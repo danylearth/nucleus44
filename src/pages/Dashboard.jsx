@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ export default function Dashboard() {
   const [nutritionData, setNutritionData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [dataSource, setDataSource] = useState('none');
+  const [error, setError] = useState(null);
 
   // Memoize expensive data processing
   const processHealthDataToMetrics = useMemo(() => {
@@ -294,6 +294,7 @@ export default function Dashboard() {
   const loadDashboardData = useCallback(async () => {
     try {
       setIsLoading(true);
+      setError(null);
 
       const currentUser = await base44.auth.me();
       setUser(currentUser);
@@ -381,7 +382,8 @@ export default function Dashboard() {
         setNutritionData(null);
       }
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      console.error('❌ Error loading dashboard data:', error);
+      setError(error.message || 'Failed to load dashboard data');
       setDataSource('none');
       setMetricsData([]);
       setNutritionData(null);
@@ -427,8 +429,21 @@ export default function Dashboard() {
       <div className="px-4 space-y-6 pb-24">
         <HealthScoreArc score={healthScore} />
         
+        {/* Show error message if there's an error */}
+        {error && (
+          <Card className="bg-red-50 rounded-2xl border-red-200 shadow-sm">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold text-red-900 mb-2">Error Loading Data</h3>
+              <p className="text-red-700 text-sm mb-4">{error}</p>
+              <Button onClick={loadDashboardData} className="bg-red-600 hover:bg-red-700 text-white">
+                Retry
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+        
         {/* Show placeholder if no data */}
-        {dataSource === 'none' ? (
+        {!error && dataSource === 'none' ? (
           <Card className="bg-white rounded-2xl border-0 shadow-sm">
             <CardContent className="p-8 text-center">
               <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -443,7 +458,7 @@ export default function Dashboard() {
               </Link>
             </CardContent>
           </Card>
-        ) : (
+        ) : !error && (
           <>
             {/* Show metrics if we have data */}
             <div className="grid grid-cols-3 gap-4 items-start">
