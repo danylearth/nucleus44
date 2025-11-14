@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import {
   Dna,
   Heart,
   Activity,
+  Zap,
   Calendar,
   User as UserIcon,
   Building2
@@ -58,27 +58,18 @@ export default function LabResultsPage() {
       const user = await base44.auth.me().catch(() => ({ id: null, role: 'user' }));
       setCurrentUser(user);
 
-      // --- CRITICAL FIX 1: Only run sync for admins to prevent data corruption for users ---
-      if (user && user.role === 'admin') {
-        try {
-          await base44.functions.invoke('listBloodResults');
-          console.log('🔄 Admin sync triggered from LabResults page.');
-        } catch (syncError) {
-          console.error('Background admin sync failed on LabResults page:', syncError);
-        }
-      }
-
-      // Now, fetch the results which will include any newly synced items
+      // ✅ OPTIMIZED: Fetch directly from database
+      // No more slow SFTP calls - cron job handles background sync
       if (user.id) {
         const query = user.role === 'admin' ? {} : { user_id: user.id };
         const fetchedResults = await base44.entities.LabResult.filter(query, '-test_date');
         setResults(fetchedResults);
+        console.log('✅ Loaded', fetchedResults.length, 'lab results from database');
       } else {
          setResults([]);
       }
     } catch (error) {
       console.error('Error loading lab results:', error);
-      // Mock data is no longer needed with the fix
       setResults([]);
     } finally {
       setIsLoading(false);
@@ -143,7 +134,7 @@ export default function LabResultsPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen pb-24">
       {/* Header */}
       <div className="flex items-center justify-between p-4 pt-12">
         <Link to={createPageUrl("Dashboard")} className="p-2 -ml-2">
@@ -197,7 +188,6 @@ export default function LabResultsPage() {
 
         <div className="space-y-4">
           {filteredResults.map((result) => {
-            // --- CRITICAL FIX 2: Correctly determine the target page ---
             let targetPage;
             if (result.profile_id) {
               targetPage = `MuhdoProfile?profile_id=${result.profile_id}&test_type=${result.test_type}`;
