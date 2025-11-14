@@ -1,6 +1,5 @@
-
-import { useState, useEffect } from "react";
-import { User, Clinic } from "@/entities/all";
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,30 +10,29 @@ import {
   Users,
   Calendar,
   TrendingUp,
-  UserPlus // Added UserPlus icon
+  UserPlus
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { registerPatient } from "@/functions/registerPatient"; // Added registerPatient function
+import { registerPatient } from "@/functions/registerPatient";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"; // Added Dialog components
-import { Label } from "@/components/ui/label"; // Added Label component for form fields
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export default function ClinicPatientsPage() {
   const [patients, setPatients] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
-  const [showAddDialog, setShowAddDialog] = useState(false); // New state for dialog visibility
-  const [isRegistering, setIsRegistering] = useState(false); // New state for registration loading
-  const [clinicId, setClinicId] = useState(null); // New state to store clinic ID
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [clinicId, setClinicId] = useState(null);
   
-  // New patient form state
   const [newPatient, setNewPatient] = useState({
     patient_name: '',
     patient_email: '',
@@ -47,17 +45,17 @@ export default function ClinicPatientsPage() {
 
   const loadPatients = async () => {
     try {
-      const currentUser = await User.me();
+      const currentUser = await base44.auth.me();
       
       if (currentUser.role !== 'admin') {
         alert('Access denied.');
         return;
       }
 
-      const clinics = await Clinic.list('-created_date', 1);
+      const clinics = await base44.entities.Clinic.list('-created_date', 1);
       if (clinics.length > 0) {
-        setClinicId(clinics[0].id); // Store clinic ID
-        const clinicPatients = await User.filter({ clinic_id: clinics[0].id }, '-last_login');
+        setClinicId(clinics[0].id);
+        const clinicPatients = await base44.entities.User.filter({ clinic_id: clinics[0].id }, '-last_login');
         setPatients(clinicPatients);
       }
     } catch (error) {
@@ -91,11 +89,8 @@ export default function ClinicPatientsPage() {
       if (response && response.data && response.data.success) {
         alert(`Patient registered successfully!\n\nKit ID: ${response.data.patient.muhdo_kit_id}\n\nInvitation email sent to ${newPatient.patient_email}`);
         
-        // Reset form and close dialog
         setNewPatient({ patient_name: '', patient_email: '', patient_phone: '' });
         setShowAddDialog(false);
-        
-        // Reload patients list
         loadPatients();
       } else {
         alert(response && response.data && response.data.error ? response.data.error : 'Failed to register patient');
@@ -150,7 +145,6 @@ export default function ClinicPatientsPage() {
         </Link>
         <h1 className="text-lg font-semibold text-gray-900">All Patients</h1>
         
-        {/* Add Patient Button */}
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="bg-teal-500 hover:bg-teal-600">

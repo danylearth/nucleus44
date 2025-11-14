@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { User, Clinic } from "@/entities/all";
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,25 +34,21 @@ export default function ClinicDashboard() {
 
   const loadClinicData = async () => {
     try {
-      const currentUser = await User.me();
+      const currentUser = await base44.auth.me();
       
-      // Check if user is clinic admin
       if (currentUser.role !== 'admin') {
         alert('Access denied. Clinic dashboard is for clinic administrators only.');
         window.location.href = createPageUrl('Dashboard');
         return;
       }
 
-      // For now, get the first clinic (in production, link user to specific clinic)
-      const clinics = await Clinic.list('-created_date', 1);
+      const clinics = await base44.entities.Clinic.list('-created_date', 1);
       if (clinics.length > 0) {
         setClinic(clinics[0]);
         
-        // Load patients for this clinic
-        const clinicPatients = await User.filter({ clinic_id: clinics[0].id }, '-last_login');
+        const clinicPatients = await base44.entities.User.filter({ clinic_id: clinics[0].id }, '-last_login');
         setPatients(clinicPatients);
 
-        // Calculate stats
         const activePatients = clinicPatients.filter(p => {
           if (!p.last_login) return false;
           const lastLogin = new Date(p.last_login);
@@ -66,7 +62,7 @@ export default function ClinicDashboard() {
           totalPatients: clinicPatients.length,
           activePatients,
           avgHealthScore: Math.round(avgScore),
-          pendingResults: 0 // TODO: Count pending lab results
+          pendingResults: 0
         });
       }
     } catch (error) {

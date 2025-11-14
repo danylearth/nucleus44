@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,8 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getAllUsers } from '@/functions/getAllUsers';
 import { assignPatientToClinic } from '@/functions/assignPatientToClinic';
-import { Clinic } from '@/entities/all';
-import { Shield, Copy, Check, Users, Building2 } from 'lucide-react';
+import { matchBloodResult } from '@/functions/matchBloodResult';
+import { base44 } from '@/api/base44Client';
+import { Shield, Copy, Check, Users, Building2, FileText } from 'lucide-react';
 
 export default function AdminPage() {
     const [users, setUsers] = useState([]);
@@ -30,12 +30,12 @@ export default function AdminPage() {
     React.useEffect(() => {
         loadClinics();
         loadBloodFiles();
-        handleLoadUsers(); // Load users initially for assignment and blood matching forms
+        handleLoadUsers();
     }, []);
 
     const loadClinics = async () => {
         try {
-            const allClinics = await Clinic.list('-created_date');
+            const allClinics = await base44.entities.Clinic.list('-created_date');
             setClinics(allClinics);
         } catch (error) {
             console.error('Error loading clinics:', error);
@@ -44,11 +44,20 @@ export default function AdminPage() {
 
     const loadBloodFiles = async () => {
         try {
-            const { listBloodResults } = await import('@/functions/listBloodResults');
-            const response = await listBloodResults();
-            if (response.data.success) {
-                setBloodFiles(response.data.files || []);
-            }
+            // ✅ FIXED: Load unmatched blood results directly from database
+            const unmatchedResults = await base44.entities.LabResult.filter({
+                blood_result_filename: { $ne: null },
+                user_id: null
+            });
+            
+            // Convert to file format for the selector
+            const files = unmatchedResults.map(result => ({
+                name: result.blood_result_filename,
+                id: result.id
+            }));
+            
+            setBloodFiles(files);
+            console.log('📋 Loaded', files.length, 'unmatched blood files');
         } catch (error) {
             console.error('Error loading blood files:', error);
         }
@@ -57,10 +66,10 @@ export default function AdminPage() {
     const handleLoadUsers = async () => {
         setIsLoading(true);
         setError(null);
-        setUsers([]); // Clear previous users
+        setUsers([]);
         try {
             const response = await getAllUsers();
-            if (response.data?.success) { // Check for success property
+            if (response.data?.success) {
                 setUsers(response.data.users);
             } else {
                 setError(response.data.error || 'Failed to fetch users.');
@@ -90,7 +99,7 @@ export default function AdminPage() {
                 alert(response.data.message);
                 setSelectedPatient('');
                 setSelectedClinic('');
-                handleLoadUsers(); // Refresh user list to show updated clinic assignment
+                handleLoadUsers();
             } else {
                 alert(response.data.error || 'Failed to assign patient');
             }
@@ -110,7 +119,6 @@ export default function AdminPage() {
 
         setIsMatching(true);
         try {
-            const { matchBloodResult } = await import('@/functions/matchBloodResult');
             const response = await matchBloodResult({
                 filename: selectedFile,
                 user_id: selectedUserForFile
@@ -120,7 +128,7 @@ export default function AdminPage() {
                 alert(`Blood result matched successfully to user!`);
                 setSelectedFile('');
                 setSelectedUserForFile('');
-                loadBloodFiles(); // Refresh the list of unassigned files
+                loadBloodFiles();
             } else {
                 alert(response.data.error || 'Failed to match blood result');
             }
@@ -145,7 +153,7 @@ export default function AdminPage() {
                 <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
             </div>
 
-            {/* Load All Users Section - kept near the title for easy access */}
+            {/* User Management */}
             <Card className="mb-6">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -214,11 +222,11 @@ export default function AdminPage() {
                 </CardContent>
             </Card>
 
-            {/* NEW: Match Blood Results Section */}
+            {/* Match Blood Results */}
             <Card className="bg-white rounded-2xl border-0 shadow-sm">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5 text-teal-500" />
+                        <FileText className="w-5 h-5 text-teal-500" />
                         Match Blood Test Results
                     </CardTitle>
                 </CardHeader>
@@ -236,7 +244,7 @@ export default function AdminPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {bloodFiles.length === 0 ? (
-                                        <SelectItem value="no-files" disabled>No unassigned files</SelectItem>
+                                        <SelectItem value="no-files" disabled>No unmatched files</SelectItem>
                                     ) : (
                                         bloodFiles.map((file) => (
                                             <SelectItem key={file.name} value={file.name}>
@@ -279,6 +287,7 @@ export default function AdminPage() {
                 </CardContent>
             </Card>
 
+            {/* User List */}
             <Card>
                 <CardHeader>
                     <CardTitle>User List</CardTitle>
