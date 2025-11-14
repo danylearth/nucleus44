@@ -14,7 +14,6 @@ import DnaStrandIcon from "../icons/DnaStrandIcon";
 export default function LabResultsCard({ orders }) {
   const [labResults, setLabResults] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [unmatchedCount, setUnmatchedCount] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -27,27 +26,13 @@ export default function LabResultsCard({ orders }) {
       setCurrentUser(user);
 
       if (user.id) {
-        // Admins see the latest results from everyone, users see their own.
+        // OPTIMIZED: Fetch directly from database, no background sync calls
+        // Admins see latest 2 results from everyone, users see their own
         const userResults = user.role === 'admin'
             ? await base44.entities.LabResult.list('-test_date', 2)
             : await base44.entities.LabResult.filter({ user_id: user.id }, '-test_date', 2);
         
         setLabResults(userResults);
-
-        // --- CRITICAL FIX ---
-        // Background sync logic should ONLY run for admins to prevent data corruption for users.
-        if (user.role === 'admin') {
-            try {
-              // Use the SDK to call the function instead of dynamic import
-              const matchingResponse = await base44.functions.invoke('listBloodResults', {});
-              if (matchingResponse.data?.success) {
-                setUnmatchedCount(matchingResponse.data.unmatched_files || 0);
-              }
-            } catch (error) {
-              console.error('Background matching failed for admin:', error);
-              // Fail silently - this is just for the unmatched count badge
-            }
-        }
       }
     } catch (error) {
       console.error('Error loading lab results:', error);
@@ -128,11 +113,6 @@ export default function LabResultsCard({ orders }) {
           <div className="flex items-center gap-2">
             <Check className="w-5 h-5 text-teal-500" />
             <span className="text-base font-medium text-gray-900">Lab Results</span>
-            {unmatchedCount > 0 && (
-              <Badge className="bg-yellow-100 text-yellow-800 text-xs">
-                {unmatchedCount} pending
-              </Badge>
-            )}
           </div>
           <Link to={createPageUrl("LabResults")}>
             <div className="bg-[#F5FCFB] pr-3 pb-1 pl-3 rounded-full">
@@ -152,7 +132,6 @@ export default function LabResultsCard({ orders }) {
               if (result.profile_id) {
                 targetPage = `MuhdoProfile?profile_id=${result.profile_id}&test_type=${result.test_type}`;
               } else if (result.test_type === 'blood_work') {
-                // ANY blood work from a file goes to the detailed CBC page
                 targetPage = `CompleteBloodCount?id=${result.id}`;
               } else {
                 targetPage = `LabResultDetail?id=${result.id}`;
