@@ -1,12 +1,11 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, Check, Dna, User as UserIcon, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
-import { LabResult, User } from "@/entities/all";
+import { base44 } from "@/api/base44Client";
 
 // Import custom icons
 import BloodDropIcon from "../icons/BloodDropIcon";
@@ -24,14 +23,14 @@ export default function LabResultsCard({ orders }) {
 
   const loadLabResults = async () => {
     try {
-      const user = await User.me().catch(() => ({ id: '', role: 'user' }));
+      const user = await base44.auth.me().catch(() => ({ id: '', role: 'user' }));
       setCurrentUser(user);
 
       if (user.id) {
         // Admins see the latest results from everyone, users see their own.
         const userResults = user.role === 'admin'
-            ? await LabResult.list('-test_date', 2)
-            : await LabResult.filter({ user_id: user.id }, '-test_date', 2);
+            ? await base44.entities.LabResult.list('-test_date', 2)
+            : await base44.entities.LabResult.filter({ user_id: user.id }, '-test_date', 2);
         
         setLabResults(userResults);
 
@@ -39,13 +38,14 @@ export default function LabResultsCard({ orders }) {
         // Background sync logic should ONLY run for admins to prevent data corruption for users.
         if (user.role === 'admin') {
             try {
-              const { listBloodResults } = await import('@/functions/listBloodResults');
-              const matchingResponse = await listBloodResults();
+              // Use the SDK to call the function instead of dynamic import
+              const matchingResponse = await base44.functions.invoke('listBloodResults', {});
               if (matchingResponse.data?.success) {
                 setUnmatchedCount(matchingResponse.data.unmatched_files || 0);
               }
             } catch (error) {
               console.error('Background matching failed for admin:', error);
+              // Fail silently - this is just for the unmatched count badge
             }
         }
       }
