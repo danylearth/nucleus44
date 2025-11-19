@@ -27,7 +27,9 @@ import BloodResults from './pages/BloodResults';
 import ClinicDashboard from './pages/ClinicDashboard';
 import ClinicPatients from './pages/ClinicPatients';
 import ClinicSettings from './pages/ClinicSettings';
-import Layout from './Layout.jsx';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -60,10 +62,12 @@ export const PAGES = {
     "ClinicDashboard": ClinicDashboard,
     "ClinicPatients": ClinicPatients,
     "ClinicSettings": ClinicSettings,
+    "TermsAndConditions": TermsAndConditions,
+    "PrivacyPolicy": PrivacyPolicy,
 }
 
 export const pagesConfig = {
     mainPage: "Dashboard",
     Pages: PAGES,
-    Layout: Layout,
+    Layout: __Layout,
 };
