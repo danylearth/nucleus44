@@ -1,14 +1,17 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { User } from "@/entities/all";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { base44 } from "@/api/base44Client";
 import {
   ChevronLeft,
   Bell,
   User as UserIcon,
   MapPin,
   Calendar,
-  Settings } from
+  Settings,
+  ChevronRight,
+  Camera } from
 "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -16,6 +19,8 @@ import { createPageUrl } from "@/utils";
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     loadUserData();
@@ -40,6 +45,23 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     if (window.confirm('Are you sure you want to log out?')) {
       await User.logout();
+    }
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      await base44.auth.updateMe({ profile_picture: file_url });
+      await loadUserData();
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      alert('Failed to upload profile picture');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -115,11 +137,31 @@ export default function ProfilePage() {
         {user ? (
           <div className="bg-white rounded-[24px] shadow-sm pt-16 pb-6 px-4 text-center">
             <div className="absolute top-0 left-1/2 -translate-x-1/2">
-              <img
-                src={profilePicture}
-                alt="Profile"
-                className="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover"
-              />
+              <div className="relative">
+                <img
+                  src={profilePicture}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="absolute bottom-0 right-0 w-10 h-10 bg-teal-500 hover:bg-teal-600 rounded-full flex items-center justify-center text-white shadow-lg disabled:opacity-50"
+                >
+                  {isUploading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Camera className="w-5 h-5" />
+                  )}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </div>
             </div>
             <h2 className="text-2xl font-bold text-gray-900">{user.full_name}</h2>
             <p className="text-gray-500">{user.email}</p>
