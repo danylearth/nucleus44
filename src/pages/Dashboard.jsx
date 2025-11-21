@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Activity
+  Activity,
+  Upload,
+  X
 } from "lucide-react";
 
 import HealthScoreArc from "../components/dashboard/HealthScoreArc";
@@ -23,6 +25,9 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [dataSource, setDataSource] = useState('none');
   const [error, setError] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Memoize expensive data processing
   const processHealthDataToMetrics = useMemo(() => {
@@ -396,6 +401,29 @@ export default function Dashboard() {
     loadDashboardData();
   }, [loadDashboardData]);
 
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setUploadedImage(file_url);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const healthScore = user?.health_score || 750;
   const firstName = user?.full_name?.split(' ')[0] || 'User';
   const profilePicture = user?.profile_picture || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5c2121d3e86e4be58e018/be300faf8_92e43541-1304-4687-9e2f-3617bacf279e1.png';
@@ -428,6 +456,61 @@ export default function Dashboard() {
 
       <div className="px-4 space-y-6 pb-24">
         <HealthScoreArc score={healthScore} />
+        
+        {/* Image Upload Section */}
+        <Card className="bg-white rounded-2xl border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Upload Health Image</h3>
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="bg-gray-900 hover:bg-gray-800 text-white"
+                size="sm"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {isUploading ? 'Uploading...' : 'Upload'}
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </div>
+            
+            {uploadedImage && (
+              <div className="relative">
+                <img
+                  src={uploadedImage}
+                  alt="Uploaded health image"
+                  className="w-full rounded-xl object-cover max-h-64"
+                />
+                <button
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+            
+            {!uploadedImage && !isUploading && (
+              <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-xl">
+                <Upload className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                <p className="text-gray-500 text-sm">No image uploaded yet</p>
+              </div>
+            )}
+            
+            {isUploading && (
+              <div className="text-center py-8">
+                <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-2"></div>
+                <p className="text-gray-500 text-sm">Uploading image...</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
         
         {/* Show error message if there's an error */}
         {error && (

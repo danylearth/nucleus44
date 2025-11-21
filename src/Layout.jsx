@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { User } from '@/entities/User';
 import { createPageUrl } from '@/utils';
-import { Heart, Stethoscope, Bot, User as UserIcon, LogOut, Settings, Bell, LayoutGrid, Shield, Home, TrendingUp, ShoppingCart, MessageCircle } from 'lucide-react';
+import { BarChart, Heart, Stethoscope, Bot, User as UserIcon, LogOut, Settings, Bell, LayoutGrid, Shield, Home, TrendingUp, ShoppingCart, MessageCircle } from 'lucide-react';
 
 const NavLink = ({ to, icon: Icon, children }) => {
   const location = useLocation();
@@ -28,7 +27,6 @@ const MobileBottomNav = React.memo(() => {
 
   const navItems = [
     { path: createPageUrl('Dashboard'), icon: Home, label: 'Dashboard' },
-    { path: createPageUrl('Analytics'), icon: TrendingUp, label: 'Analytics' },
     { path: createPageUrl('Tests'), icon: ShoppingCart, label: 'Shop' },
     { path: createPageUrl('AIAgent'), icon: MessageCircle, label: 'Chat' }
   ];
