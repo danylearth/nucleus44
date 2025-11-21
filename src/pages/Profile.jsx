@@ -146,12 +146,12 @@ export default function ProfilePage() {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="absolute bottom-0 right-0 w-10 h-10 bg-teal-500 hover:bg-teal-600 rounded-full flex items-center justify-center text-white shadow-lg disabled:opacity-50"
+                  className="absolute bottom-0 right-0 w-8 h-8 bg-teal-500 hover:bg-teal-600 rounded-full flex items-center justify-center text-white shadow-lg disabled:opacity-50"
                 >
                   {isUploading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   ) : (
-                    <Camera className="w-5 h-5" />
+                    <Camera className="w-4 h-4" />
                   )}
                 </button>
                 <input
