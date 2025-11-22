@@ -456,9 +456,9 @@ export default function Dashboard() {
 
       <div className="px-4 space-y-6 pb-24">
         <HealthScoreArc score={healthScore} />
-        
+
         {/* Image Upload Section */}
-        <Card className="bg-white rounded-2xl border-0 shadow-sm">
+        {/* <Card className="bg-white rounded-2xl border-0 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Upload Health Image</h3>
@@ -479,7 +479,7 @@ export default function Dashboard() {
                 className="hidden"
               />
             </div>
-            
+
             {uploadedImage && (
               <div className="relative">
                 <img
@@ -495,14 +495,14 @@ export default function Dashboard() {
                 </button>
               </div>
             )}
-            
+
             {!uploadedImage && !isUploading && (
               <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-xl">
                 <Upload className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                 <p className="text-gray-500 text-sm">No image uploaded yet</p>
               </div>
             )}
-            
+
             {isUploading && (
               <div className="text-center py-8">
                 <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-2"></div>
@@ -510,7 +510,7 @@ export default function Dashboard() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
         
         {/* Show error message if there's an error */}
         {error && (
