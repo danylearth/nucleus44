@@ -53,9 +53,10 @@ export default function BloodResultsPage() {
 
       // ✅ OPTIMIZED: Fetch directly from database
       // Admins see all blood work, users see only their own
+      // Users only see approved results, admins see all
       const query = currentUser.role === 'admin' 
         ? { test_type: 'blood_work' }
-        : { user_id: currentUser.id, test_type: 'blood_work' };
+        : { user_id: currentUser.id, test_type: 'blood_work', approval_status: 'approved' };
       
       const bloodResults = await base44.entities.LabResult.filter(query, '-test_date');
       setResults(bloodResults);

@@ -29,6 +29,7 @@ import ClinicPatients from './pages/ClinicPatients';
 import ClinicSettings from './pages/ClinicSettings';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import BloodTestManagement from './pages/BloodTestManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -64,6 +65,7 @@ export const PAGES = {
     "ClinicSettings": ClinicSettings,
     "TermsAndConditions": TermsAndConditions,
     "PrivacyPolicy": PrivacyPolicy,
+    "BloodTestManagement": BloodTestManagement,
 }
 
 export const pagesConfig = {

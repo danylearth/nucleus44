@@ -174,7 +174,10 @@ export default function Layout({ children, currentPageName }) {
                   </>
                 )}
                 {user?.role === 'admin' && !isClinicUser && (
-                  <NavLink to={createPageUrl('Admin')} icon={Shield}>Admin</NavLink>
+                  <>
+                    <NavLink to={createPageUrl('Admin')} icon={Shield}>Admin</NavLink>
+                    <NavLink to={createPageUrl('BloodTestManagement')} icon={Stethoscope}>Blood Test Mgmt</NavLink>
+                  </>
                 )}
               </nav>
             </div>
