@@ -268,7 +268,7 @@ Deno.serve(async (req) => {
                     const overallStatus = hasAbnormalParameters ? 'abnormal' : 'normal';
                     const iconColor = hasAbnormalParameters ? 'red' : 'green';
 
-                    // Create lab result
+                    // Create lab result with pending approval status
                     const newLabResult = await base44.asServiceRole.entities.LabResult.create({
                         user_id: matchedUser.id,
                         user_name: matchedUser.full_name,
@@ -276,6 +276,7 @@ Deno.serve(async (req) => {
                         test_type: 'blood_work',
                         test_date: parsedData.test_date || new Date().toISOString().split('T')[0],
                         status: overallStatus,
+                        approval_status: 'pending',
                         icon_color: iconColor,
                         blood_result_filename: filename,
                         laboratory: clinic ? clinic.clinic_name : 'Unknown Lab',
