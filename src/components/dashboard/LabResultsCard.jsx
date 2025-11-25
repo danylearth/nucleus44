@@ -27,10 +27,10 @@ export default function LabResultsCard({ orders }) {
 
       if (user.id) {
         // OPTIMIZED: Fetch directly from database, no background sync calls
-        // Admins see latest 2 results from everyone, users see their own
+        // Admins see latest 2 results from everyone, users see only their approved results
         const userResults = user.role === 'admin'
             ? await base44.entities.LabResult.list('-test_date', 2)
-            : await base44.entities.LabResult.filter({ user_id: user.id }, '-test_date', 2);
+            : await base44.entities.LabResult.filter({ user_id: user.id, approval_status: 'approved' }, '-test_date', 2);
         
         setLabResults(userResults);
       }

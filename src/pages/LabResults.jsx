@@ -60,8 +60,9 @@ export default function LabResultsPage() {
 
       // ✅ OPTIMIZED: Fetch directly from database
       // No more slow SFTP calls - cron job handles background sync
+      // Users only see approved results, admins see all
       if (user.id) {
-        const query = user.role === 'admin' ? {} : { user_id: user.id };
+        const query = user.role === 'admin' ? {} : { user_id: user.id, approval_status: 'approved' };
         const fetchedResults = await base44.entities.LabResult.filter(query, '-test_date');
         setResults(fetchedResults);
         console.log('✅ Loaded', fetchedResults.length, 'lab results from database');
