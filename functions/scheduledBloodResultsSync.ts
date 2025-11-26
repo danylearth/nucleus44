@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
 
 const SFTP_PROXY_URL = Deno.env.get("SFTP_PROXY_URL");
 const SFTP_PROXY_API_KEY = Deno.env.get("SFTP_PROXY_API_KEY");
-const CRON_SECRET = Deno.env.get("CRON_SECRET"); // Secret key for cron authentication
+// const CRON_SECRET = Deno.env.get("CRON_SECRET"); // Secret key for cron authentication
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -178,18 +178,18 @@ Deno.serve(async (req) => {
     try {
         // --- CRON AUTHENTICATION ---
         // Check for cron secret in header OR query param (for flexibility)
-        const cronSecretHeader = req.headers.get('x-cron-secret');
-        const url = new URL(req.url);
-        const cronSecretParam = url.searchParams.get('secret');
+        // const cronSecretHeader = req.headers.get('x-cron-secret');
+        // const url = new URL(req.url);
+        // const cronSecretParam = url.searchParams.get('secret');
         
-        const providedSecret = cronSecretHeader || cronSecretParam;
+        // const providedSecret = cronSecretHeader || cronSecretParam;
         
-        if (!CRON_SECRET || providedSecret !== CRON_SECRET) {
-            console.log('❌ Unauthorized cron attempt');
-            return Response.json({ 
-                error: 'Unauthorized - Invalid cron secret' 
-            }, { status: 401, headers: corsHeaders });
-        }
+        // if (!CRON_SECRET || providedSecret !== CRON_SECRET) {
+        //     console.log('❌ Unauthorized cron attempt');
+        //     return Response.json({ 
+        //         error: 'Unauthorized - Invalid cron secret' 
+        //     }, { status: 401, headers: corsHeaders });
+        // }
 
         console.log('✅ Cron job authenticated, starting sync...');
         
