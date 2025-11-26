@@ -187,8 +187,8 @@ export default function LabResultsPage() {
           <p className="text-gray-500 text-sm mb-4">{filteredResults.length} tests found</p>
         </div>
 
-        <div className="space-y-4">
-          {filteredResults.map((result) => {
+        <div className="space-y-6">
+                      {filteredResults.map((result) => {
             let targetPage;
             if (result.profile_id) {
               targetPage = `MuhdoProfile?profile_id=${result.profile_id}&test_type=${result.test_type}`;
