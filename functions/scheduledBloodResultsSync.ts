@@ -253,6 +253,7 @@ Deno.serve(async (req) => {
                 }
 
                 const hl7Content = await downloadResponse.text();
+                console.log("hl7Content",hl7Content)
                 const parsedData = parseHL7(hl7Content);
                 
                 console.log('📊 Parsed:', filename, {
