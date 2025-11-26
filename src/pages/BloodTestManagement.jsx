@@ -43,6 +43,8 @@ export default function BloodTestManagementPage() {
   const [selectedResult, setSelectedResult] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [isUpdating, setIsUpdating] = useState(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncResult, setLastSyncResult] = useState(null);
 
   useEffect(() => {
     loadData();
