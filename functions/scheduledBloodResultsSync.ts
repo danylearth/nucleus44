@@ -214,6 +214,7 @@ Deno.serve(async (req) => {
         const files = listData.files || listData.items || listData || [];
         
         const hl7Files = files.filter(file => {
+            console.log('file',file)
             const filename = file.name || file.filename || file;
             return typeof filename === 'string' && filename.toLowerCase().endsWith('.hl7');
         });
