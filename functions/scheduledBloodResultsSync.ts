@@ -238,8 +238,8 @@ Deno.serve(async (req) => {
                     headers: { 'x-api-key': SFTP_PROXY_API_KEY }
                 });
   const hl7Content = await downloadResponse.text();
-                console.log("hl7Content",hl7Content)
-               
+                const parsedData = parseHL7(hl7Content)
+                console.log(parsedData)
             if (processedFileNames.has(filename)) {
                 console.log('✅ Already processed, skipping:', filename);
                 skippedFilesCount++;
