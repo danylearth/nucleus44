@@ -261,17 +261,21 @@ Deno.serve(async (req) => {
                     params: parsedData.parameters.length
                 });
 
+                // TEMPORARY: Skip user matching, save ALL blood tests for testing
                 const { user: matchedUser, clinic } = await matchToUser(base44, parsedData);
                 
-                if (matchedUser) {
+                // if (matchedUser) {
+                // TEMPORARY: Always save, regardless of user match
+                {
                     const hasAbnormalParameters = parsedData.parameters.some(p => p.status !== 'normal');
                     const overallStatus = hasAbnormalParameters ? 'abnormal' : 'normal';
                     const iconColor = hasAbnormalParameters ? 'red' : 'green';
 
                     // Create lab result with pending approval status
+                    // TEMPORARY: Use matched user if found, otherwise use placeholder
                     const newLabResult = await base44.asServiceRole.entities.LabResult.create({
-                        user_id: matchedUser.id,
-                        user_name: matchedUser.full_name,
+                        user_id: matchedUser?.id || 'UNMATCHED',
+                        user_name: matchedUser?.full_name || parsedData.patient_name || 'Unknown Patient',
                         test_name: 'Complete Blood Count',
                         test_type: 'blood_work',
                         test_date: parsedData.test_date || new Date().toISOString().split('T')[0],
@@ -279,9 +283,9 @@ Deno.serve(async (req) => {
                         approval_status: 'pending',
                         icon_color: iconColor,
                         blood_result_filename: filename,
-                        laboratory: clinic ? clinic.clinic_name : 'Unknown Lab',
+                        laboratory: clinic ? clinic.clinic_name : (parsedData.clinic_name || 'Unknown Lab'),
                         ordered_by: 'Automated Sync',
-                        results_summary: `Blood test results for ${parsedData.patient_name || 'patient'}.`
+                        results_summary: `Blood test results for ${parsedData.patient_name || 'patient'}. ${matchedUser ? '(Matched)' : '(UNMATCHED - needs manual assignment)'}`
                     });
                     
                     // Create parameters
@@ -295,7 +299,7 @@ Deno.serve(async (req) => {
                     }
 
                     newFilesMatched++;
-                    console.log(`✅ Processed ${filename} for ${matchedUser.full_name}`);
+                    console.log(`✅ Processed ${filename} for ${matchedUser?.full_name || 'UNMATCHED: ' + parsedData.patient_name}`);
 
                     // Archive file
                     const moveUrl = `${SFTP_PROXY_URL}/sftp/move`;
@@ -312,6 +316,10 @@ Deno.serve(async (req) => {
                         console.log(`🗂️ Archived: ${filename}`);
                     }
 
+                }
+                
+                // TEMPORARY: Commented out unmatched tracking
+                /*
                 } else {
                     unmatchedFiles.push({ 
                         name: filename,
@@ -320,6 +328,7 @@ Deno.serve(async (req) => {
                         reason: 'No matching user found'
                     });
                 }
+                */
 
             } catch (error) {
                 console.error(`❌ Error processing ${filename}:`, error);
