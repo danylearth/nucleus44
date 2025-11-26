@@ -117,6 +117,7 @@ function parseHL7(hl7Content) {
 
 // Try to match parsed HL7 data to a user WITHIN THE SAME CLINIC
 async function matchToUser(base44, hl7Data) {
+    console.log(hl7Data)
     let clinic = null;
     if (hl7Data.clinic_name) {
         const allClinics = await base44.asServiceRole.entities.Clinic.list();
