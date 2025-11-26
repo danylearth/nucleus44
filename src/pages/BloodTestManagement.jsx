@@ -27,8 +27,10 @@ import {
   XCircle,
   Clock,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  RefreshCw
 } from "lucide-react";
+import { scheduledBloodResultsSync } from "@/functions/scheduledBloodResultsSync";
 import { format } from "date-fns";
 
 export default function BloodTestManagementPage() {
