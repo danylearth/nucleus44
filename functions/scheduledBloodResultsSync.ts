@@ -233,11 +233,11 @@ Deno.serve(async (req) => {
         for (const file of hl7Files) {
             const filename = file.name || file.filename || file;
             
-            // if (processedFileNames.has(filename)) {
-            //     console.log('✅ Already processed, skipping:', filename);
-            //     skippedFilesCount++;
-            //     continue;
-            // }
+            if (processedFileNames.has(filename)) {
+                console.log('✅ Already processed, skipping:', filename);
+                skippedFilesCount++;
+                continue;
+            }
 
             try {
                 const downloadUrl = `${SFTP_PROXY_URL}/sftp/get?path=${encodeURIComponent('/files/' + filename)}`;
