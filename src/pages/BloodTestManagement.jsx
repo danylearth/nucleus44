@@ -274,6 +274,39 @@ export default function BloodTestManagementPage() {
         <div className="w-10"></div>
       </div>
 
+      {/* Sync Button */}
+      <div className="px-4 mb-4">
+        <Card className="bg-white rounded-2xl border-0 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-gray-900">Sync Blood Tests</h3>
+                <p className="text-sm text-gray-500">Manually fetch new results from SFTP server</p>
+              </div>
+              <Button 
+                onClick={handleManualSync}
+                disabled={isSyncing}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+                {isSyncing ? 'Syncing...' : 'Sync Now'}
+              </Button>
+            </div>
+            {lastSyncResult && (
+              <div className={`mt-3 p-3 rounded-lg text-sm ${lastSyncResult.error ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                {lastSyncResult.error ? (
+                  <span>Error: {lastSyncResult.error}</span>
+                ) : (
+                  <span>
+                    {lastSyncResult.message || `Synced: ${lastSyncResult.new_files_matched} new, ${lastSyncResult.files_already_processed} skipped`}
+                  </span>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Search */}
       <div className="px-4 mb-6">
         <div className="relative">
