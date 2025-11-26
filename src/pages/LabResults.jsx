@@ -199,7 +199,7 @@ export default function LabResultsPage() {
             }
             
             return (
-              <Link key={result.id} to={createPageUrl(targetPage)}>
+              <Link key={result.id} to={createPageUrl(targetPage)} className="block mb-4">
                 <Card className="bg-white rounded-2xl border-0 shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
