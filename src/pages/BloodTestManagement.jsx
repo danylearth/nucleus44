@@ -118,6 +118,21 @@ export default function BloodTestManagementPage() {
     setRejectDialogOpen(true);
   };
 
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    setLastSyncResult(null);
+    try {
+      const response = await scheduledBloodResultsSync();
+      setLastSyncResult(response.data);
+      await loadData(); // Reload results after sync
+    } catch (err) {
+      console.error('Sync failed:', err);
+      setLastSyncResult({ error: err.message });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const getFilteredResults = (status) => {
     return results.filter(r => {
       const matchesStatus = (r.approval_status || 'pending') === status;
