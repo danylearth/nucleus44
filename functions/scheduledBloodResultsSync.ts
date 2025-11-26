@@ -268,11 +268,21 @@ Deno.serve(async (req) => {
                 // TEMPORARY: Always save, regardless of user match
                 {
                     const hasAbnormalParameters = parsedData.parameters.some(p => p.status !== 'normal');
+                    const abnormalCount = parsedData.parameters.filter(p => p.status !== 'normal').length;
+                    const totalParams = parsedData.parameters.length;
                     const overallStatus = hasAbnormalParameters ? 'abnormal' : 'normal';
                     const iconColor = hasAbnormalParameters ? 'red' : 'green';
 
+                    // Build detailed summary
+                    const statusBreakdown = hasAbnormalParameters 
+                        ? `${abnormalCount} of ${totalParams} parameters outside normal range`
+                        : `All ${totalParams} parameters within normal range`;
+
+                    const matchStatus = matchedUser 
+                        ? `Matched to: ${matchedUser.full_name}` 
+                        : `UNMATCHED - Patient: ${parsedData.patient_name || 'Unknown'}, DOB: ${parsedData.date_of_birth || 'N/A'}, Email: ${parsedData.patient_email || 'N/A'}`;
+
                     // Create lab result with pending approval status
-                    // TEMPORARY: Use matched user if found, otherwise use placeholder
                     const newLabResult = await base44.asServiceRole.entities.LabResult.create({
                         user_id: matchedUser?.id || 'UNMATCHED',
                         user_name: matchedUser?.full_name || parsedData.patient_name || 'Unknown Patient',
@@ -285,7 +295,7 @@ Deno.serve(async (req) => {
                         blood_result_filename: filename,
                         laboratory: clinic ? clinic.clinic_name : (parsedData.clinic_name || 'Unknown Lab'),
                         ordered_by: 'Automated Sync',
-                        results_summary: `Blood test results for ${parsedData.patient_name || 'patient'}. ${matchedUser ? '(Matched)' : '(UNMATCHED - needs manual assignment)'}`
+                        results_summary: `${statusBreakdown}. ${matchStatus}`
                     });
                     
                     // Create parameters
