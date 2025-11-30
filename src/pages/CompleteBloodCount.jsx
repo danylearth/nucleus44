@@ -367,8 +367,7 @@ export default function CompleteBloodCountPage() {
                                                                                                                                                         }
 
                                                                                                                                                         if (paramName === 'eGFR') {
-                                                                                                                                                                                                  if (numValue === 60) return 'normal';
-                                                                                                                                                                                                  if (numValue > 60) return 'high';
+                                                                                                                                                                                                  if (numValue >= 60) return 'normal';
                                                                                                                                                                                                   if (numValue < 60) return 'low';
                                                                                                                                                                                                 }
 
