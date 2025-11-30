@@ -407,7 +407,8 @@ export default function CompleteBloodCountPage() {
                                                                                           className="absolute -top-4 transition-all duration-500"
                                                                                           style={{ left: `calc(${progressWidth}% - 8px)` }}
                                                                                         >
-                                                                                          <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent border-t-white drop-shadow-md"></div>
+                                                                                          <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent border-t-gray-800"></div>
+                                  <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent border-t-white absolute top-0 left-[2px]"></div>
                                                                                         </div>
                                                       </div>
                                                       <div className="flex items-center justify-between mt-2">
