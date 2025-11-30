@@ -397,7 +397,7 @@ export default function CompleteBloodCountPage() {
                                                               ></div>
                           </div>
                           <div className="flex items-center justify-between mt-1">
-                            <span className="text-xs text-gray-500">Reference Range</span>
+                            <span className="text-xs text-gray-500">Expected Range</span>
                             <span className="text-xs font-medium text-gray-700">{param.reference_range}</span>
                           </div>
                         </div>
