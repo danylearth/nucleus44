@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,8 +12,11 @@ import {
   Calendar,
   Building2,
   User,
+  TrendingUp,
   AlertCircle,
   CheckCircle2,
+  Info,
+  Circle,
   Loader2,
   MessageCircle
 } from "lucide-react";
@@ -366,9 +368,14 @@ export default function CompleteBloodCountPage() {
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-4">
-          <Button variant="outline" className="flex-1 gap-2">
-            <Download className="w-4 h-4" />
-            Download PDF
+          <Button 
+            variant="outline" 
+            className="flex-1 gap-2"
+            onClick={handleDownloadOriginal}
+            disabled={isDownloading || !result?.blood_result_filename}
+          >
+            {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            Download Report
           </Button>
           <Button variant="outline" className="flex-1 gap-2">
             <Share2 className="w-4 h-4" />
