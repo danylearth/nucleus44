@@ -359,7 +359,7 @@ export default function CompleteBloodCountPage() {
                     <div className="flex items-start gap-4">
                       {/* Traffic Light Indicator */}
                       <div className="flex flex-col items-center gap-1 pt-1">
-                        <div className={`w-3 h-3 rounded-full ${status.trafficLight} shadow-lg`}></div>
+                        <div className={`w-3 h-3 rounded-full ${getStatusColor(calculatedStatus).trafficLight} shadow-lg`}></div>
                         <div className="w-0.5 h-full bg-gray-200"></div>
                       </div>
 
@@ -380,7 +380,7 @@ export default function CompleteBloodCountPage() {
 
                         {/* Value and Range */}
                         <div className="flex items-center gap-2 mt-3">
-                          <div className={`text-2xl font-bold ${status.text}`}>
+                          <div className={`text-2xl font-bold ${getStatusColor(calculatedStatus).text}`}>
                             {param.value}
                           </div>
                           <div className="text-sm text-gray-500">
@@ -392,9 +392,9 @@ export default function CompleteBloodCountPage() {
                         <div className="mt-3">
                           <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                             <div
-                              className={`h-full ${status.trafficLight} transition-all duration-500`}
-                              style={{ width: `${progressWidth}%` }}
-                            ></div>
+                                                                className={`h-full ${getStatusColor(calculatedStatus).trafficLight} transition-all duration-500`}
+                                                                style={{ width: `${progressWidth}%` }}
+                                                              ></div>
                           </div>
                           <div className="flex items-center justify-between mt-1">
                             <span className="text-xs text-gray-500">Reference Range</span>
