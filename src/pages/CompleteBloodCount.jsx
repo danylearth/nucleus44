@@ -157,7 +157,7 @@ export default function CompleteBloodCountPage() {
     const customRanges = {
       'ALT': '7 - 50',
       'LDL': '0.0 - 3.0',
-      'eGFR': '>60',
+      'eGFR': '60',
       'Progesterone': '0.0 - 0.474',
       'PSA - Non Symptomatic': '<2.0'
     };
@@ -367,7 +367,8 @@ export default function CompleteBloodCountPage() {
                                                                                                                                                         }
 
                                                                                                                                                         if (paramName === 'eGFR') {
-                                                                                                                                                                                                  if (numValue >= 60) return 'normal';
+                                                                                                                                                                                                  if (numValue === 60) return 'normal';
+                                                                                                                                                                                                  if (numValue > 60) return 'high';
                                                                                                                                                                                                   if (numValue < 60) return 'low';
                                                                                                                                                                                                 }
 
