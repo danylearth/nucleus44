@@ -157,7 +157,8 @@ export default function CompleteBloodCountPage() {
     const customRanges = {
       'ALT': '7 - 50',
       'LDL': '0.0 - 3.0',
-      'eGFR': '>60'
+      'eGFR': '>60',
+      'Progesterone': '0.0 - 0.474'
     };
     return customRanges[name] || originalRange;
   };
@@ -365,9 +366,15 @@ export default function CompleteBloodCountPage() {
                                                                                                                                                         }
 
                                                                                                                                                         if (paramName === 'eGFR') {
-                                                                                                                                                          if (numValue >= 60) return 'normal';
-                                                                                                                                                          if (numValue < 60) return 'low';
-                                                                                                                                                        }
+                                                                                                                                                                                                  if (numValue >= 60) return 'normal';
+                                                                                                                                                                                                  if (numValue < 60) return 'low';
+                                                                                                                                                                                                }
+
+                                                                                                                                                                                                if (paramName === 'Progesterone') {
+                                                                                                                                                                                                  if (numValue <= 0.474) return 'normal';
+                                                                                                                                                                                                  if (numValue > 0.474 && numValue <= 1.0) return 'high';
+                                                                                                                                                                                                  if (numValue > 1.0) return 'critical';
+                                                                                                                                                                                                }
 
                                                                         const rangeStr = (range || '').trim();
                                                                         if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
