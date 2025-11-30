@@ -158,7 +158,8 @@ export default function CompleteBloodCountPage() {
       'ALT': '7 - 50',
       'LDL': '0.0 - 3.0',
       'eGFR': '>60',
-      'Progesterone': '0.0 - 0.474'
+      'Progesterone': '0.0 - 0.474',
+      'PSA - Non Symptomatic': '<2.0'
     };
     return customRanges[name] || originalRange;
   };
@@ -371,10 +372,15 @@ export default function CompleteBloodCountPage() {
                                                                                                                                                                                                 }
 
                                                                                                                                                                                                 if (paramName === 'Progesterone') {
-                                                                                                                                                                                                  if (numValue <= 0.474) return 'normal';
-                                                                                                                                                                                                  if (numValue > 0.474 && numValue <= 1.0) return 'high';
-                                                                                                                                                                                                  if (numValue > 1.0) return 'critical';
-                                                                                                                                                                                                }
+                                                                                                                                                                                                                                          if (numValue <= 0.474) return 'normal';
+                                                                                                                                                                                                                                          if (numValue > 0.474 && numValue <= 1.0) return 'high';
+                                                                                                                                                                                                                                          if (numValue > 1.0) return 'critical';
+                                                                                                                                                                                                                                        }
+
+                                                                                                                                                                                                                                        if (paramName === 'PSA - Non Symptomatic') {
+                                                                                                                                                                                                                                          if (numValue < 2.0) return 'normal';
+                                                                                                                                                                                                                                          if (numValue >= 2.0) return 'high';
+                                                                                                                                                                                                                                        }
 
                                                                         const rangeStr = (range || '').trim();
                                                                         if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
