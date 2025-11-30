@@ -2,6 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
 
 const SFTP_PROXY_URL = Deno.env.get("SFTP_PROXY_URL");
 const SFTP_PROXY_API_KEY = Deno.env.get("SFTP_PROXY_API_KEY");
+console.log(SFTP_PROXY_URL,SFTP_PROXY_API_KEY)
 // const CRON_SECRET = Deno.env.get("CRON_SECRET"); // Secret key for cron authentication
 
 const corsHeaders = {
