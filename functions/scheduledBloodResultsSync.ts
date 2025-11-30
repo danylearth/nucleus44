@@ -255,7 +255,7 @@ Deno.serve(async (req) => {
 
                 const hl7Content = await downloadResponse.text();
                 // console.log("========== HL7 FILE CONTENT ==========");
-                // console.log("Filename:", filename);
+                console.log("Filename:", filename);
                 // console.log("Content length:", hl7Content.length);
                 // console.log("Raw content:", hl7Content);
                 // console.log("Lines:", hl7Content.split(/\r\n|\r|\n/).filter(l => l.trim()));
