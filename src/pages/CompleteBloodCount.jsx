@@ -154,32 +154,39 @@ export default function CompleteBloodCountPage() {
   };
 
   const getProgressBarWidth = (value, range) => {
-    const rangeStr = range.trim();
+        const rangeStr = range.trim();
+        const numValue = parseFloat(value);
 
-    if (rangeStr.startsWith('<')) {
-      const max = parseFloat(rangeStr.replace('<', '').trim());
-      const numValue = parseFloat(value);
-      if (isNaN(max) || isNaN(numValue)) return 50;
-      const percentage = (numValue / max) * 100;
-      return Math.min(100, percentage);
-    }
+        if (rangeStr.startsWith('<')) {
+          const max = parseFloat(rangeStr.replace('<', '').trim());
+          if (isNaN(max) || isNaN(numValue)) return 50;
+          // Scale so max is at 50%, values above go to 100%
+          const percentage = (numValue / (max * 2)) * 100;
+          return Math.max(0, Math.min(100, percentage));
+        }
 
-    if (rangeStr.startsWith('>')) {
-      const min = parseFloat(rangeStr.replace('>', '').trim());
-      const numValue = parseFloat(value);
-      if (isNaN(min) || isNaN(numValue)) return 50;
-      const percentage = ((numValue - min) / min) * 100;
-      return Math.max(0, Math.min(100, percentage));
-    }
+        if (rangeStr.startsWith('>')) {
+          const min = parseFloat(rangeStr.replace('>', '').trim());
+          if (isNaN(min) || isNaN(numValue)) return 50;
+          // Scale so min is at 50%
+          const percentage = (numValue / (min * 2)) * 100;
+          return Math.max(0, Math.min(100, percentage));
+        }
 
-    const [min, max] = rangeStr.split('-').map(s => parseFloat(s.trim()));
-    const numValue = parseFloat(value);
+        const [min, max] = rangeStr.split('-').map(s => parseFloat(s.trim()));
+        if (isNaN(min) || isNaN(max) || isNaN(numValue)) return 50;
 
-    if (isNaN(min) || isNaN(max) || isNaN(numValue)) return 50;
+        // Calculate the range midpoint and scale so it's at 50%
+        const rangeSize = max - min;
+        const midpoint = min + (rangeSize / 2);
 
-    const percentage = ((numValue - min) / (max - min)) * 100;
-    return Math.max(0, Math.min(100, percentage));
-  };
+        // Scale: midpoint = 50%, min = 25%, max = 75%
+        // Values below min go towards 0%, values above max go towards 100%
+        const normalizedValue = (numValue - midpoint) / rangeSize;
+        const percentage = 50 + (normalizedValue * 50);
+
+        return Math.max(0, Math.min(100, percentage));
+      };
 
   if (isLoading) {
     return (
