@@ -2,7 +2,6 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
 
 const SFTP_PROXY_URL = Deno.env.get("SFTP_PROXY_URL");
 const SFTP_PROXY_API_KEY = Deno.env.get("SFTP_PROXY_API_KEY");
-console.log(SFTP_PROXY_URL,SFTP_PROXY_API_KEY)
 // const CRON_SECRET = Deno.env.get("CRON_SECRET"); // Secret key for cron authentication
 
 const corsHeaders = {
@@ -215,7 +214,7 @@ Deno.serve(async (req) => {
         const files = listData.files || listData.items || listData || [];
         
         const hl7Files = files.filter(file => {
-            // console.log('file',file)
+            console.log('file',file)
             const filename = file.name || file.filename || file;
             return typeof filename === 'string' && filename.toLowerCase().endsWith('.hl7');
         });
@@ -254,20 +253,20 @@ Deno.serve(async (req) => {
                 }
 
                 const hl7Content = await downloadResponse.text();
-                // console.log("========== HL7 FILE CONTENT ==========");
+                console.log("========== HL7 FILE CONTENT ==========");
                 console.log("Filename:", filename);
-                // console.log("Content length:", hl7Content.length);
-                // console.log("Raw content:", hl7Content);
-                // console.log("Lines:", hl7Content.split(/\r\n|\r|\n/).filter(l => l.trim()));
-                // console.log("OBX lines:", hl7Content.split(/\r\n|\r|\n/).filter(l => l.startsWith('OBX')));
-                // console.log("=======================================");
+                console.log("Content length:", hl7Content.length);
+                console.log("Raw content:", hl7Content);
+                console.log("Lines:", hl7Content.split(/\r\n|\r|\n/).filter(l => l.trim()));
+                console.log("OBX lines:", hl7Content.split(/\r\n|\r|\n/).filter(l => l.startsWith('OBX')));
+                console.log("=======================================");
                 const parsedData = parseHL7(hl7Content);
                 
-                // console.log('📊 Parsed:', filename, {
-                //     patient: parsedData.patient_name,
-                //     clinic: parsedData.clinic_name,
-                //     params: parsedData.parameters.length
-                // });
+                console.log('📊 Parsed:', filename, {
+                    patient: parsedData.patient_name,
+                    clinic: parsedData.clinic_name,
+                    params: parsedData.parameters.length
+                });
 
                 // TEMPORARY: Skip user matching, save ALL blood tests for testing
                 const { user: matchedUser, clinic } = await matchToUser(base44, parsedData);
@@ -313,11 +312,11 @@ Deno.serve(async (req) => {
                             lab_result_id: newLabResult.id
                         }));
                         await base44.asServiceRole.entities.LabResultParameter.bulkCreate(parametersToCreate);
-                        // console.log(`📝 Saved ${parametersToCreate.length} parameters`);
+                        console.log(`📝 Saved ${parametersToCreate.length} parameters`);
                     }
 
                     newFilesMatched++;
-                    // console.log(`✅ Processed ${filename} for ${matchedUser?.full_name || 'UNMATCHED: ' + parsedData.patient_name}`);
+                    console.log(`✅ Processed ${filename} for ${matchedUser?.full_name || 'UNMATCHED: ' + parsedData.patient_name}`);
 
                     // Archive file
                     const moveUrl = `${SFTP_PROXY_URL}/sftp/move`;
@@ -365,7 +364,7 @@ Deno.serve(async (req) => {
             message: `Cron sync completed: ${newFilesMatched} new, ${skippedFilesCount} skipped, ${unmatchedFiles.length} unmatched`
         };
 
-        // console.log('✅ Cron sync complete:', response.message);
+        console.log('✅ Cron sync complete:', response.message);
         return Response.json(response, { headers: corsHeaders });
 
     } catch (error) {

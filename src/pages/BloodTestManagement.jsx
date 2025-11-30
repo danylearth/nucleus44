@@ -248,7 +248,7 @@ export default function BloodTestManagementPage() {
     <div className="bg-gray-50 min-h-screen pb-24">
       {/* Header */}
       <div className="flex items-center justify-between p-4 pt-12">
-        <Link to={createPageUrl("Dashboard")} className="p-2 -ml-2">
+        <Link to={createPageUrl("Admin")} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6 text-gray-900" />
         </Link>
         <h1 className="text-lg font-semibold text-gray-900">Blood Test Management</h1>
