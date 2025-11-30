@@ -390,17 +390,18 @@ export default function CompleteBloodCountPage() {
 
                         {/* Progress Bar */}
                                                       <div className="mt-3">
-                                                        <div className="relative w-full">
-                                                          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                                            <div
-                                                              className={`h-full ${getStatusColor(calculatedStatus).trafficLight} transition-all duration-500`}
-                                                              style={{ width: `${progressWidth}%` }}
-                                                            ></div>
-                                                          </div>
-                                                          {/* Expected Range Indicator - centered at 25%-75% */}
-                                                                                            <div className="absolute top-0 left-1/4 w-1/2 h-2 border-l-2 border-r-2 border-green-500 pointer-events-none" style={{ borderRadius: '0' }}></div>
+                                                        <div className="relative w-full h-3">
+                                                          {/* Background track */}
+                                                          <div className="absolute inset-0 bg-gray-200 rounded-full"></div>
+                                                          {/* Expected Range Zone - green area in the middle */}
+                                                          <div className="absolute top-0 left-1/4 w-1/2 h-full bg-green-200 rounded-full"></div>
+                                                          {/* Value indicator dot */}
+                                                          <div 
+                                                            className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full ${getStatusColor(calculatedStatus).trafficLight} border-2 border-white shadow-md transition-all duration-500`}
+                                                            style={{ left: `calc(${progressWidth}% - 8px)` }}
+                                                          ></div>
                                                         </div>
-                                                        <div className="flex items-center justify-between mt-1">
+                                                        <div className="flex items-center justify-between mt-2">
                                                           <span className="text-xs text-gray-500">Expected Range</span>
                                                           <span className="text-xs font-medium text-gray-700">{param.reference_range}</span>
                                                         </div>
