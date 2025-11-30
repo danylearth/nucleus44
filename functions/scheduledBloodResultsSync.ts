@@ -253,7 +253,13 @@ Deno.serve(async (req) => {
                 }
 
                 const hl7Content = await downloadResponse.text();
-                console.log("hl7Content",hl7Content)
+                console.log("========== HL7 FILE CONTENT ==========");
+                console.log("Filename:", filename);
+                console.log("Content length:", hl7Content.length);
+                console.log("Raw content:", hl7Content);
+                console.log("Lines:", hl7Content.split(/\r\n|\r|\n/).filter(l => l.trim()));
+                console.log("OBX lines:", hl7Content.split(/\r\n|\r|\n/).filter(l => l.startsWith('OBX')));
+                console.log("=======================================");
                 const parsedData = parseHL7(hl7Content);
                 
                 console.log('📊 Parsed:', filename, {
