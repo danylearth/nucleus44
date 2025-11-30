@@ -190,7 +190,7 @@ export default function BloodTestManagementPage() {
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Link to={createPageUrl(`CompleteBloodCount?id=${result.id}`)}>
+            <Link to={createPageUrl(`CompleteBloodCount?id=${result.id}&from=BloodTestManagement`)}>
               <Button variant="outline" size="sm" className="w-full">
                 <Eye className="w-4 h-4 mr-1" />
                 View
