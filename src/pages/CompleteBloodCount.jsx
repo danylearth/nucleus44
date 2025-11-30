@@ -153,6 +153,15 @@ export default function CompleteBloodCountPage() {
     return <AlertCircle className={`w-5 h-5 ${colors.icon}`} />;
   };
 
+  const getDisplayRange = (name, originalRange) => {
+    const customRanges = {
+      'ALT': '7 - 50',
+      'LDL': '0.0 - 3.0',
+      'eGFR': '>60'
+    };
+    return customRanges[name] || originalRange;
+  };
+
   const getProgressBarWidth = (value, range) => {
         const rangeStr = range.trim();
         const numValue = parseFloat(value);
