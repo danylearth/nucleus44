@@ -159,7 +159,8 @@ export default function CompleteBloodCountPage() {
       'LDL': '0.0 - 3.0',
       'eGFR': '60',
       'Progesterone': '0.0 - 0.474',
-      'PSA - Non Symptomatic': '<2.0'
+      'PSA - Non Symptomatic': '<2.0',
+      'HDL Cholesterol Ratio': '>1.1'
     };
     return customRanges[name] || originalRange;
   };
@@ -378,9 +379,14 @@ export default function CompleteBloodCountPage() {
                                                                                                                                                                                                                                         }
 
                                                                                                                                                                                                                                         if (paramName === 'PSA - Non Symptomatic') {
-                                                                                                                                                                                                                                          if (numValue < 2.0) return 'normal';
-                                                                                                                                                                                                                                          if (numValue >= 2.0) return 'high';
-                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                  if (numValue < 2.0) return 'normal';
+                                                                                                                                                                                                                                                                                  if (numValue >= 2.0) return 'high';
+                                                                                                                                                                                                                                                                                }
+
+                                                                                                                                                                                                                                                                                if (paramName === 'HDL Cholesterol Ratio') {
+                                                                                                                                                                                                                                                                                  if (numValue > 1.1) return 'normal';
+                                                                                                                                                                                                                                                                                  if (numValue <= 1.1) return 'low';
+                                                                                                                                                                                                                                                                                }
 
                                                                         const rangeStr = (range || '').trim();
                                                                         if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
