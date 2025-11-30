@@ -160,32 +160,56 @@ export default function CompleteBloodCountPage() {
         if (rangeStr.startsWith('<')) {
           const max = parseFloat(rangeStr.replace('<', '').trim());
           if (isNaN(max) || isNaN(numValue)) return 50;
-          // Scale so max is at 50%, values above go to 100%
-          const percentage = (numValue / (max * 2)) * 100;
-          return Math.max(0, Math.min(100, percentage));
+          // For <X ranges: 0 to max maps to green zone (25%-75%), above max goes to amber/red
+          // Green zone is 25%-75%, so max should be at 75%
+          if (numValue <= max) {
+            // Within normal range: map 0 to max → 25% to 75%
+            const percentage = 25 + (numValue / max) * 50;
+            return Math.max(0, Math.min(100, percentage));
+          } else {
+            // Above normal: map max to max*2 → 75% to 100%
+            const excess = (numValue - max) / max;
+            const percentage = 75 + excess * 25;
+            return Math.max(0, Math.min(100, percentage));
+          }
         }
 
         if (rangeStr.startsWith('>')) {
           const min = parseFloat(rangeStr.replace('>', '').trim());
           if (isNaN(min) || isNaN(numValue)) return 50;
-          // Scale so min is at 50%
-          const percentage = (numValue / (min * 2)) * 100;
-          return Math.max(0, Math.min(100, percentage));
+          // For >X ranges: min should be at 25%, above min is green
+          if (numValue >= min) {
+            // Within normal range: map min to min*2 → 25% to 75%
+            const percentage = 25 + ((numValue - min) / min) * 50;
+            return Math.max(0, Math.min(100, percentage));
+          } else {
+            // Below normal: map 0 to min → 0% to 25%
+            const percentage = (numValue / min) * 25;
+            return Math.max(0, Math.min(100, percentage));
+          }
         }
 
         const [min, max] = rangeStr.split('-').map(s => parseFloat(s.trim()));
         if (isNaN(min) || isNaN(max) || isNaN(numValue)) return 50;
 
-        // Calculate the range midpoint and scale so it's at 50%
+        // For min-max ranges: min at 25%, max at 75%, center of green zone is 50%
         const rangeSize = max - min;
-        const midpoint = min + (rangeSize / 2);
-
-        // Scale: midpoint = 50%, min = 25%, max = 75%
-        // Values below min go towards 0%, values above max go towards 100%
-        const normalizedValue = (numValue - midpoint) / rangeSize;
-        const percentage = 50 + (normalizedValue * 50);
-
-        return Math.max(0, Math.min(100, percentage));
+        
+        if (numValue < min) {
+          // Below normal: map to 0%-25%
+          const deficit = (min - numValue) / rangeSize;
+          const percentage = 25 - deficit * 25;
+          return Math.max(0, Math.min(100, percentage));
+        } else if (numValue > max) {
+          // Above normal: map to 75%-100%
+          const excess = (numValue - max) / rangeSize;
+          const percentage = 75 + excess * 25;
+          return Math.max(0, Math.min(100, percentage));
+        } else {
+          // Within normal: map min-max to 25%-75%
+          const percentage = 25 + ((numValue - min) / rangeSize) * 50;
+          return Math.max(0, Math.min(100, percentage));
+        }
       };
 
   if (isLoading) {
