@@ -389,18 +389,26 @@ export default function CompleteBloodCountPage() {
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="mt-3">
-                          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                            <div
-                                                                className={`h-full ${getStatusColor(calculatedStatus).trafficLight} transition-all duration-500`}
-                                                                style={{ width: `${progressWidth}%` }}
-                                                              ></div>
-                          </div>
-                          <div className="flex items-center justify-between mt-1">
-                            <span className="text-xs text-gray-500">Reference Range</span>
-                            <span className="text-xs font-medium text-gray-700">{param.reference_range}</span>
-                          </div>
-                        </div>
+                                                      <div className="mt-3">
+                                                        <div className="relative w-full h-3">
+                                                          {/* Background track */}
+                                                          <div className="absolute inset-0 bg-gray-200 rounded-full"></div>
+                                                          {/* Expected Range Zone - green area in the middle */}
+                                                          <div className="absolute top-0 left-1/4 w-1/2 h-full bg-green-200 rounded-full"></div>
+                                                          {/* Expected Range boundary markers - top and bottom */}
+                                                          <div className="absolute left-1/4 w-0.5 h-5 bg-green-500 -top-1"></div>
+                                                          <div className="absolute left-3/4 w-0.5 h-5 bg-green-500 -top-1"></div>
+                                                          {/* Value indicator dot */}
+                                                          <div 
+                                                            className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full ${getStatusColor(calculatedStatus).trafficLight} border-2 border-white shadow-md transition-all duration-500`}
+                                                            style={{ left: `calc(${progressWidth}% - 8px)` }}
+                                                          ></div>
+                                                        </div>
+                                                        <div className="flex items-center justify-between mt-2">
+                                                                                                                        <span className="text-xs text-gray-500">Reference Range</span>
+                                                                                                                        <span className="text-xs font-medium text-gray-700">{param.reference_range}</span>
+                                                                                                                      </div>
+                                                      </div>
                       </div>
                     </div>
                   </CardContent>
