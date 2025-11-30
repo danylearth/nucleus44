@@ -347,42 +347,50 @@ export default function CompleteBloodCountPage() {
           <div className="space-y-3">
             {parameters.map((param, index) => {
                                 // Dynamically calculate status based on value vs reference range
-                                const calculateStatus = (value, range) => {
-                                  const numValue = parseFloat(value);
-                                  const rangeStr = (range || '').trim();
+                                const calculateStatus = (value, range, paramName) => {
+                                                                        const numValue = parseFloat(value);
 
-                                  if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
+                                                                        // Custom thresholds for specific parameters
+                                                                        if (paramName === 'ALT') {
+                                                                          if (numValue < 7) return 'low';
+                                                                          if (numValue >= 7 && numValue <= 50) return 'normal';
+                                                                          if (numValue > 50 && numValue <= 60) return 'high';
+                                                                          if (numValue > 60) return 'critical';
+                                                                        }
 
-                                  if (rangeStr.startsWith('<')) {
-                                    const max = parseFloat(rangeStr.replace('<', '').trim());
-                                    if (!isNaN(max)) {
-                                      if (numValue > max * 2) return 'critical';
-                                      if (numValue > max) return 'high';
-                                    }
-                                    return 'normal';
-                                  }
+                                                                        const rangeStr = (range || '').trim();
+                                                                        if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
 
-                                  if (rangeStr.startsWith('>')) {
-                                    const min = parseFloat(rangeStr.replace('>', '').trim());
-                                    if (!isNaN(min)) {
-                                      if (numValue < min / 2) return 'critical';
-                                      if (numValue < min) return 'low';
-                                    }
-                                    return 'normal';
-                                  }
+                                                                        if (rangeStr.startsWith('<')) {
+                                                                          const max = parseFloat(rangeStr.replace('<', '').trim());
+                                                                          if (!isNaN(max)) {
+                                                                            if (numValue > max * 2) return 'critical';
+                                                                            if (numValue > max) return 'high';
+                                                                          }
+                                                                          return 'normal';
+                                                                        }
 
-                                  const [min, max] = rangeStr.split('-').map(s => parseFloat(s.trim()));
-                                  if (isNaN(min) || isNaN(max)) return param.status || 'normal';
+                                                                        if (rangeStr.startsWith('>')) {
+                                                                          const min = parseFloat(rangeStr.replace('>', '').trim());
+                                                                          if (!isNaN(min)) {
+                                                                            if (numValue < min / 2) return 'critical';
+                                                                            if (numValue < min) return 'low';
+                                                                          }
+                                                                          return 'normal';
+                                                                        }
 
-                                  const rangeSize = max - min;
-                                  if (numValue < min - rangeSize) return 'critical';
-                                  if (numValue > max + rangeSize) return 'critical';
-                                  if (numValue < min) return 'low';
-                                  if (numValue > max) return 'high';
-                                  return 'normal';
-                                };
+                                                                        const [min, max] = rangeStr.split('-').map(s => parseFloat(s.trim()));
+                                                                        if (isNaN(min) || isNaN(max)) return param.status || 'normal';
 
-                                const calculatedStatus = calculateStatus(param.value, param.reference_range);
+                                                                        const rangeSize = max - min;
+                                                                        if (numValue < min - rangeSize) return 'critical';
+                                                                        if (numValue > max + rangeSize) return 'critical';
+                                                                        if (numValue < min) return 'low';
+                                                                        if (numValue > max) return 'high';
+                                                                        return 'normal';
+                                                                      };
+
+                                const calculatedStatus = calculateStatus(param.value, param.reference_range, param.name);
                                 const status = getStatusColor(calculatedStatus);
                                 const progressWidth = getProgressBarWidth(param.value, param.reference_range);
 
