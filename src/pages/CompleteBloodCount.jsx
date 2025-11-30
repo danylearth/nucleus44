@@ -313,8 +313,45 @@ export default function CompleteBloodCountPage() {
 
           <div className="space-y-3">
             {parameters.map((param, index) => {
-              const status = getStatusColor(param.status);
-              const progressWidth = getProgressBarWidth(param.value, param.reference_range);
+                                // Dynamically calculate status based on value vs reference range
+                                const calculateStatus = (value, range) => {
+                                  const numValue = parseFloat(value);
+                                  const rangeStr = (range || '').trim();
+
+                                  if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
+
+                                  if (rangeStr.startsWith('<')) {
+                                    const max = parseFloat(rangeStr.replace('<', '').trim());
+                                    if (!isNaN(max)) {
+                                      if (numValue > max * 2) return 'critical';
+                                      if (numValue > max) return 'high';
+                                    }
+                                    return 'normal';
+                                  }
+
+                                  if (rangeStr.startsWith('>')) {
+                                    const min = parseFloat(rangeStr.replace('>', '').trim());
+                                    if (!isNaN(min)) {
+                                      if (numValue < min / 2) return 'critical';
+                                      if (numValue < min) return 'low';
+                                    }
+                                    return 'normal';
+                                  }
+
+                                  const [min, max] = rangeStr.split('-').map(s => parseFloat(s.trim()));
+                                  if (isNaN(min) || isNaN(max)) return param.status || 'normal';
+
+                                  const rangeSize = max - min;
+                                  if (numValue < min - rangeSize) return 'critical';
+                                  if (numValue > max + rangeSize) return 'critical';
+                                  if (numValue < min) return 'low';
+                                  if (numValue > max) return 'high';
+                                  return 'normal';
+                                };
+
+                                const calculatedStatus = calculateStatus(param.value, param.reference_range);
+                                const status = getStatusColor(calculatedStatus);
+                                const progressWidth = getProgressBarWidth(param.value, param.reference_range);
 
               return (
                 <Card key={index} className="rounded-2xl border-0 shadow-sm hover:shadow-md transition-shadow">
@@ -334,10 +371,10 @@ export default function CompleteBloodCountPage() {
                             <p className="text-xs text-gray-500 mt-1">{param.description}</p>
                           </div>
                           <Badge className={`${status.bg} ${status.text} border-0 ml-2 whitespace-nowrap`}>
-                            {param.status === 'normal' ? '✓ Normal' :
-                              param.status === 'high' ? '↑ High' :
-                                param.status === 'low' ? '↓ Low' :
-                                  '⚠ Critical'}
+                                                            {calculatedStatus === 'normal' ? '✓ Normal' :
+                                                              calculatedStatus === 'high' ? '↑ High' :
+                                                                calculatedStatus === 'low' ? '↓ Low' :
+                                                                  '⚠ Critical'}
                           </Badge>
                         </div>
 
