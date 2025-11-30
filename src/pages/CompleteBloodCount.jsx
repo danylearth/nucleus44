@@ -351,12 +351,18 @@ export default function CompleteBloodCountPage() {
                                                                         const numValue = parseFloat(value);
 
                                                                         // Custom thresholds for specific parameters
-                                                                        if (paramName === 'ALT') {
-                                                                          if (numValue < 7) return 'low';
-                                                                          if (numValue >= 7 && numValue <= 50) return 'normal';
-                                                                          if (numValue > 50 && numValue <= 60) return 'high';
-                                                                          if (numValue > 60) return 'critical';
-                                                                        }
+                                                                                                                if (paramName === 'ALT') {
+                                                                                                                  if (numValue < 7) return 'low';
+                                                                                                                  if (numValue >= 7 && numValue <= 50) return 'normal';
+                                                                                                                  if (numValue > 50 && numValue <= 60) return 'high';
+                                                                                                                  if (numValue > 60) return 'critical';
+                                                                                                                }
+
+                                                                                                                if (paramName === 'LDL') {
+                                                                                                                  if (numValue <= 3.0) return 'normal';
+                                                                                                                  if (numValue > 3.0 && numValue <= 4.9) return 'high';
+                                                                                                                  if (numValue >= 5.0) return 'critical';
+                                                                                                                }
 
                                                                         const rangeStr = (range || '').trim();
                                                                         if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
