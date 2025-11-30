@@ -34,23 +34,37 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
         }
 
-        const remotePath = `/files/${filename}`;
-        console.log('📥 Constructed remote path:', remotePath);
-        console.log('🔌 Using SFTP proxy:', SFTP_PROXY_URL);
-
-        // Call the proxy service to download file
-        const proxyUrl = `${SFTP_PROXY_URL}/sftp/get?path=${encodeURIComponent(remotePath)}`;
-        console.log('🌐 Full proxy URL:', proxyUrl);
-        console.log('🔐 Using API key:', SFTP_PROXY_API_KEY ? 'SET ✓' : 'NOT SET ✗');
+        // Try archive first (processed files), then original location
+        const archivePath = `/files/archive/${filename}`;
+        const originalPath = `/files/${filename}`;
         
-        const proxyResponse = await fetch(proxyUrl, {
-            method: 'GET',
-            headers: {
-                'x-api-key': SFTP_PROXY_API_KEY
-            }
-        });
+        console.log('🔌 Using SFTP proxy:', SFTP_PROXY_URL);
+        console.log('🔐 Using API key:', SFTP_PROXY_API_KEY ? 'SET ✓' : 'NOT SET ✗');
 
-        console.log('📡 Proxy response status:', proxyResponse.status);
+        let proxyResponse;
+        let usedPath;
+
+        // Try archive location first
+        console.log('📥 Trying archive path:', archivePath);
+        const archiveUrl = `${SFTP_PROXY_URL}/sftp/get?path=${encodeURIComponent(archivePath)}`;
+        proxyResponse = await fetch(archiveUrl, {
+            method: 'GET',
+            headers: { 'x-api-key': SFTP_PROXY_API_KEY }
+        });
+        usedPath = archivePath;
+
+        // If not in archive, try original location
+        if (!proxyResponse.ok) {
+            console.log('📥 Not in archive, trying original path:', originalPath);
+            const originalUrl = `${SFTP_PROXY_URL}/sftp/get?path=${encodeURIComponent(originalPath)}`;
+            proxyResponse = await fetch(originalUrl, {
+                method: 'GET',
+                headers: { 'x-api-key': SFTP_PROXY_API_KEY }
+            });
+            usedPath = originalPath;
+        }
+
+        console.log('📡 Proxy response status:', proxyResponse.status, 'from path:', usedPath);
 
         if (!proxyResponse.ok) {
             const contentType = proxyResponse.headers.get('content-type');
