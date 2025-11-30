@@ -359,10 +359,15 @@ export default function CompleteBloodCountPage() {
                                                                                                                 }
 
                                                                                                                 if (paramName === 'LDL') {
-                                                                                                                  if (numValue <= 3.0) return 'normal';
-                                                                                                                  if (numValue > 3.0 && numValue <= 4.9) return 'high';
-                                                                                                                  if (numValue >= 5.0) return 'critical';
-                                                                                                                }
+                                                                                                                                                          if (numValue <= 3.0) return 'normal';
+                                                                                                                                                          if (numValue > 3.0 && numValue <= 4.9) return 'high';
+                                                                                                                                                          if (numValue >= 5.0) return 'critical';
+                                                                                                                                                        }
+
+                                                                                                                                                        if (paramName === 'eGFR') {
+                                                                                                                                                          if (numValue >= 60) return 'normal';
+                                                                                                                                                          if (numValue < 60) return 'low';
+                                                                                                                                                        }
 
                                                                         const rangeStr = (range || '').trim();
                                                                         if (isNaN(numValue) || !rangeStr) return param.status || 'normal';
