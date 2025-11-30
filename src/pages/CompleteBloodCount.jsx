@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ export default function CompleteBloodCountPage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isViewing, setIsViewing] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -214,9 +215,9 @@ export default function CompleteBloodCountPage() {
       {/* Header */}
       <div className="bg-gradient-to-b from-red-500 to-red-600 text-white p-6 pt-12 pb-32">
         <div className="flex items-center justify-between mb-8">
-          <Link to={createPageUrl("LabResults")} className="p-2 -ml-2">
-            <ChevronLeft className="w-6 h-6" />
-          </Link>
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+                          <ChevronLeft className="w-6 h-6" />
+                        </button>
           <h1 className="text-lg font-semibold">Blood Test</h1>
           <div className="flex items-center gap-2">
             {result?.blood_result_filename && (
