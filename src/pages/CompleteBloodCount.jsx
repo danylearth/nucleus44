@@ -111,24 +111,24 @@ export default function CompleteBloodCountPage() {
     switch (status) {
       case 'high':
         return {
-          bg: 'bg-orange-50',
-          text: 'text-orange-700',
-          border: 'border-orange-200',
-          icon: 'text-orange-500',
+          bg: 'bg-yellow-50',
+          text: 'text-yellow-600',
+          border: 'border-yellow-200',
+          icon: 'text-yellow-500',
           trafficLight: 'bg-yellow-400'
         };
       case 'low':
         return {
-          bg: 'bg-blue-50',
-          text: 'text-blue-700',
-          border: 'border-blue-200',
-          icon: 'text-blue-500',
+          bg: 'bg-yellow-50',
+          text: 'text-yellow-600',
+          border: 'border-yellow-200',
+          icon: 'text-yellow-500',
           trafficLight: 'bg-yellow-400'
         };
       case 'critical':
         return {
           bg: 'bg-red-50',
-          text: 'text-red-700',
+          text: 'text-red-600',
           border: 'border-red-200',
           icon: 'text-red-500',
           trafficLight: 'bg-red-500'
@@ -137,7 +137,7 @@ export default function CompleteBloodCountPage() {
       default:
         return {
           bg: 'bg-green-50',
-          text: 'text-green-700',
+          text: 'text-green-600',
           border: 'border-green-200',
           icon: 'text-green-500',
           trafficLight: 'bg-green-500'
