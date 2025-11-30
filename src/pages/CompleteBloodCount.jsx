@@ -398,7 +398,7 @@ export default function CompleteBloodCountPage() {
                                                             ></div>
                                                           </div>
                                                           {/* Expected Range Indicator - centered at 25%-75% */}
-                                                          <div className="absolute top-0 left-1/4 w-1/2 h-2 border-l-2 border-r-2 border-green-500 rounded-full pointer-events-none"></div>
+                                                                                            <div className="absolute top-0 left-1/4 w-1/2 h-2 border-l-2 border-r-2 border-green-500 pointer-events-none" style={{ borderRadius: '0' }}></div>
                                                         </div>
                                                         <div className="flex items-center justify-between mt-1">
                                                           <span className="text-xs text-gray-500">Expected Range</span>
