@@ -389,18 +389,22 @@ export default function CompleteBloodCountPage() {
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="mt-3">
-                          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                            <div
-                                                                className={`h-full ${getStatusColor(calculatedStatus).trafficLight} transition-all duration-500`}
-                                                                style={{ width: `${progressWidth}%` }}
-                                                              ></div>
-                          </div>
-                          <div className="flex items-center justify-between mt-1">
-                            <span className="text-xs text-gray-500">Expected Range</span>
-                            <span className="text-xs font-medium text-gray-700">{param.reference_range}</span>
-                          </div>
-                        </div>
+                                                      <div className="mt-3">
+                                                        <div className="relative w-full">
+                                                          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                                            <div
+                                                              className={`h-full ${getStatusColor(calculatedStatus).trafficLight} transition-all duration-500`}
+                                                              style={{ width: `${progressWidth}%` }}
+                                                            ></div>
+                                                          </div>
+                                                          {/* Expected Range Indicator - centered at 25%-75% */}
+                                                          <div className="absolute top-0 left-1/4 w-1/2 h-2 border-l-2 border-r-2 border-green-500 rounded-full pointer-events-none"></div>
+                                                        </div>
+                                                        <div className="flex items-center justify-between mt-1">
+                                                          <span className="text-xs text-gray-500">Expected Range</span>
+                                                          <span className="text-xs font-medium text-gray-700">{param.reference_range}</span>
+                                                        </div>
+                                                      </div>
                       </div>
                     </div>
                   </CardContent>
