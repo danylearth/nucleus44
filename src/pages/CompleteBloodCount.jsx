@@ -402,14 +402,13 @@ export default function CompleteBloodCountPage() {
                                                         {/* Expected Range boundary markers */}
                                                         <div className="absolute left-1/4 w-0.5 h-5 bg-green-600 -top-1"></div>
                                                         <div className="absolute left-3/4 w-0.5 h-5 bg-green-600 -top-1"></div>
-                                                        {/* Value indicator arrow */}
-                                                                                        <div 
-                                                                                          className="absolute -top-4 transition-all duration-500"
-                                                                                          style={{ left: `calc(${progressWidth}% - 8px)` }}
-                                                                                        >
-                                                                                          <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent border-t-gray-800"></div>
-                                  <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent border-t-white absolute top-0 left-[2px]"></div>
-                                                                                        </div>
+                                                        {/* Value indicator - Apple Health style */}
+                                                                                                                                        <div 
+                                                                                                                                          className="absolute top-1/2 -translate-y-1/2 transition-all duration-500"
+                                                                                                                                          style={{ left: `calc(${progressWidth}% - 3px)` }}
+                                                                                                                                        >
+                                                                                                                                          <div className="w-1.5 h-5 bg-gray-900 rounded-full shadow-lg"></div>
+                                                                                                                                        </div>
                                                       </div>
                                                       <div className="flex items-center justify-between mt-2">
                                                         <span className="text-xs text-gray-500">Reference Range</span>
