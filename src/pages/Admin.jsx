@@ -7,7 +7,9 @@ import { getAllUsers } from '@/functions/getAllUsers';
 import { assignPatientToClinic } from '@/functions/assignPatientToClinic';
 import { matchBloodResult } from '@/functions/matchBloodResult';
 import { base44 } from '@/api/base44Client';
-import { Shield, Copy, Check, Users, Building2, FileText } from 'lucide-react';
+import { Shield, Copy, Check, Users, Building2, FileText, Dna, Stethoscope } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function AdminPage() {
     const [users, setUsers] = useState([]);
@@ -151,6 +153,37 @@ export default function AdminPage() {
             <div className="flex items-center gap-3 mb-6">
                 <Shield className="w-8 h-8 text-gray-900" />
                 <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <Link to={createPageUrl('BloodTestManagement')} className="block">
+                    <Card className="bg-white rounded-2xl border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-6 flex items-center gap-4">
+                            <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+                                <Stethoscope className="w-6 h-6 text-red-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-gray-900">Blood Test Management</h3>
+                                <p className="text-sm text-gray-500">Review and approve blood tests</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Link>
+
+                <Link to={createPageUrl('DnaTestManagement')} className="block">
+                    <Card className="bg-white rounded-2xl border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-6 flex items-center gap-4">
+                            <div className="w-12 h-12 bg-teal-50 rounded-full flex items-center justify-center">
+                                <Dna className="w-6 h-6 text-teal-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-gray-900">DNA Test Management</h3>
+                                <p className="text-sm text-gray-500">Review and approve DNA tests</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Link>
             </div>
 
             {/* User Management */}
