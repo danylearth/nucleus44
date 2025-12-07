@@ -30,6 +30,7 @@ import ClinicSettings from './pages/ClinicSettings';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import BloodTestManagement from './pages/BloodTestManagement';
+import DnaTestManagement from './pages/DnaTestManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -66,6 +67,7 @@ export const PAGES = {
     "TermsAndConditions": TermsAndConditions,
     "PrivacyPolicy": PrivacyPolicy,
     "BloodTestManagement": BloodTestManagement,
+    "DnaTestManagement": DnaTestManagement,
 }
 
 export const pagesConfig = {
