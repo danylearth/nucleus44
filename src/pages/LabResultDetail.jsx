@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,9 +14,9 @@ import {
   TrendingUp,
   Loader2 // Added Loader2 icon
 } from "lucide-react";
-import { LabResult, LabResultParameter } from "@/entities/all";
 import { format } from "date-fns";
-import { downloadBloodResult } from "@/functions/downloadBloodResult"; // Added import for downloadBloodResult
+import { downloadBloodResult } from "@/functions/downloadBloodResult";
+import { base44 } from "@/api/base44Client";
 
 export default function LabResultDetailPage() {
   const [result, setResult] = useState(null);
@@ -40,10 +39,9 @@ export default function LabResultDetailPage() {
   const loadResultDetails = async (resultId) => {
     setIsLoading(true);
     try {
-      const [resultData, paramsData] = await Promise.all([
-        LabResult.get(resultId),
-        LabResultParameter.filter({ lab_result_id: resultId })
-      ]);
+      const allResults = await base44.entities.LabResult.list();
+      const resultData = allResults.find(r => r.id === resultId);
+      const paramsData = await base44.entities.LabResultParameter.filter({ lab_result_id: resultId });
       setResult(resultData);
       setParameters(paramsData);
     } catch (error) {
