@@ -91,7 +91,7 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24 max-w-md mx-auto">
       {/* Header */}
       <div className="p-4 pt-12">
         <h1 className="text-2xl font-bold text-gray-900">Health Tests</h1>
