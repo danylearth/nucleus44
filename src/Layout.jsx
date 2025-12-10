@@ -27,7 +27,7 @@ const MobileBottomNav = React.memo(() => {
 
   const navItems = [
     { path: createPageUrl('Dashboard'), icon: Home, label: 'Dashboard' },
-    // { path: createPageUrl('Tests'), icon: ShoppingCart, label: 'Shop' },
+    { path: createPageUrl('Tests'), icon: ShoppingCart, label: 'Shop' },
     { path: createPageUrl('AIAgent'), icon: MessageCircle, label: 'Chat' }
   ];
 
@@ -168,7 +168,7 @@ export default function Layout({ children, currentPageName }) {
                     <NavLink to={createPageUrl('HeartRate')} icon={Heart}>Heart Rate</NavLink>
                     <NavLink to={createPageUrl('LabResults')} icon={Stethoscope}>Lab Results</NavLink>
                     <NavLink to={createPageUrl('BloodResults')} icon={Stethoscope}>Blood Results</NavLink>
-                    {/* <NavLink to={createPageUrl('Tests')} icon={ShoppingCart}>Health Tests</NavLink> */}
+                    <NavLink to={createPageUrl('Tests')} icon={ShoppingCart}>Health Tests</NavLink>
                     <NavLink to={createPageUrl('AIAgent')} icon={Bot}>AI Agent</NavLink>
                     <NavLink to={createPageUrl('Profile')} icon={UserIcon}>Profile</NavLink>
                   </>
