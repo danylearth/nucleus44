@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { HealthTest, TestOrder, User } from "@/entities/all";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TestTube, 
   Search, 
-  Star,
+  Star, 
+  Clock, 
+  DollarSign,
   Droplets,
   Dna,
   Heart,
@@ -88,9 +91,9 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="p-4 pt-8 space-y-6 max-w-full overflow-hidden">
+    <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header */}
-      <div>
+      <div className="p-4 pt-12">
         <h1 className="text-2xl font-bold text-gray-900">Health Tests</h1>
         <p className="text-gray-600 text-sm mt-1">
           Order tests to get deeper insights into your health
@@ -98,33 +101,41 @@ export default function TestsPage() {
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-white/80 backdrop-blur-sm">
-          <TabsTrigger value="browse" className="text-sm">Browse Tests</TabsTrigger>
-          <TabsTrigger value="orders" className="text-sm">My Orders ({orders.length})</TabsTrigger>
-        </TabsList>
+        <div className="px-4">
+          <TabsList className="grid w-full grid-cols-2 bg-white rounded-xl">
+            <TabsTrigger value="browse" className="text-sm">Browse</TabsTrigger>
+            <TabsTrigger value="orders" className="text-sm">Orders ({orders.length})</TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="browse" className="mt-6 space-y-6">
+        <TabsContent value="browse" className="mt-4 space-y-4">
           {/* Search */}
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search tests..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white/80 backdrop-blur-sm border-0 shadow-md w-full"
-            />
+          <div className="px-4">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                placeholder="Search tests..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 h-12 bg-white border-gray-200 rounded-xl w-full"
+              />
+            </div>
           </div>
 
-          {/* Categories - Horizontal scroll on mobile */}
-          <div className="w-full overflow-x-auto">
-            <div className="flex gap-2 pb-2 min-w-max">
+          {/* Categories - Horizontal scroll */}
+          <div className="overflow-x-auto">
+            <div className="flex gap-2 px-4 pb-2">
               {categories.map((category) => (
                 <Button
                   key={category.id}
                   variant={selectedCategory === category.id ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className="flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 ${
+                    selectedCategory === category.id
+                      ? 'bg-gray-900 hover:bg-gray-800 text-white'
+                      : 'bg-white text-gray-600 hover:bg-gray-100'
+                  }`}
                 >
                   <category.icon className="w-4 h-4" />
                   {category.label}
@@ -134,13 +145,13 @@ export default function TestsPage() {
           </div>
 
           {/* Popular Tests */}
-          {selectedCategory === 'all' && (
-            <div className="space-y-4">
+          {selectedCategory === 'all' && tests.filter(test => test.popular).length > 0 && (
+            <div className="space-y-3 px-4">
               <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <Star className="w-5 h-5 text-yellow-500" />
                 Popular Tests
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {tests.filter(test => test.popular).slice(0, 3).map((test) => (
                   <TestCard key={test.id} test={test} onOrder={handleOrderTest} />
                 ))}
@@ -149,13 +160,13 @@ export default function TestsPage() {
           )}
 
           {/* All Tests */}
-          <div className="space-y-4">
+          <div className="space-y-3 px-4">
             {selectedCategory !== 'all' && (
               <h2 className="text-lg font-semibold text-gray-900">
                 {categories.find(c => c.id === selectedCategory)?.label} Tests
               </h2>
             )}
-            <div className="space-y-4">
+            <div className="space-y-3">
               {filteredTests
                 .filter(test => selectedCategory === 'all' ? !test.popular : true)
                 .map((test) => (
@@ -163,7 +174,7 @@ export default function TestsPage() {
                 ))}
             </div>
             {filteredTests.length === 0 && (
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <Card className="bg-white rounded-2xl border-0 shadow-sm">
                 <CardContent className="text-center py-12">
                   <TestTube className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -178,7 +189,7 @@ export default function TestsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="orders" className="mt-6">
+        <TabsContent value="orders" className="mt-4 px-4">
           <MyOrdersTab orders={orders} onUpdate={loadTestsData} />
         </TabsContent>
       </Tabs>
