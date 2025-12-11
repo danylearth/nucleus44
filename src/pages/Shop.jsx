@@ -209,14 +209,14 @@ export default function ShopPage() {
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="flex gap-2 flex-1 justify-center">
+            <div className="flex gap-2 flex-1 justify-center min-w-0">
               {visibleCategories.map((category) => (
                 <Button
                   key={category.id}
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`whitespace-nowrap rounded-full px-4 h-8 text-xs flex-shrink-0 ${
+                  className={`whitespace-nowrap rounded-full px-4 h-8 text-xs flex-shrink-0 min-w-[80px] ${
                     selectedCategory === category.id
                       ? 'bg-gray-900 text-white border-gray-900'
                       : 'bg-white text-gray-700 border-gray-200'
