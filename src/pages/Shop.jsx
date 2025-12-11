@@ -14,7 +14,9 @@ import {
   Dna,
   Heart,
   Shield,
-  Filter
+  Filter,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import ProductCard from "../components/shop/ProductCard";
 
@@ -26,6 +28,7 @@ export default function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [categoryIndex, setCategoryIndex] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -105,6 +108,23 @@ export default function ShopPage() {
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const ITEMS_PER_PAGE = 3;
+  const visibleCategories = categories.slice(categoryIndex, categoryIndex + ITEMS_PER_PAGE);
+  const canGoBack = categoryIndex > 0;
+  const canGoForward = categoryIndex + ITEMS_PER_PAGE < categories.length;
+
+  const handlePrevCategories = () => {
+    if (canGoBack) {
+      setCategoryIndex(Math.max(0, categoryIndex - ITEMS_PER_PAGE));
+    }
+  };
+
+  const handleNextCategories = () => {
+    if (canGoForward) {
+      setCategoryIndex(Math.min(categories.length - ITEMS_PER_PAGE, categoryIndex + ITEMS_PER_PAGE));
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white p-4">
@@ -177,22 +197,46 @@ export default function ShopPage() {
 
         {/* Category Filter */}
         <div className="w-full">
-          <div className="flex flex-wrap gap-2 px-4 pb-4">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedCategory(category.id)}
-                className={`whitespace-nowrap rounded-full px-4 h-8 text-xs flex-shrink-0 ${
-                  selectedCategory === category.id
-                    ? 'bg-gray-900 text-white border-gray-900'
-                    : 'bg-white text-gray-700 border-gray-200'
-                }`}
-              >
-                {category.label}
-              </Button>
-            ))}
+          <div className="flex items-center gap-2 px-4 pb-4">
+            <button
+              onClick={handlePrevCategories}
+              disabled={!canGoBack}
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                canGoBack
+                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="flex gap-2 flex-1 justify-center">
+              {visibleCategories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`whitespace-nowrap rounded-full px-4 h-8 text-xs flex-shrink-0 ${
+                    selectedCategory === category.id
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-white text-gray-700 border-gray-200'
+                  }`}
+                >
+                  {category.label}
+                </Button>
+              ))}
+            </div>
+            <button
+              onClick={handleNextCategories}
+              disabled={!canGoForward}
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                canGoForward
+                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+              }`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
