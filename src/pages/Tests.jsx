@@ -110,16 +110,16 @@ export default function TestsPage() {
 
       <Tabs defaultValue="browse" className="w-full">
         <div className="px-4 mb-6">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1 h-12">
             <TabsTrigger 
               value="browse" 
-              className="text-sm rounded-lg data-[state=active]:bg-gray-900 data-[state=active]:text-white"
+              className="text-sm rounded-lg data-[state=active]:bg-gray-900 data-[state=active]:text-white h-10"
             >
               Browse Tests
             </TabsTrigger>
             <TabsTrigger 
               value="orders" 
-              className="text-sm rounded-lg data-[state=active]:bg-gray-900 data-[state=active]:text-white"
+              className="text-sm rounded-lg data-[state=active]:bg-gray-900 data-[state=active]:text-white h-10"
             >
               My Orders ({orders.length})
             </TabsTrigger>
