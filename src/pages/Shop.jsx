@@ -117,10 +117,10 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 w-full overflow-x-hidden">
+    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto">
       {/* Header */}
-      <div className="sticky top-0 bg-white z-10 border-b border-gray-200">
-        <div className="flex items-center justify-between px-4 pt-12 pb-4 max-w-md mx-auto">
+      <div className="sticky top-0 bg-white z-10 border-b border-gray-200 w-full">
+        <div className="flex items-center justify-between px-4 pt-12 pb-4">
           <h1 className="text-2xl font-bold text-gray-900">Shop</h1>
           <Link to={createPageUrl('Cart')}>
             <Button variant="outline" size="icon" className="relative rounded-full">
@@ -135,7 +135,7 @@ export default function ShopPage() {
         </div>
 
         {/* Search */}
-        <div className="px-4 pb-4 max-w-md mx-auto">
+        <div className="px-4 pb-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
@@ -148,8 +148,8 @@ export default function ShopPage() {
         </div>
 
         {/* Type Filter */}
-        <div className="overflow-x-auto scrollbar-hide w-full">
-          <div className="flex gap-2 px-4 pb-3 max-w-md mx-auto">
+        <div className="w-full overflow-x-auto scrollbar-hide">
+          <div className="flex gap-2 px-4 pb-3 min-w-max">
             {types.map((type) => {
               const Icon = type.icon;
               return (
@@ -176,8 +176,8 @@ export default function ShopPage() {
         </div>
 
         {/* Category Filter */}
-        <div className="overflow-x-auto scrollbar-hide w-full">
-          <div className="flex gap-2 px-4 pb-4 max-w-md mx-auto">
+        <div className="w-full overflow-x-auto scrollbar-hide">
+          <div className="flex gap-2 px-4 pb-4 min-w-max">
             {categories.map((category) => (
               <Button
                 key={category.id}
@@ -198,7 +198,7 @@ export default function ShopPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-md mx-auto px-4 space-y-6 mt-4">
+      <div className="px-4 space-y-6 mt-4">
         {/* Popular Products */}
         {popularProducts.length > 0 && selectedType === 'all' && selectedCategory === 'all' && (
           <div className="space-y-4">
