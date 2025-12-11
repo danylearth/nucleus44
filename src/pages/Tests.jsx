@@ -91,13 +91,20 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 max-w-md mx-auto">
+    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto">
       {/* Header */}
-      <div className="p-4 pt-12">
-        <h1 className="text-2xl font-bold text-gray-900">Health Tests</h1>
-        <p className="text-gray-600 text-sm mt-1">
-          Order tests to get deeper insights into your health
-        </p>
+      <div className="flex items-center justify-between px-4 pt-12 pb-4">
+        <button className="p-2 -ml-2">
+          <ChevronLeft className="w-6 h-6 text-gray-900" />
+        </button>
+        <h1 className="text-lg font-semibold text-gray-900">Health Tests</h1>
+        <button className="p-2 -mr-2">
+          <div className="w-6 h-6 flex items-center justify-center">
+            <div className="w-1 h-1 bg-gray-900 rounded-full mb-1"></div>
+            <div className="w-1 h-1 bg-gray-900 rounded-full mb-1 ml-1"></div>
+            <div className="w-1 h-1 bg-gray-900 rounded-full ml-1"></div>
+          </div>
+        </button>
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
