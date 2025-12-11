@@ -99,12 +99,42 @@ export default function ProductDetailPage() {
   ];
 
   const coveredItems = [
-    { name: "Estradiol", description: "Primary female sex hormone" },
-    { name: "Progesterone", description: "Supports pregnancy & cycle" },
-    { name: "Testosterone", description: "Muscle & bone health" },
-    { name: "FSH", description: "Follicle stimulating hormone" },
-    { name: "LH", description: "Luteinizing hormone" },
-    { name: "Cortisol", description: "Stress hormone levels" }
+    { 
+      name: "Advanced Testosterone (total and free)", 
+      description: "Testosterone is really important for your long-term health. Low testosterone is linked to diabetes and heart disease. High testosterone is linked to acne, mood swings, and weight gain.",
+      affects: ["Energy", "Fitness", "Long term health", "Mood", "Sleep", "Weight"],
+      color: "bg-teal-400"
+    },
+    { 
+      name: "Estradiol (Oestradiol)", 
+      description: "Estradiol is the primary female sex hormone and plays a key role in reproductive health, bone density, and cardiovascular function.",
+      affects: ["Fertility", "Bone health", "Mood", "Energy"],
+      color: "bg-purple-400"
+    },
+    { 
+      name: "Progesterone", 
+      description: "Progesterone supports pregnancy, regulates the menstrual cycle, and helps maintain hormonal balance throughout your life.",
+      affects: ["Fertility", "Sleep", "Mood", "Cycle regulation"],
+      color: "bg-pink-400"
+    },
+    { 
+      name: "FSH (Follicle Stimulating Hormone)", 
+      description: "FSH is essential for reproductive health, controlling the menstrual cycle and the production of eggs in ovaries.",
+      affects: ["Fertility", "Reproductive health", "Hormone balance"],
+      color: "bg-blue-400"
+    },
+    { 
+      name: "LH (Luteinizing Hormone)", 
+      description: "LH triggers ovulation and supports the production of sex hormones, playing a vital role in fertility and reproductive health.",
+      affects: ["Fertility", "Ovulation", "Hormone production"],
+      color: "bg-orange-400"
+    },
+    { 
+      name: "Cortisol", 
+      description: "Cortisol is your body's main stress hormone. High levels can affect weight, mood, sleep, and immune function.",
+      affects: ["Stress", "Sleep", "Weight", "Immunity", "Mood"],
+      color: "bg-red-400"
+    }
   ];
 
   const howItWorks = [
@@ -314,10 +344,26 @@ export default function ProductDetailPage() {
           <h2 className="text-xl font-bold text-gray-900 px-4">What's covered in this blood test?</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 px-4 w-full">
             {coveredItems.map((item, idx) => (
-              <Card key={idx} className="border border-gray-200 flex-shrink-0 w-[200px]">
-                <CardContent className="p-4">
-                  <p className="font-semibold text-gray-900 mb-2">{item.name}</p>
-                  <p className="text-xs text-gray-600">{item.description}</p>
+              <Card key={idx} className="border border-gray-200 flex-shrink-0 w-[320px]">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className={`w-3 h-3 rounded-full ${item.color} flex-shrink-0 mt-1`}></div>
+                    <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.name}</h3>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed mb-6">{item.description}</p>
+                  <div className="space-y-3">
+                    <p className="font-bold text-gray-900 text-sm">This Affects:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {item.affects.map((affect, affectIdx) => (
+                        <span 
+                          key={affectIdx} 
+                          className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium"
+                        >
+                          {affect}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
