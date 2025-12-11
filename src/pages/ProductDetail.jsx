@@ -187,15 +187,15 @@ export default function ProductDetailPage() {
 
           {/* Header buttons overlaid on image */}
           <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-12 pb-4 z-10">
-            <Link to={createPageUrl("Shop")} className="p-2 -ml-2 bg-white/90 rounded-full">
-              <ChevronLeft className="w-6 h-6 text-gray-900" />
+            <Link to={createPageUrl("Shop")} className="p-2 -ml-2 bg-white/10 rounded-full">
+              <ChevronLeft className="w-6 h-6 text-white" />
             </Link>
             <div className="flex items-center gap-2">
-              <button className="p-2 bg-white/90 rounded-full">
-                <Heart className="w-6 h-6 text-gray-900" />
+              <button className="p-2 bg-white/10 rounded-full">
+                <Heart className="w-6 h-6 text-white" />
               </button>
-              <button className="p-2 bg-white/90 rounded-full">
-                <Share2 className="w-6 h-6 text-gray-900" />
+              <button className="p-2 bg-white/10 rounded-full">
+                <Share2 className="w-6 h-6 text-white" />
               </button>
             </div>
           </div>
@@ -205,15 +205,15 @@ export default function ProductDetailPage() {
             <>
               <button
                 onClick={() => setCurrentImageIndex((currentImageIndex - 1 + productImages.length) % productImages.length)}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md z-10"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center shadow-md z-10"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-900" />
+                <ChevronLeft className="w-5 h-5 text-white" />
               </button>
               <button
                 onClick={() => setCurrentImageIndex((currentImageIndex + 1) % productImages.length)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md z-10"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center shadow-md z-10"
               >
-                <ChevronRight className="w-5 h-5 text-gray-900" />
+                <ChevronRight className="w-5 h-5 text-white" />
               </button>
             </>
           )}
