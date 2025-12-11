@@ -176,42 +176,42 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-white pb-32 w-screen overflow-x-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-12 pb-4 sticky top-0 bg-white z-10 max-w-md mx-auto">
-        <Link to={createPageUrl("Shop")} className="p-2 -ml-2">
-          <ChevronLeft className="w-6 h-6 text-gray-900" />
-        </Link>
-        <div className="flex items-center gap-2">
-          <button className="p-2">
-            <Heart className="w-6 h-6 text-gray-900" />
-          </button>
-          <button className="p-2">
-            <Share2 className="w-6 h-6 text-gray-900" />
-          </button>
-        </div>
-      </div>
-
       {/* Product Image Carousel */}
-      <div className="px-4 mb-6 relative w-full max-w-md mx-auto">
-        <div className="relative bg-gray-100 aspect-[4/3] rounded-2xl overflow-hidden w-full">
+      <div className="relative w-full mb-6">
+        <div className="relative bg-gray-100 h-[60vh] overflow-hidden w-full">
           <img
             src={productImages[currentImageIndex]}
             alt={product.name}
             className="w-full h-full object-cover"
           />
-          
+
+          {/* Header buttons overlaid on image */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-12 pb-4 z-10">
+            <Link to={createPageUrl("Shop")} className="p-2 -ml-2 bg-white/90 rounded-full">
+              <ChevronLeft className="w-6 h-6 text-gray-900" />
+            </Link>
+            <div className="flex items-center gap-2">
+              <button className="p-2 bg-white/90 rounded-full">
+                <Heart className="w-6 h-6 text-gray-900" />
+              </button>
+              <button className="p-2 bg-white/90 rounded-full">
+                <Share2 className="w-6 h-6 text-gray-900" />
+              </button>
+            </div>
+          </div>
+
           {/* Navigation arrows */}
           {productImages.length > 1 && (
             <>
               <button
                 onClick={() => setCurrentImageIndex((currentImageIndex - 1 + productImages.length) % productImages.length)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md z-10"
               >
                 <ChevronLeft className="w-5 h-5 text-gray-900" />
               </button>
               <button
                 onClick={() => setCurrentImageIndex((currentImageIndex + 1) % productImages.length)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md z-10"
               >
                 <ChevronRight className="w-5 h-5 text-gray-900" />
               </button>
@@ -219,18 +219,18 @@ export default function ProductDetailPage() {
           )}
 
           {/* Dots indicator */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
             {productImages.map((_, idx) => (
               <div
                 key={idx}
-                className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                  idx === currentImageIndex ? 'bg-gray-900' : 'bg-white/60'
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  idx === currentImageIndex ? 'bg-white' : 'bg-white/60'
                 }`}
               />
             ))}
           </div>
-        </div>
-      </div>
+          </div>
+          </div>
 
       {/* Product Info */}
       <div className="px-4 space-y-6 w-full max-w-md mx-auto">
