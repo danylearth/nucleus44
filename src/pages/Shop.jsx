@@ -137,7 +137,7 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 w-full overflow-x-hidden">
+    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 bg-white z-10 border-b border-gray-200 w-full">
         <div className="flex items-center justify-between px-4 pt-12 pb-4">
@@ -168,27 +168,27 @@ export default function ShopPage() {
         </div>
 
         {/* Type Filter */}
-        <div className="w-full border-b border-gray-200">
-          <div className="flex gap-3 px-4 pb-3">
+        <div className="w-full">
+          <div className="flex gap-2 px-4 pb-3">
             {types.map((type) => {
               const Icon = type.icon;
               return (
                 <Button
                   key={type.id}
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={() => {
                     setSelectedType(type.id);
                     setSelectedCategory('all');
                   }}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-3 h-9 flex-shrink-0 ${
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 h-9 flex-shrink-0 ${
                     selectedType === type.id
-                      ? 'bg-gray-900 text-white hover:bg-gray-900'
-                      : 'bg-transparent text-gray-600 hover:bg-gray-100'
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-white text-gray-700 border-gray-200'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{type.label}</span>
+                  {type.label}
                 </Button>
               );
             })}
