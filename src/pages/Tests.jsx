@@ -92,9 +92,9 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto overflow-x-hidden">
+    <div className="min-h-screen bg-white pb-24 w-full overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-12 pb-6">
+      <div className="flex items-center justify-between px-4 pt-12 pb-6 max-w-md mx-auto">
         <button className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6 text-gray-900" />
         </button>
@@ -108,7 +108,7 @@ export default function TestsPage() {
         </button>
       </div>
 
-      <Tabs defaultValue="browse" className="w-full">
+      <Tabs defaultValue="browse" className="w-full max-w-md mx-auto">
         <div className="px-4 mb-6">
           <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1 h-12">
             <TabsTrigger 
