@@ -168,28 +168,26 @@ export default function ShopPage() {
         </div>
 
         {/* Type Filter */}
-        <div className="w-full">
-          <div className="flex gap-2 px-4 pb-3">
+        <div className="w-full px-4 pb-3">
+          <div className="bg-gray-200 rounded-full p-1 flex gap-1">
             {types.map((type) => {
               const Icon = type.icon;
               return (
-                <Button
+                <button
                   key={type.id}
-                  variant="outline"
-                  size="sm"
                   onClick={() => {
                     setSelectedType(type.id);
                     setSelectedCategory('all');
                   }}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 h-9 flex-shrink-0 ${
+                  className={`flex-1 flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 font-medium text-sm transition-colors ${
                     selectedType === type.id
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-white text-gray-700 border-gray-200'
+                      ? 'bg-gray-900 text-white shadow-sm'
+                      : 'bg-transparent text-gray-600'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
                   {type.label}
-                </Button>
+                </button>
               );
             })}
           </div>
