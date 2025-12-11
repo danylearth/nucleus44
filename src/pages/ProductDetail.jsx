@@ -374,14 +374,10 @@ export default function ProductDetailPage() {
         <div className="space-y-4 p-6 -mx-4 rounded-t-[40px] rounded-b-[40px]" style={{ backgroundColor: '#4B858A' }}>
           <h2 className="text-2xl font-bold text-white mb-6">How it Works</h2>
           <div className="space-y-6 relative">
-            {/* Vertical line */}
-            <div className="absolute left-[46px] top-[60px] bottom-[60px] w-[2px] bg-white/30"></div>
-
             {howItWorks.map((step, idx) => (
               <div key={idx} className="flex gap-4 relative">
                 <div className="relative flex-shrink-0">
-                  {/* Faded circles behind */}
-                  <div className="absolute inset-0 w-[92px] h-[92px] bg-white/10 rounded-full -left-5 -top-5"></div>
+                  {/* Faded circle behind */}
                   <div className="absolute inset-0 w-[72px] h-[72px] bg-white/15 rounded-full -left-3 -top-3"></div>
                   {/* Main circle */}
                   <div className="relative w-12 h-12 bg-white rounded-full flex items-center justify-center z-10">
