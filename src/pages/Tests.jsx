@@ -109,10 +109,20 @@ export default function TestsPage() {
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <div className="px-4">
-          <TabsList className="grid w-full grid-cols-2 bg-white rounded-xl">
-            <TabsTrigger value="browse" className="text-sm">Browse</TabsTrigger>
-            <TabsTrigger value="orders" className="text-sm">Orders ({orders.length})</TabsTrigger>
+        <div className="px-4 mb-4">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1">
+            <TabsTrigger 
+              value="browse" 
+              className="text-sm rounded-lg data-[state=active]:bg-gray-900 data-[state=active]:text-white"
+            >
+              Browse Tests
+            </TabsTrigger>
+            <TabsTrigger 
+              value="orders" 
+              className="text-sm rounded-lg data-[state=active]:bg-gray-900 data-[state=active]:text-white"
+            >
+              My Orders ({orders.length})
+            </TabsTrigger>
           </TabsList>
         </div>
 
