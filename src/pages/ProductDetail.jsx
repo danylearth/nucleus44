@@ -218,8 +218,11 @@ export default function ProductDetailPage() {
             </>
           )}
 
+          {/* Bottom rounded corner detail */}
+          <div className="absolute bottom-0 left-0 right-0 h-10 bg-white rounded-t-[40px]"></div>
+
           {/* Dots indicator */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
             {productImages.map((_, idx) => (
               <div
                 key={idx}
@@ -229,9 +232,6 @@ export default function ProductDetailPage() {
               />
             ))}
           </div>
-
-          {/* Bottom rounded corner detail */}
-          <div className="absolute bottom-0 left-0 right-0 h-10 bg-white rounded-t-[40px]"></div>
           </div>
           </div>
 
