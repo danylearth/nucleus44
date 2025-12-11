@@ -195,7 +195,7 @@ export default function ShopPage() {
 
         {/* Category Filter */}
         <div className="w-full overflow-hidden">
-          <div className="flex items-center gap-2 px-4 pb-4 max-w-full">
+          <div className="flex items-center gap-1 px-2 pb-4 max-w-full">
             <button
               onClick={handlePrevCategories}
               disabled={!canGoBack}
@@ -207,24 +207,22 @@ export default function ShopPage() {
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="flex gap-2 flex-1 justify-start min-w-0 overflow-x-auto scrollbar-hide">
-              {visibleCategories.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium flex items-center gap-2 flex-shrink-0 border transition-colors ${
-                      selectedCategory === category.id
-                        ? 'bg-gray-900 text-white border-gray-900'
-                        : 'bg-white text-gray-700 border-gray-300'
-                    }`}
-                  >
-                    {Icon && <Icon className="w-4 h-4" />}
-                    {category.label}
-                  </button>
-                );
-              })}
+            <div className="flex gap-1 flex-1 justify-center min-w-0 overflow-hidden">
+              {visibleCategories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`whitespace-nowrap rounded-full px-3 h-8 text-xs flex-shrink min-w-0 ${
+                    selectedCategory === category.id
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-white text-gray-700 border-gray-200'
+                  }`}
+                >
+                  {category.label}
+                </Button>
+              ))}
             </div>
             <button
               onClick={handleNextCategories}
