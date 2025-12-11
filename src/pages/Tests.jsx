@@ -191,8 +191,8 @@ export default function TestsPage() {
                 ))}
             </div>
             {filteredTests.length === 0 && (
-              <Card className="bg-white rounded-2xl border-0 shadow-sm">
-                <CardContent className="text-center py-12">
+              <Card className="bg-white rounded-2xl border-0 shadow-sm w-full max-w-full">
+                <CardContent className="text-center py-12 px-4">
                   <TestTube className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     No tests found
