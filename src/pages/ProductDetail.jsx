@@ -144,7 +144,7 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-white pb-32 w-full overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-12 pb-4 sticky top-0 bg-white z-10">
+      <div className="flex items-center justify-between px-4 pt-12 pb-4 sticky top-0 bg-white z-10 max-w-md mx-auto">
         <Link to={createPageUrl("Shop")} className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6 text-gray-900" />
         </Link>
@@ -159,7 +159,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Product Image Carousel */}
-      <div className="px-4 mb-6 relative">
+      <div className="px-4 mb-6 relative max-w-md mx-auto">
         <div className="relative bg-gray-100 aspect-[4/3] rounded-2xl overflow-hidden">
           <img
             src={productImages[currentImageIndex]}
@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Product Info */}
-      <div className="px-4 space-y-6">
+      <div className="px-4 space-y-6 max-w-md mx-auto">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h1>
           {product.description && (
@@ -295,9 +295,9 @@ export default function ProductDetailPage() {
         </div>
 
         {/* What's covered */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-gray-900">What's covered in this blood test?</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+        <div className="space-y-4 -mx-4">
+          <h2 className="text-xl font-bold text-gray-900 px-4">What's covered in this blood test?</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 px-4">
             {coveredItems.map((item, idx) => (
               <Card key={idx} className="border border-gray-200 flex-shrink-0 w-[200px]">
                 <CardContent className="p-4">
@@ -310,7 +310,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* How it works */}
-        <div className="space-y-4 bg-gradient-to-b from-teal-600 to-teal-700 rounded-3xl p-6 -mx-4 mx-4">
+        <div className="space-y-4 bg-gradient-to-b from-teal-600 to-teal-700 rounded-3xl p-6 -mx-4">
           <h2 className="text-xl font-bold text-white">How it Works</h2>
           <div className="space-y-4">
             {howItWorks.map((step, idx) => (
