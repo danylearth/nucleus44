@@ -137,7 +137,7 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto">
+    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 bg-white z-10 border-b border-gray-200 w-full">
         <div className="flex items-center justify-between px-4 pt-12 pb-4">
@@ -168,8 +168,8 @@ export default function ShopPage() {
         </div>
 
         {/* Type Filter */}
-        <div className="w-full overflow-x-auto scrollbar-hide">
-          <div className="flex gap-2 px-4 pb-3 min-w-max">
+        <div className="w-full">
+          <div className="flex gap-2 px-4 pb-3">
             {types.map((type) => {
               const Icon = type.icon;
               return (
