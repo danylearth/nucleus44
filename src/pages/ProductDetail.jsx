@@ -344,7 +344,7 @@ export default function ProductDetailPage() {
           <h2 className="text-xl font-bold text-gray-900 px-4">What's covered in this blood test?</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 px-4 w-full">
             {coveredItems.map((item, idx) => (
-              <Card key={idx} className="border border-gray-200 flex-shrink-0 w-[320px]">
+              <Card key={idx} className="border border-gray-200 flex-shrink-0 w-[272px]">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-3 mb-4">
                     <div className={`w-3 h-3 rounded-full ${item.color} flex-shrink-0 mt-1`}></div>
