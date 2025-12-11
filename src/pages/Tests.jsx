@@ -92,9 +92,9 @@ export default function TestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto">
+    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-12 pb-4">
+      <div className="flex items-center justify-between px-4 pt-12 pb-6">
         <button className="p-2 -ml-2">
           <ChevronLeft className="w-6 h-6 text-gray-900" />
         </button>
@@ -109,7 +109,7 @@ export default function TestsPage() {
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <div className="px-4 mb-4">
+        <div className="px-4 mb-6">
           <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1">
             <TabsTrigger 
               value="browse" 
@@ -129,27 +129,27 @@ export default function TestsPage() {
         <TabsContent value="browse" className="space-y-4">
           {/* Search */}
           <div className="px-4">
-            <div className="relative w-full">
+            <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 placeholder="Search tests..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-4 h-11 bg-gray-50 border-0 rounded-xl w-full text-sm"
+                className="pl-12 pr-4 h-11 bg-gray-50 border-0 rounded-xl text-sm"
               />
             </div>
           </div>
 
           {/* Categories - Horizontal scroll */}
-          <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-2 px-4">
+          <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
+            <div className="flex gap-2 min-w-max">
               {categories.map((category) => (
                 <Button
                   key={category.id}
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 border ${
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 border flex-shrink-0 ${
                     selectedCategory === category.id
                       ? 'bg-gray-900 text-white border-gray-900'
                       : 'bg-white text-gray-700 border-gray-200'
