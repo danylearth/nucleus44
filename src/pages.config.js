@@ -31,6 +31,10 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import BloodTestManagement from './pages/BloodTestManagement';
 import DnaTestManagement from './pages/DnaTestManagement';
 import TestDetail from './pages/TestDetail';
+import Shop from './pages/Shop';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
 import __Layout from './Layout.jsx';
 
 
@@ -68,6 +72,10 @@ export const PAGES = {
     "BloodTestManagement": BloodTestManagement,
     "DnaTestManagement": DnaTestManagement,
     "TestDetail": TestDetail,
+    "Shop": Shop,
+    "ProductDetail": ProductDetail,
+    "Cart": Cart,
+    "Checkout": Checkout,
 }
 
 export const pagesConfig = {
