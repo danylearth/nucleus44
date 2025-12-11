@@ -246,9 +246,21 @@ export default function ProductDetailPage() {
 
         {/* Payment Methods */}
         <div className="flex items-center justify-center gap-3 py-2">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" alt="Mastercard" className="h-6" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" className="h-6" />
-          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="Amex" className="h-6" />
+          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" className="h-5" />
+          </div>
+          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="Google Pay" className="h-5" />
+          </div>
+          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg" alt="Mastercard" className="h-5" />
+          </div>
+          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" className="h-5" />
+          </div>
+          <div className="bg-white px-3 py-2 rounded-lg border border-gray-200">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg" alt="Amex" className="h-5" />
+          </div>
         </div>
 
         {/* Feature Cards */}
