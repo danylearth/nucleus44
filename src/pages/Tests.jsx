@@ -141,24 +141,26 @@ export default function TestsPage() {
           </div>
 
           {/* Categories - Horizontal scroll */}
-          <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
-            <div className="flex gap-2 min-w-max">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 border flex-shrink-0 ${
-                    selectedCategory === category.id
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-white text-gray-700 border-gray-200'
-                  }`}
-                >
-                  <category.icon className="w-4 h-4" />
-                  {category.label}
-                </Button>
-              ))}
+          <div className="px-4">
+            <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
+              <div className="flex gap-2">
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 border flex-shrink-0 ${
+                      selectedCategory === category.id
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'bg-white text-gray-700 border-gray-200'
+                    }`}
+                  >
+                    <category.icon className="w-4 h-4" />
+                    {category.label}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
 
