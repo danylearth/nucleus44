@@ -1,16 +1,13 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
-  DollarSign, 
-  Clock, 
   Droplets, 
   Dna, 
   Heart, 
   Shield, 
   TestTube,
-  Star
+  ArrowRight
 } from "lucide-react";
 
 export default function TestCard({ test, onOrder }) {
@@ -26,16 +23,6 @@ export default function TestCard({ test, onOrder }) {
     }
   };
 
-  const getCategoryColor = (category) => {
-    switch (category) {
-      case 'essential': return 'bg-blue-100 text-blue-800';
-      case 'advanced': return 'bg-purple-100 text-purple-800';
-      case 'specialty': return 'bg-orange-100 text-orange-800';
-      case 'premium': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const handleOrder = async () => {
     setIsOrdering(true);
     await onOrder(test);
@@ -45,57 +32,45 @@ export default function TestCard({ test, onOrder }) {
   const TestIcon = getTestIcon(test.test_type);
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-200 w-full">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
-              <TestIcon className="w-5 h-5 text-blue-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <h3 className="font-semibold text-gray-900 truncate">{test.test_name}</h3>
-                  {test.popular && <Star className="w-4 h-4 text-yellow-500 fill-current flex-shrink-0" />}
-                </div>
-                <Badge className={`${getCategoryColor(test.category)} flex-shrink-0 text-xs`}>
-                  {test.category}
-                </Badge>
-              </div>
-              <p className="text-sm text-gray-600 mt-1 capitalize">
-                {test.test_type.replace('_', ' ')} • {test.sample_type} sample
-              </p>
-            </div>
-          </div>
+    <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
+      <div className="relative bg-gray-100 aspect-[4/3] flex items-center justify-center">
+        <img
+          src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=300&fit=crop"
+          alt={test.test_name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute bottom-3 right-3 w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
+          <TestIcon className="w-6 h-6 text-white" />
         </div>
-      </CardHeader>
+      </div>
       
-      <CardContent className="space-y-4">
-        {test.description && (
-          <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-            {test.description}
-          </p>
-        )}
+      <CardContent className="p-4 space-y-3">
+        <div>
+          <h3 className="font-semibold text-gray-900 text-base mb-1">{test.test_name}</h3>
+          {test.description && (
+            <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
+              {test.description}
+            </p>
+          )}
+        </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-4 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <DollarSign className="w-4 h-4 flex-shrink-0" />
-              <span className="font-medium text-gray-900">${test.price}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4 flex-shrink-0" />
-              <span>{test.duration_days} days</span>
-            </div>
-          </div>
+        <div className="flex items-center justify-between">
+          <span className="text-lg font-bold text-gray-900">
+            £{test.price.toFixed(2)}
+          </span>
           
           <Button
             onClick={handleOrder}
             disabled={isOrdering}
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+            className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-5 h-9"
           >
-            {isOrdering ? 'Ordering...' : 'Order Test'}
+            {isOrdering ? 'Ordering...' : (
+              <>
+                Order Now
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </>
+            )}
           </Button>
         </div>
       </CardContent>
