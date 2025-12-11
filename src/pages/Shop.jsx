@@ -265,7 +265,7 @@ export default function ShopPage() {
           <h2 className="text-lg font-semibold text-gray-900">
             {selectedType !== 'all' ? `${types.find(t => t.id === selectedType)?.label}` : 'All Products'}
           </h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {filteredProducts
               .filter(p => !(selectedType === 'all' && selectedCategory === 'all' && p.popular))
               .map((product) => (
