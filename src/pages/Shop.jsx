@@ -170,7 +170,7 @@ export default function ShopPage() {
 
         {/* Type Filter */}
         <div className="w-full px-4 pb-3">
-          <div className="bg-gray-200 rounded-full p-1 flex gap-1">
+          <div className="rounded-full p-1 flex gap-1" style={{ backgroundColor: '#E9EAEA' }}>
             {types.map((type) => {
               const Icon = type.icon;
               return (
