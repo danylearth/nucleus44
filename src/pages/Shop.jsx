@@ -119,7 +119,7 @@ export default function ShopPage() {
   return (
     <div className="min-h-screen bg-white pb-24 max-w-md mx-auto">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 w-full">
+      <div className="sticky top-0 bg-white z-10 border-b border-gray-200 w-full">
         <div className="flex items-center justify-between px-4 pt-12 pb-4">
           <h1 className="text-2xl font-bold text-gray-900">Shop</h1>
           <Link to={createPageUrl('Cart')}>
@@ -176,8 +176,8 @@ export default function ShopPage() {
         </div>
 
         {/* Category Filter */}
-        <div className="w-full overflow-x-auto scrollbar-hide">
-          <div className="flex gap-2 px-4 pb-4">
+        <div className="w-full">
+          <div className="flex flex-wrap gap-2 px-4 pb-4">
             {categories.map((category) => (
               <Button
                 key={category.id}
