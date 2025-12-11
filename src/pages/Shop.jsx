@@ -196,8 +196,8 @@ export default function ShopPage() {
         </div>
 
         {/* Category Filter */}
-        <div className="w-full">
-          <div className="flex items-center gap-2 px-4 pb-4">
+        <div className="w-full overflow-hidden">
+          <div className="flex items-center gap-1 px-2 pb-4 max-w-full">
             <button
               onClick={handlePrevCategories}
               disabled={!canGoBack}
@@ -209,14 +209,14 @@ export default function ShopPage() {
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="flex gap-2 flex-1 justify-center min-w-0">
+            <div className="flex gap-1 flex-1 justify-center min-w-0 overflow-hidden">
               {visibleCategories.map((category) => (
                 <Button
                   key={category.id}
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`whitespace-nowrap rounded-full px-4 h-8 text-xs flex-shrink-0 min-w-[80px] ${
+                  className={`whitespace-nowrap rounded-full px-3 h-8 text-xs flex-shrink min-w-0 ${
                     selectedCategory === category.id
                       ? 'bg-gray-900 text-white border-gray-900'
                       : 'bg-white text-gray-700 border-gray-200'
