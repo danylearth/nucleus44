@@ -126,33 +126,33 @@ export default function TestsPage() {
           </TabsList>
         </div>
 
-        <TabsContent value="browse" className="mt-4 space-y-4">
+        <TabsContent value="browse" className="space-y-4">
           {/* Search */}
           <div className="px-4">
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 placeholder="Search tests..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 h-12 bg-white border-gray-200 rounded-xl w-full"
+                className="pl-12 pr-4 h-11 bg-gray-50 border-0 rounded-xl w-full text-sm"
               />
             </div>
           </div>
 
           {/* Categories - Horizontal scroll */}
-          <div className="overflow-x-auto">
-            <div className="flex gap-2 px-4 pb-2">
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 px-4">
               {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
+                  variant="outline"
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 ${
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 border ${
                     selectedCategory === category.id
-                      ? 'bg-gray-900 hover:bg-gray-800 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-white text-gray-700 border-gray-200'
                   }`}
                 >
                   <category.icon className="w-4 h-4" />
