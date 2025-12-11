@@ -142,7 +142,7 @@ export default function ProductDetailPage() {
   const totalPrice = includeAddon ? product.price + 10 : product.price;
 
   return (
-    <div className="min-h-screen bg-white pb-32 w-full overflow-x-hidden">
+    <div className="min-h-screen bg-white pb-32 w-screen overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-12 pb-4 sticky top-0 bg-white z-10 max-w-md mx-auto">
         <Link to={createPageUrl("Shop")} className="p-2 -ml-2">
@@ -159,8 +159,8 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Product Image Carousel */}
-      <div className="px-4 mb-6 relative max-w-md mx-auto">
-        <div className="relative bg-gray-100 aspect-[4/3] rounded-2xl overflow-hidden">
+      <div className="px-4 mb-6 relative w-full max-w-md mx-auto">
+        <div className="relative bg-gray-100 aspect-[4/3] rounded-2xl overflow-hidden w-full">
           <img
             src={productImages[currentImageIndex]}
             alt={product.name}
@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Product Info */}
-      <div className="px-4 space-y-6 max-w-md mx-auto">
+      <div className="px-4 space-y-6 w-full max-w-md mx-auto">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h1>
           {product.description && (
@@ -295,9 +295,9 @@ export default function ProductDetailPage() {
         </div>
 
         {/* What's covered */}
-        <div className="space-y-4 -mx-4">
+        <div className="space-y-4 -mx-4 w-screen max-w-full">
           <h2 className="text-xl font-bold text-gray-900 px-4">What's covered in this blood test?</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 px-4">
+          <div className="flex gap-3 overflow-x-auto pb-2 px-4 w-full">
             {coveredItems.map((item, idx) => (
               <Card key={idx} className="border border-gray-200 flex-shrink-0 w-[200px]">
                 <CardContent className="p-4">
