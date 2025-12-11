@@ -164,12 +164,11 @@ export default function TestsPage() {
 
           {/* Popular Tests */}
           {selectedCategory === 'all' && tests.filter(test => test.popular).length > 0 && (
-            <div className="space-y-3 px-4">
-              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Star className="w-5 h-5 text-yellow-500" />
+            <div className="space-y-4 px-4">
+              <h2 className="text-base font-semibold text-gray-900">
                 Popular Tests
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {tests.filter(test => test.popular).slice(0, 3).map((test) => (
                   <TestCard key={test.id} test={test} onOrder={handleOrderTest} />
                 ))}
