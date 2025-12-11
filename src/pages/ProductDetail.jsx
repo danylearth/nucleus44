@@ -229,6 +229,9 @@ export default function ProductDetailPage() {
               />
             ))}
           </div>
+
+          {/* Bottom rounded corner detail */}
+          <div className="absolute bottom-0 left-0 right-0 h-10 bg-white rounded-t-[40px]"></div>
           </div>
           </div>
 
