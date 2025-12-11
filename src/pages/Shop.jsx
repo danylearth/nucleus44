@@ -19,6 +19,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import ProductCard from "../components/shop/ProductCard";
+import PopularTestCard from "../components/shop/PopularTestCard";
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
@@ -244,13 +245,15 @@ export default function ShopPage() {
         {/* Popular Products */}
         {popularProducts.length > 0 && selectedType === 'all' && selectedCategory === 'all' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Popular Products</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Popular Tests</h2>
+              <p className="text-sm text-gray-500 mt-1">{popularProducts.length} tests found</p>
+            </div>
+            <div className="space-y-4">
               {popularProducts.map((product) => (
-                <ProductCard 
+                <PopularTestCard 
                   key={product.id} 
-                  product={product} 
-                  onAddToCart={handleAddToCart}
+                  product={product}
                 />
               ))}
             </div>
