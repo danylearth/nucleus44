@@ -270,24 +270,24 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-3 gap-3">
           <Card className="border-0 bg-gray-50">
             <CardContent className="p-4 text-center">
-              <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                <Truck className="w-12 h-12 text-gray-700" strokeWidth={1.5} />
+              <div className="w-10 h-10 flex items-center justify-center mx-auto mb-3">
+                <Truck className="w-10 h-10 text-gray-700" strokeWidth={1.5} />
               </div>
               <p className="text-sm font-semibold text-gray-900">Free Delivery</p>
             </CardContent>
           </Card>
           <Card className="border-0 bg-gray-50">
             <CardContent className="p-4 text-center">
-              <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                <CalendarCheck className="w-12 h-12 text-gray-700" strokeWidth={1.5} />
+              <div className="w-10 h-10 flex items-center justify-center mx-auto mb-3">
+                <CalendarCheck className="w-10 h-10 text-gray-700" strokeWidth={1.5} />
               </div>
               <p className="text-sm font-semibold text-gray-900 leading-tight">Test arrives in 1-2 working days</p>
             </CardContent>
           </Card>
           <Card className="border-0 bg-gray-50">
             <CardContent className="p-4 text-center">
-              <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                <Zap className="w-12 h-12 text-gray-700" strokeWidth={1.5} />
+              <div className="w-10 h-10 flex items-center justify-center mx-auto mb-3">
+                <Zap className="w-10 h-10 text-gray-700" strokeWidth={1.5} />
               </div>
               <p className="text-sm font-semibold text-gray-900 leading-tight">Results in as little as 48 hours</p>
             </CardContent>
