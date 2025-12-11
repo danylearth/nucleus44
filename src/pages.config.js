@@ -31,6 +31,7 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import BloodTestManagement from './pages/BloodTestManagement';
 import DnaTestManagement from './pages/DnaTestManagement';
+import TestDetail from './pages/TestDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -68,6 +69,7 @@ export const PAGES = {
     "PrivacyPolicy": PrivacyPolicy,
     "BloodTestManagement": BloodTestManagement,
     "DnaTestManagement": DnaTestManagement,
+    "TestDetail": TestDetail,
 }
 
 export const pagesConfig = {
