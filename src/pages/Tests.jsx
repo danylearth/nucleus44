@@ -177,13 +177,13 @@ export default function TestsPage() {
           )}
 
           {/* All Tests */}
-          <div className="space-y-3 px-4">
+          <div className="space-y-4 px-4">
             {selectedCategory !== 'all' && (
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-base font-semibold text-gray-900">
                 {categories.find(c => c.id === selectedCategory)?.label} Tests
               </h2>
             )}
-            <div className="space-y-3">
+            <div className="space-y-4">
               {filteredTests
                 .filter(test => selectedCategory === 'all' ? !test.popular : true)
                 .map((test) => (
