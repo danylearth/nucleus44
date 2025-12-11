@@ -138,9 +138,9 @@ export default function ProductDetailPage() {
   ];
 
   const howItWorks = [
-    { step: "01", title: "Buy your test", description: "Order online and receive your at-home test kit within 2-3 days" },
-    { step: "02", title: "Post, accept sample", description: "Complete your test and return it using the prepaid envelope" },
-    { step: "03", title: "Receive your results", description: "Get your comprehensive results within 5-7 days via email and app" }
+    { step: "01", title: "Do your test", description: "Your kit arrives in 1-2 days. Find out how to collect your sample at home. You'll need to fill 2 tubes for this test — around 10 drops of blood." },
+    { step: "02", title: "Fast, accurate results", description: "Free post your sample to our lab and get your results in as little as 48 hours. Access your GP-reviewed report in your results dashboard." },
+    { step: "03", title: "Support your health", description: "Our doctors give you evidence-based tips to help you support your health. And you can access articles, podcasts, and recipes." }
   ];
 
   const faqs = [
@@ -371,17 +371,26 @@ export default function ProductDetailPage() {
         </div>
 
         {/* How it works */}
-        <div className="space-y-4 bg-gradient-to-b from-teal-600 to-teal-700 rounded-3xl p-6 -mx-4">
-          <h2 className="text-xl font-bold text-white">How it Works</h2>
-          <div className="space-y-4">
+        <div className="space-y-4 p-6 -mx-4 rounded-t-[40px] rounded-b-[40px]" style={{ backgroundColor: '#4B858A' }}>
+          <h2 className="text-2xl font-bold text-white mb-6">How it Works</h2>
+          <div className="space-y-6 relative">
+            {/* Vertical line */}
+            <div className="absolute left-[46px] top-[60px] bottom-[60px] w-[2px] bg-white/30"></div>
+
             {howItWorks.map((step, idx) => (
-              <div key={idx} className="flex gap-4">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-teal-700 font-bold">{step.step}</span>
+              <div key={idx} className="flex gap-4 relative">
+                <div className="relative flex-shrink-0">
+                  {/* Faded circles behind */}
+                  <div className="absolute inset-0 w-[92px] h-[92px] bg-white/10 rounded-full -left-5 -top-5"></div>
+                  <div className="absolute inset-0 w-[72px] h-[72px] bg-white/15 rounded-full -left-3 -top-3"></div>
+                  {/* Main circle */}
+                  <div className="relative w-12 h-12 bg-white rounded-full flex items-center justify-center z-10">
+                    <span className="text-gray-900 font-bold text-lg">{step.step}</span>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-white mb-1">{step.title}</p>
-                  <p className="text-sm text-white/90">{step.description}</p>
+                <div className="flex-1 rounded-2xl p-5 mt-1" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+                  <p className="font-bold text-white text-lg mb-2">{step.title}</p>
+                  <p className="text-sm text-white/90 leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
