@@ -137,7 +137,7 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 max-w-md mx-auto overflow-x-hidden">
+    <div className="min-h-screen bg-white pb-24 w-full overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 bg-white z-10 border-b border-gray-200 w-full">
         <div className="flex items-center justify-between px-4 pt-12 pb-4">
