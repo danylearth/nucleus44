@@ -1,6 +1,5 @@
 import Dashboard from './pages/Dashboard';
 import Devices from './pages/Devices';
-import Tests from './pages/Tests';
 import AIAgent from './pages/AIAgent';
 import Profile from './pages/Profile';
 import HeartRate from './pages/HeartRate';
@@ -38,7 +37,6 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "Dashboard": Dashboard,
     "Devices": Devices,
-    "Tests": Tests,
     "AIAgent": AIAgent,
     "Profile": Profile,
     "HeartRate": HeartRate,
