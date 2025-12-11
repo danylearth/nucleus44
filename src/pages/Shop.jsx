@@ -5,16 +5,14 @@ import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
   Search, 
   ShoppingCart,
-  TestTube,
-  Pill,
   Droplets,
   Dna,
   Heart,
   Shield,
-  Filter,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -30,6 +28,8 @@ export default function ShopPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [categoryIndex, setCategoryIndex] = useState(0);
+  const [viewMode, setViewMode] = useState('browse');
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -40,13 +40,15 @@ export default function ShopPage() {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       
-      const [productsData, cartData] = await Promise.all([
+      const [productsData, cartData, ordersData] = await Promise.all([
         base44.entities.Product.filter({ in_stock: true }, '-created_date'),
-        base44.entities.CartItem.filter({ user_email: currentUser.email })
+        base44.entities.CartItem.filter({ user_email: currentUser.email }),
+        base44.entities.Order.filter({ user_email: currentUser.email }, '-created_date')
       ]);
       
       setProducts(productsData);
       setCartItems(cartData);
+      setOrders(ordersData);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -79,10 +81,9 @@ export default function ShopPage() {
     }
   };
 
-  const types = [
-    { id: 'all', label: 'All', icon: Filter },
-    { id: 'test', label: 'Tests', icon: TestTube },
-    { id: 'supplement', label: 'Supplements', icon: Pill }
+  const viewModes = [
+    { id: 'browse', label: 'Browse Tests' },
+    { id: 'orders', label: 'My Orders' }
   ];
 
   const categories = [
@@ -168,128 +169,185 @@ export default function ShopPage() {
           </div>
         </div>
 
-        {/* Type Filter */}
+        {/* View Mode Toggle */}
         <div className="w-full px-4 pb-3">
           <div className="rounded-full p-1 flex gap-1" style={{ backgroundColor: '#E9EAEA' }}>
-            {types.map((type) => {
-              const Icon = type.icon;
-              return (
-                <button
-                  key={type.id}
-                  onClick={() => {
-                    setSelectedType(type.id);
-                    setSelectedCategory('all');
-                  }}
-                  className={`flex-1 flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 font-medium text-sm transition-colors ${
-                    selectedType === type.id
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'bg-transparent text-gray-600'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {type.label}
-                </button>
-              );
-            })}
+            {viewModes.map((mode) => (
+              <button
+                key={mode.id}
+                onClick={() => setViewMode(mode.id)}
+                className={`flex-1 flex items-center justify-center whitespace-nowrap rounded-full px-4 py-2.5 font-medium text-sm transition-colors ${
+                  viewMode === mode.id
+                    ? 'bg-gray-900 text-white shadow-sm'
+                    : 'bg-transparent text-gray-600'
+                }`}
+              >
+                {mode.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Category Filter */}
-        <div className="w-full overflow-hidden">
-          <div className="flex items-center gap-1 px-2 pb-4 max-w-full">
-            <button
-              onClick={handlePrevCategories}
-              disabled={!canGoBack}
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                canGoBack
-                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  : 'bg-gray-50 text-gray-300 cursor-not-allowed'
-              }`}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <div className="flex gap-1 flex-1 justify-center min-w-0 overflow-hidden">
-              {visibleCategories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`whitespace-nowrap rounded-full px-3 h-8 text-xs flex-shrink min-w-0 ${
-                    selectedCategory === category.id
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-white text-gray-700 border-gray-200'
-                  }`}
-                >
-                  {category.label}
-                </Button>
-              ))}
+        {/* Category Filter - Only show in browse mode */}
+        {viewMode === 'browse' && (
+          <div className="w-full overflow-hidden">
+            <div className="flex items-center gap-1 px-2 pb-4 max-w-full">
+              <button
+                onClick={handlePrevCategories}
+                disabled={!canGoBack}
+                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  canGoBack
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <div className="flex gap-1 flex-1 justify-center min-w-0 overflow-hidden">
+                {visibleCategories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`whitespace-nowrap rounded-full px-3 h-8 text-xs flex-shrink min-w-0 ${
+                      selectedCategory === category.id
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'bg-white text-gray-700 border-gray-200'
+                    }`}
+                  >
+                    {category.label}
+                  </Button>
+                ))}
+              </div>
+              <button
+                onClick={handleNextCategories}
+                disabled={!canGoForward}
+                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  canGoForward
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                }`}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={handleNextCategories}
-              disabled={!canGoForward}
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                canGoForward
-                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  : 'bg-gray-50 text-gray-300 cursor-not-allowed'
-              }`}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="px-4 space-y-6 mt-4">
-        {/* Popular Products */}
-        {popularProducts.length > 0 && selectedType === 'all' && selectedCategory === 'all' && (
+        {viewMode === 'browse' ? (
+          <>
+            {/* Popular Products */}
+            {popularProducts.length > 0 && selectedCategory === 'all' && (
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Popular Tests</h2>
+                  <p className="text-sm text-gray-500 mt-1">{popularProducts.length} tests found</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  {popularProducts.map((product) => (
+                    <ProductCard 
+                      key={product.id} 
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* All Products */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-gray-900">All Products</h2>
+              <div className="grid grid-cols-1 gap-4">
+                {filteredProducts
+                  .filter(p => !(selectedCategory === 'all' && p.popular))
+                  .map((product) => (
+                    <ProductCard 
+                      key={product.id} 
+                      product={product} 
+                      onAddToCart={handleAddToCart}
+                    />
+                  ))}
+              </div>
+
+              {filteredProducts.length === 0 && (
+                <div className="text-center py-12">
+                  <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No products found
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    Try adjusting your filters or search query
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          /* My Orders */
           <div className="space-y-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Popular Tests</h2>
-              <p className="text-sm text-gray-500 mt-1">{popularProducts.length} tests found</p>
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              {popularProducts.map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
-            </div>
+            <h2 className="text-2xl font-bold text-gray-900">My Orders</h2>
+            {orders.length === 0 ? (
+              <div className="text-center py-12">
+                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No orders yet
+                </h3>
+                <p className="text-gray-500 text-sm mb-6">
+                  Place your first order to see it here
+                </p>
+                <Button 
+                  onClick={() => setViewMode('browse')}
+                  className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6"
+                >
+                  Browse Tests
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {orders.map((order) => (
+                  <Card key={order.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <p className="font-semibold text-gray-900">Order #{order.order_number}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(order.created_date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Badge className={`capitalize ${
+                          order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                          order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+                          order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {order.status}
+                        </Badge>
+                      </div>
+                      <div className="space-y-2 mb-3">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="text-sm text-gray-600">
+                            {item.quantity}x {item.product_name}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                        <span className="text-sm text-gray-600">Total</span>
+                        <span className="text-lg font-bold text-gray-900">
+                          £{order.total_amount.toFixed(2)}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
-
-        {/* All Products */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {selectedType !== 'all' ? `${types.find(t => t.id === selectedType)?.label}` : 'All Products'}
-          </h2>
-          <div className="grid grid-cols-1 gap-4">
-            {filteredProducts
-              .filter(p => !(selectedType === 'all' && selectedCategory === 'all' && p.popular))
-              .map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
-          </div>
-
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No products found
-              </h3>
-              <p className="text-gray-500 text-sm">
-                Try adjusting your filters or search query
-              </p>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
