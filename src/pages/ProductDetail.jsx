@@ -29,7 +29,7 @@ export default function ProductDetailPage() {
   const [isAdding, setIsAdding] = useState(false);
   const [user, setUser] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [includeAddon, setIncludeAddon] = useState(false);
+
   const [expandedFaq, setExpandedFaq] = useState(null);
 
   useEffect(() => {
@@ -65,13 +65,13 @@ export default function ProductDetailPage() {
       if (cartItems.length > 0) {
         await base44.entities.CartItem.update(cartItems[0].id, {
           quantity: cartItems[0].quantity + 1,
-          product_price: finalPrice
+          product_price: product.price
         });
       } else {
         await base44.entities.CartItem.create({
           product_id: product.id,
           product_name: product.name,
-          product_price: finalPrice,
+          product_price: product.price,
           product_image: product.image_url,
           quantity: 1,
           user_email: user.email
@@ -172,7 +172,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const totalPrice = includeAddon ? product.price + 10 : product.price;
+
 
   return (
     <div className="min-h-screen bg-white pb-32 w-screen overflow-x-hidden">
@@ -254,22 +254,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Addon Checkbox */}
-        <div className="flex items-start gap-3 p-4 border border-gray-200 rounded-xl">
-          <Checkbox 
-            checked={includeAddon}
-            onCheckedChange={setIncludeAddon}
-            className="mt-0.5"
-          />
-          <div className="flex-1">
-            <p className="font-medium text-gray-900 mb-1">
-              Have a result in your email - <span className="font-bold">+ £10.00</span>
-            </p>
-            <p className="text-xs text-gray-500">
-              Get comprehensive results and insights delivered to your email within 5-7 days
-            </p>
-          </div>
-        </div>
+
 
         {/* Proceed to Checkout Button */}
         <Button
@@ -277,7 +262,7 @@ export default function ProductDetailPage() {
           disabled={isAdding || !product.in_stock}
           className="w-full bg-gray-900 hover:bg-gray-800 text-white h-14 rounded-full text-base font-semibold"
         >
-          {isAdding ? 'Adding...' : `Proceed to checkout → £${totalPrice.toFixed(2)}`}
+          {isAdding ? 'Adding...' : `Proceed to checkout → £${product.price.toFixed(2)}`}
         </Button>
 
         {/* Payment Methods */}
