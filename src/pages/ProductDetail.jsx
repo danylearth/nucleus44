@@ -254,14 +254,7 @@ export default function ProductDetailPage() {
 
 
 
-        {/* Proceed to Checkout Button */}
-        <Button
-          onClick={handleAddToCart}
-          disabled={isAdding || !product.in_stock}
-          className="w-full bg-gray-900 hover:bg-gray-800 text-white h-14 rounded-full text-base font-semibold"
-        >
-          {isAdding ? 'Adding...' : `Proceed to checkout → £${product.price.toFixed(2)}`}
-        </Button>
+
 
         {/* Payment Methods */}
         <div className="flex items-center justify-center gap-3 py-2">
@@ -380,7 +373,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* FAQ Section */}
-        <div className="space-y-4 pb-6">
+        <div className="space-y-4 pb-24">
           <h2 className="text-xl font-bold text-gray-900">Want to know more?</h2>
           <div className="space-y-2">
             {faqs.map((faq, idx) => (
@@ -404,6 +397,19 @@ export default function ProductDetailPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Fixed Bottom Checkout Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
+        <div className="max-w-md mx-auto">
+          <Button
+            onClick={handleAddToCart}
+            disabled={isAdding || !product.in_stock}
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white h-14 rounded-full text-base font-semibold"
+          >
+            {isAdding ? 'Adding...' : `Proceed to checkout → £${product.price.toFixed(2)}`}
+          </Button>
         </div>
       </div>
     </div>
