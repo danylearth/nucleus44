@@ -55,8 +55,6 @@ export default function ProductDetailPage() {
     try {
       setIsAdding(true);
       
-      const finalPrice = includeAddon ? product.price + 10 : product.price;
-      
       const cartItems = await base44.entities.CartItem.filter({ 
         user_email: user.email,
         product_id: product.id 
