@@ -95,8 +95,8 @@ export default function Layout({ children, currentPageName }) {
     window.location.reload();
   };
 
-  // Don't show layout for Onboarding page
-  if (currentPageName === 'Onboarding') {
+  // Don't show layout for Onboarding and ProductDetail pages
+  if (currentPageName === 'Onboarding' || currentPageName === 'ProductDetail') {
     return (
       <>
         <link
