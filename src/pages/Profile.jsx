@@ -49,8 +49,11 @@ export default function ProfilePage() {
   };
 
   const handleDeleteAccount = () => {
-    if (window.confirm('Are you sure you want to delete your account?')) {
-      // Do nothing, just close
+    const confirmed = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
+    if (confirmed) {
+      // User clicked OK/Yes - do nothing, just close
+    } else {
+      // User clicked Cancel/No - do nothing, just close
     }
   };
 
