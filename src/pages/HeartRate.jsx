@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -349,7 +348,7 @@ export default function HeartRatePage() {
       <div className="pb-24">
         <div className="bg-[#F7F8F8] rounded-t-3xl -mt-20 md:-mt-32 py-4 space-y-6">
           {/* Device Source Card */}
-          <div className="px-4">
+          {/* <div className="px-4">
             <Card className="rounded-2xl border-0 shadow-sm">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -366,7 +365,7 @@ export default function HeartRatePage() {
                 <ChevronRight className="w-5 h-5 text-gray-400" />
               </CardContent>
             </Card>
-          </div>
+          </div> */}
 
           {/* Timeframe Toggle */}
           <div className="px-4">
