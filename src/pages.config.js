@@ -1,4 +1,3 @@
-import AIAgent from './pages/AIAgent';
 import AIInbox from './pages/AIInbox';
 import APIDocumentation from './pages/APIDocumentation';
 import Admin from './pages/Admin';
@@ -36,11 +35,11 @@ import Supplements from './pages/Supplements';
 import TermsAndConditions from './pages/TermsAndConditions';
 import TestDetail from './pages/TestDetail';
 import Water from './pages/Water';
+import AIAgent from './pages/AIAgent';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "AIAgent": AIAgent,
     "AIInbox": AIInbox,
     "APIDocumentation": APIDocumentation,
     "Admin": Admin,
@@ -78,6 +77,7 @@ export const PAGES = {
     "TermsAndConditions": TermsAndConditions,
     "TestDetail": TestDetail,
     "Water": Water,
+    "AIAgent": AIAgent,
 }
 
 export const pagesConfig = {

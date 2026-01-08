@@ -157,7 +157,7 @@ export default function ProfilePage() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png,image/heic"
                   onChange={handleImageUpload}
                   className="hidden"
                 />

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { User } from "@/entities/User";
 import { Card, CardContent } from "@/components/ui/card";
@@ -259,7 +258,7 @@ export default function OnboardingPage() {
                       <input
                         id="profile-picture"
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/jpg,image/png,image/heic"
                         onChange={handleProfilePictureChange}
                         className="hidden"
                         disabled={isUploadingImage}
