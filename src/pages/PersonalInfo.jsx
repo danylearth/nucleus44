@@ -127,16 +127,21 @@ export default function PersonalInfoPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const updateData = { ...formData };
-      delete updateData.password;
-      delete updateData.repeat_password;
+      const updateData = {
+        full_name: formData.full_name,
+        date_of_birth: formData.date_of_birth,
+        phone_number: formData.phone_number,
+        address: formData.address,
+        profile_picture: formData.profile_picture
+      };
       
+      console.log('Updating user with:', updateData);
       await base44.auth.updateMe(updateData);
       await loadUserData();
       alert('Profile updated successfully!');
     } catch (error) {
       console.error('Error saving user data:', error);
-      alert('Failed to update profile. Please try again.');
+      alert(`Failed to update profile: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -251,7 +256,7 @@ export default function PersonalInfoPage() {
                 </div>
               </div>
 
-              {/* Email */}
+              {/* Email - Read Only */}
               <div>
                 <Label htmlFor="email" className="text-sm font-medium text-gray-900 mb-2 block">
                   Email
@@ -262,10 +267,11 @@ export default function PersonalInfoPage() {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="pl-10 bg-white border-gray-200 rounded-[14px] h-12"
+                    disabled
+                    className="pl-10 bg-gray-100 border-gray-200 rounded-[14px] h-12 text-gray-600 cursor-not-allowed"
                   />
                 </div>
+                <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
               </div>
 
               {/* Date of Birth */}
