@@ -144,7 +144,6 @@ export default function PersonalInfoPage() {
     setIsSaving(true);
     try {
       const updateData = {
-        full_name: formData.full_name,
         date_of_birth: formData.date_of_birth,
         phone_number: formData.phone_number,
         address: formData.address,
@@ -267,7 +266,7 @@ export default function PersonalInfoPage() {
                 </div>
               )}
 
-              {/* Full Name */}
+              {/* Full Name - Read Only */}
               <div>
                 <Label htmlFor="full_name" className="text-sm font-medium text-gray-900 mb-2 block">
                   Full Name
@@ -277,10 +276,11 @@ export default function PersonalInfoPage() {
                   <Input
                     id="full_name"
                     value={formData.full_name}
-                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                    className="pl-10 bg-white border-gray-200 rounded-[14px] h-12"
+                    disabled
+                    className="pl-10 bg-gray-100 border-gray-200 rounded-[14px] h-12 text-gray-600 cursor-not-allowed"
                   />
                 </div>
+                <p className="text-xs text-gray-400 mt-1">Name cannot be changed</p>
               </div>
 
               {/* Email - Read Only */}
