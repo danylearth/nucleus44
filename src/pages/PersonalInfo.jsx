@@ -135,13 +135,15 @@ export default function PersonalInfoPage() {
         profile_picture: formData.profile_picture
       };
       
-      console.log('Updating user with:', updateData);
-      await base44.auth.updateMe(updateData);
+      console.log('🔄 Updating user with:', updateData);
+      const result = await base44.auth.updateMe(updateData);
+      console.log('✅ Update successful:', result);
       await loadUserData();
       alert('Profile updated successfully!');
     } catch (error) {
-      console.error('Error saving user data:', error);
-      alert(`Failed to update profile: ${error.message}`);
+      console.error('❌ Error saving user data:', error);
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
+      alert(`Failed to update profile: ${error.message || 'Unknown error'}`);
     } finally {
       setIsSaving(false);
     }
