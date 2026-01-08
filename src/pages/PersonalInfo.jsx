@@ -124,6 +124,18 @@ export default function PersonalInfoPage() {
     }
   };
 
+  const handleTestUpdate = async () => {
+    try {
+      console.log('🧪 Running update tests...');
+      const response = await base44.functions.invoke('testUserUpdate', {});
+      console.log('🧪 Test results:', response);
+      alert(`Test Results:\nName Update: ${response.tests.nameUpdate ? '✅' : '❌'}\nDOB Update: ${response.tests.dobUpdate ? '✅' : '❌'}\nPhone Update: ${response.tests.phoneUpdate ? '✅' : '❌'}`);
+    } catch (error) {
+      console.error('❌ Test error:', error);
+      alert(`Test failed: ${error.message}`);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -138,6 +150,15 @@ export default function PersonalInfoPage() {
       console.log('🔄 Updating user with:', updateData);
       const result = await base44.auth.updateMe(updateData);
       console.log('✅ Update successful:', result);
+      
+      // Verify the update
+      const updatedUser = await base44.auth.me();
+      console.log('✅ User after update:', {
+        full_name: updatedUser.full_name,
+        date_of_birth: updatedUser.date_of_birth,
+        phone_number: updatedUser.phone_number
+      });
+      
       await loadUserData();
       alert('Profile updated successfully!');
     } catch (error) {
@@ -411,13 +432,21 @@ export default function PersonalInfoPage() {
       </div>
 
       {/* Save Button */}
-      <div className="px-4 py-4">
+      <div className="px-4 py-4 space-y-3">
         <Button 
           onClick={handleSave} 
           disabled={isSaving} 
           className="w-full h-[60px] bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-[16px] transition-colors duration-200"
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
+        </Button>
+        
+        <Button 
+          onClick={handleTestUpdate}
+          variant="outline"
+          className="w-full h-[50px] border-2 border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-[16px]"
+        >
+          🧪 Run Update Tests
         </Button>
       </div>
     </div>
