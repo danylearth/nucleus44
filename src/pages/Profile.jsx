@@ -48,6 +48,12 @@ export default function ProfilePage() {
     }
   };
 
+  const handleDeleteAccount = () => {
+    if (window.confirm('Are you sure you want to delete your account?')) {
+      // Do nothing, just close
+    }
+  };
+
   const handleImageUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
