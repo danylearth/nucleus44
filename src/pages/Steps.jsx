@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
@@ -301,7 +300,7 @@ export default function StepsPage() {
       <div className="pb-24">
         <div className="bg-white rounded-t-3xl -mt-20 md:-mt-32 py-4 space-y-6">
           {/* Device Source Card */}
-          <div className="px-4">
+          {/* <div className="px-4">
             <Card className="rounded-2xl border-0 shadow-sm">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -316,7 +315,7 @@ export default function StepsPage() {
                 <ChevronRight className="w-5 h-5 text-gray-400" />
               </CardContent>
             </Card>
-          </div>
+          </div> */}
 
           {/* Timeframe Toggle */}
           <div className="px-4">
