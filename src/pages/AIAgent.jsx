@@ -1,12 +1,11 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, ChevronLeft, Inbox, Bot, Droplets, Utensils, ChevronRight } from 'lucide-react';
+import { Send, ChevronLeft, Inbox, Bot, Droplets, Utensils, ChevronRight, Paperclip, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { InvokeLLM } from '@/integrations/Core';
+import { base44 } from '@/api/base44Client';
 import { User } from '@/entities/User';
 import ChatMessage from '../components/ai/ChatMessage';
 
