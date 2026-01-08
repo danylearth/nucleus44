@@ -534,11 +534,11 @@ export default function Dashboard() {
               <p className="text-gray-500 text-sm mb-6">
                 Connect your wearable device or mobile app to start tracking your health metrics.
               </p>
-              <Link to={createPageUrl("Devices")}>
+              {/* <Link to={createPageUrl("Devices")}>
                 <Button className="bg-gray-900 hover:bg-gray-800 text-white">
                   Connect Device
                 </Button>
-              </Link>
+              </Link> */}
             </CardContent>
           </Card>
         ) : !error && (
