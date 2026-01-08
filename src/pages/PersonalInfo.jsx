@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { User, Clinic } from "@/entities/all";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,10 +13,12 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Building2
+  Building2,
+  Camera
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { base44 } from "@/api/base44Client";
 
 export default function PersonalInfoPage() {
   const [user, setUser] = useState(null);
@@ -26,12 +27,15 @@ export default function PersonalInfoPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
     date_of_birth: '',
     phone_number: '',
     address: '',
+    profile_picture: '',
     password: '',
     repeat_password: ''
   });
@@ -78,27 +82,45 @@ export default function PersonalInfoPage() {
       }
       
       setFormData({
-        full_name: currentUser.full_name || 'Willson Johnson',
-        email: currentUser.email || 'will_j@email.com',
-        date_of_birth: currentUser.date_of_birth || '1990/05/12',
-        phone_number: currentUser.phone_number || '+44 (555) 123-456',
-        address: currentUser.address || '123 Health Street, Wellness City, 123',
+        full_name: currentUser.full_name || '',
+        email: currentUser.email || '',
+        date_of_birth: currentUser.date_of_birth || '',
+        phone_number: currentUser.phone_number || '',
+        address: currentUser.address || '',
+        profile_picture: currentUser.profile_picture || '',
         password: '',
         repeat_password: ''
       });
     } catch (error) {
       console.error('Error loading user data:', error);
       setFormData({
-        full_name: 'Willson Johnson',
-        email: 'will_j@email.com',
-        date_of_birth: '1990/05/12',
-        phone_number: '+44 (555) 123-456',
-        address: '123 Health Street, Wellness City, 123',
+        full_name: '',
+        email: '',
+        date_of_birth: '',
+        phone_number: '',
+        address: '',
+        profile_picture: '',
         password: '',
         repeat_password: ''
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, profile_picture: file_url });
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      alert('Failed to upload profile picture');
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -109,7 +131,8 @@ export default function PersonalInfoPage() {
       delete updateData.password;
       delete updateData.repeat_password;
       
-      await User.updateMyUserData(updateData);
+      await base44.auth.updateMe(updateData);
+      await loadUserData();
       alert('Profile updated successfully!');
     } catch (error) {
       console.error('Error saving user data:', error);
@@ -164,16 +187,29 @@ export default function PersonalInfoPage() {
             {/* Profile Picture */}
             <div className="relative w-32 h-32 mx-auto mb-8">
               <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5c2121d3e86e4be58e018/be300faf8_92e43541-1304-4687-9e2f-3617bacf279e1.png" 
+                src={formData.profile_picture || "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5c2121d3e86e4be58e018/be300faf8_92e43541-1304-4687-9e2f-3617bacf279e1.png"} 
                 alt="Profile" 
                 className="w-full h-full object-cover rounded-full"
               />
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center border-4 border-white">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingImage}
+                className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 w-10 h-10 bg-teal-500 hover:bg-teal-600 rounded-full flex items-center justify-center border-4 border-white disabled:opacity-50"
+              >
+                {isUploadingImage ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Camera className="w-5 h-5 text-white" />
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/heic"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
             </div>
 
             {/* Form Fields */}
