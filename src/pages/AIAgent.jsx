@@ -15,8 +15,11 @@ export default function AIAgentPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [context, setContext] = useState(null);
   const [user, setUser] = useState(null);
-  const [userLoading, setUserLoading] = useState(true); // Add user loading state
+  const [userLoading, setUserLoading] = useState(true);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
