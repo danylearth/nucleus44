@@ -100,17 +100,17 @@ export default function ProfilePage() {
   //   iconBg: 'bg-teal-50',
   //   link: createPageUrl("Devices")
   // },
+  // {
+  //   title: 'Calendar Integration',
+  //   subtitle: 'Connect your calendar',
+  //   icon: Calendar,
+  //   iconColor: 'text-teal-500',
+  //   iconBg: 'bg-teal-50',
+  //   link: createPageUrl("CalendarIntegration")
+  // },
   {
-    title: 'Calendar Integration',
-    subtitle: 'Connect your calendar',
-    icon: Calendar,
-    iconColor: 'text-teal-500',
-    iconBg: 'bg-teal-50',
-    link: createPageUrl("CalendarIntegration")
-  },
-  {
-    title: (<>App<br/>Settings</>),
-    subtitle: 'Notifications, security & more',
+    title: 'Logout',
+    subtitle: '',
     icon: Settings,
     iconColor: 'text-teal-500',
     iconBg: 'bg-teal-50',
