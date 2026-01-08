@@ -127,9 +127,13 @@ export default function PersonalInfoPage() {
   const handleTestUpdate = async () => {
     try {
       console.log('🧪 Running update tests...');
-      const response = await base44.functions.invoke('testUserUpdate', {});
-      console.log('🧪 Test results:', response);
-      alert(`Test Results:\nName Update: ${response.tests.nameUpdate ? '✅' : '❌'}\nDOB Update: ${response.tests.dobUpdate ? '✅' : '❌'}\nPhone Update: ${response.tests.phoneUpdate ? '✅' : '❌'}`);
+      const { data } = await base44.functions.invoke('testUserUpdate', {});
+      console.log('🧪 Test results:', data);
+      if (data.error) {
+        alert(`Test Error: ${data.error}`);
+      } else {
+        alert(`Test Results:\nName Update: ${data.tests.nameUpdate ? '✅' : '❌'}\nDOB Update: ${data.tests.dobUpdate ? '✅' : '❌'}\nPhone Update: ${data.tests.phoneUpdate ? '✅' : '❌'}`);
+      }
     } catch (error) {
       console.error('❌ Test error:', error);
       alert(`Test failed: ${error.message}`);
