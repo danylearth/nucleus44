@@ -436,21 +436,13 @@ export default function PersonalInfoPage() {
       </div>
 
       {/* Save Button */}
-      <div className="px-4 py-4 space-y-3">
+      <div className="px-4 py-4">
         <Button 
           onClick={handleSave} 
           disabled={isSaving} 
           className="w-full h-[60px] bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-[16px] transition-colors duration-200"
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
-        </Button>
-        
-        <Button 
-          onClick={handleTestUpdate}
-          variant="outline"
-          className="w-full h-[50px] border-2 border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-[16px]"
-        >
-          🧪 Run Update Tests
         </Button>
       </div>
     </div>
