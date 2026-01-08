@@ -115,7 +115,8 @@ export default function PersonalInfoPage() {
     setIsUploadingImage(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData({ ...formData, profile_picture: file_url });
+      await base44.auth.updateMe({ profile_picture: file_url });
+      await loadUserData();
     } catch (error) {
       console.error('Error uploading profile picture:', error);
       alert('Failed to upload profile picture');
