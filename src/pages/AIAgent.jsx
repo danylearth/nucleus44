@@ -57,12 +57,45 @@ export default function AIAgentPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (messageText) => {
-    if (messageText.trim() === '' || isLoading) return;
+  const handleFileSelect = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-    const newUserMessage = { role: 'user', content: messageText };
+    setIsUploading(true);
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        return file_url;
+      });
+      
+      const urls = await Promise.all(uploadPromises);
+      setUploadedImages((prev) => [...prev, ...urls]);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const removeImage = (index) => {
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSendMessage = async (messageText) => {
+    if ((messageText.trim() === '' && uploadedImages.length === 0) || isLoading) return;
+
+    const newUserMessage = { 
+      role: 'user', 
+      content: messageText || '(Image attached)',
+      images: uploadedImages.length > 0 ? [...uploadedImages] : undefined
+    };
     setMessages((prev) => [...prev, newUserMessage]);
     setInput('');
+    const imagesToSend = [...uploadedImages];
+    setUploadedImages([]);
     setIsLoading(true);
 
     try {
@@ -91,7 +124,10 @@ User query: "${messageText}"`;
         prompt += `\n\nContext: The user is asking about their ${context.type} data: ${JSON.stringify(context)}`;
       }
 
-      const response = await InvokeLLM({ prompt });
+      const response = await base44.integrations.Core.InvokeLLM({ 
+        prompt,
+        file_urls: imagesToSend.length > 0 ? imagesToSend : undefined
+      });
 
       const assistantMessage = { role: 'assistant', content: response };
       setMessages((prev) => [...prev, assistantMessage]);
