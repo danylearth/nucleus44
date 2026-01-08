@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { TerraConnection, User } from "@/entities/all"; // Changed from WearableDevice
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,8 +22,8 @@ import { forceSync } from "@/functions/forceSync"; // Import the new function
 // Helper to get details for each Terra provider
 const getProviderDetails = (provider) => {
     switch (provider) {
-        case 'APPLE_HEALTH':
-            return { name: "Apple Health", icon: <Heart className="w-6 h-6 text-red-500" />, bgColor: "bg-red-50", subtitle: "Steps, health record, vitals" };
+        // case 'APPLE_HEALTH':
+        //     return { name: "Apple Health", icon: <Heart className="w-6 h-6 text-red-500" />, bgColor: "bg-red-50", subtitle: "Steps, health record, vitals" };
         case 'GOOGLE_FIT':
             return { name: "Google Fit", icon: <Smartphone className="w-6 h-6 text-blue-500" />, bgColor: "bg-blue-50", subtitle: "Activity, sleep, heart rate" };
         case 'GARMIN':
@@ -114,7 +113,7 @@ export default function DevicesPage() {
         </p>
         
         <div className="space-y-4">
-          {connections.map((conn) => {
+          {connections.filter(conn => conn.provider !== 'APPLE_HEALTH').map((conn) => {
             const details = getProviderDetails(conn.provider);
             const isCurrentlySyncing = isSyncing === conn.id;
             return (
