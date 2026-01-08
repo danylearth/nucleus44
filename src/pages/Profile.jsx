@@ -121,6 +121,14 @@ export default function ProfilePage() {
     iconColor: 'text-teal-500',
     iconBg: 'bg-teal-50',
     action: handleLogout
+  },
+  {
+    title: 'Delete Account',
+    subtitle: '',
+    icon: UserIcon,
+    iconColor: 'text-red-500',
+    iconBg: 'bg-red-50',
+    action: handleDeleteAccount
   }];
 
   const profilePicture = user?.profile_picture || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5c2121d3e86e4be58e018/be300faf8_92e43541-1304-4687-9e2f-3617bacf279e1.png';
