@@ -186,11 +186,13 @@ export default function ProfilePage() {
                     <ItemIcon className={`w-6 h-6 ${item.iconColor}`} />
                   </div>
                   <h3 className="font-semibold text-gray-900 text-left mb-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 text-left leading-relaxed">
-                    {item.subtitle}
-                  </p>
+                            {item.title}
+                          </h3>
+                          {item.subtitle && (
+                            <p className="text-sm text-gray-500 text-left leading-relaxed">
+                              {item.subtitle}
+                            </p>
+                          )}
                 </CardContent>
               </Card>;
 
