@@ -27,7 +27,6 @@ const MobileBottomNav = React.memo(() => {
 
   const navItems = [
     { path: createPageUrl('Dashboard'), icon: Home, label: 'Dashboard' },
-    // { path: createPageUrl('Shop'), icon: ShoppingCart, label: 'Shop' },
     { path: createPageUrl('AIAgent'), icon: MessageCircle, label: 'Chat' }
   ];
 
