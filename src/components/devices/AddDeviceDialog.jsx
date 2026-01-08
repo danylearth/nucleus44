@@ -24,7 +24,7 @@ export default function AddDeviceDialog({ open, onOpenChange }) {
         <div className="py-4 text-center">
           <h3 className="font-semibold text-lg mb-2">Get the Mobile App</h3>
           <p className="text-sm text-gray-600 mb-6">
-            Download the mobile app to connect your Apple Health, Garmin, Fitbit, Oura, and other wearables.
+            Download the mobile app to connect your Garmin, Fitbit, Oura, and other wearables.
           </p>
           <div className="flex justify-center gap-4">
             <Button className="bg-black hover:bg-gray-800 text-white gap-2">
