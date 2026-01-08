@@ -178,7 +178,41 @@ User query: "${messageText}"`;
         
         {/* Message Input */}
         <div className="p-4 bg-white border-t">
+          {uploadedImages.length > 0 && (
+            <div className="flex gap-2 mb-3 overflow-x-auto pb-2">
+              {uploadedImages.map((url, idx) => (
+                <div key={idx} className="relative flex-shrink-0">
+                  <img src={url} alt="Upload" className="w-16 h-16 rounded-lg object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx)}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
+                  >
+                    <X className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading || isLoading}
+              className="rounded-full w-12 h-12"
+            >
+              <Paperclip className="w-5 h-5" />
+            </Button>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -189,7 +223,7 @@ User query: "${messageText}"`;
             <Button
               type="submit"
               size="icon"
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || (!input.trim() && uploadedImages.length === 0)}
               className="rounded-full w-12 h-12 bg-gray-900 hover:bg-gray-800">
 
               <Send className="w-5 h-5" />
