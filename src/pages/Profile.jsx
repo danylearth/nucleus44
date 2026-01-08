@@ -92,14 +92,14 @@ export default function ProfilePage() {
     iconBg: 'bg-teal-50',
     link: createPageUrl("PersonalInfo")
   },
-  {
-    title: 'Connected Devices',
-    subtitle: 'Manage your health devices',
-    icon: MapPin,
-    iconColor: 'text-teal-500',
-    iconBg: 'bg-teal-50',
-    link: createPageUrl("Devices")
-  },
+  // {
+  //   title: 'Connected Devices',
+  //   subtitle: 'Manage your health devices',
+  //   icon: MapPin,
+  //   iconColor: 'text-teal-500',
+  //   iconBg: 'bg-teal-50',
+  //   link: createPageUrl("Devices")
+  // },
   {
     title: 'Calendar Integration',
     subtitle: 'Connect your calendar',
