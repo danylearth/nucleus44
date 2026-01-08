@@ -1,11 +1,12 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, ChevronLeft, Inbox, Bot, Droplets, Utensils, ChevronRight, Paperclip, X } from 'lucide-react';
+import { Send, ChevronLeft, Inbox, Bot, Droplets, Utensils, ChevronRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
+import { InvokeLLM } from '@/integrations/Core';
 import { User } from '@/entities/User';
 import ChatMessage from '../components/ai/ChatMessage';
 
@@ -15,11 +16,8 @@ export default function AIAgentPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [context, setContext] = useState(null);
   const [user, setUser] = useState(null);
-  const [userLoading, setUserLoading] = useState(true);
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [isUploading, setIsUploading] = useState(false);
+  const [userLoading, setUserLoading] = useState(true); // Add user loading state
   const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -57,45 +55,12 @@ export default function AIAgentPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleFileSelect = async (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-
-    setIsUploading(true);
-    try {
-      const uploadPromises = files.map(async (file) => {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        return file_url;
-      });
-      
-      const urls = await Promise.all(uploadPromises);
-      setUploadedImages((prev) => [...prev, ...urls]);
-    } catch (error) {
-      console.error('Error uploading files:', error);
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
-  };
-
-  const removeImage = (index) => {
-    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const handleSendMessage = async (messageText) => {
-    if ((messageText.trim() === '' && uploadedImages.length === 0) || isLoading) return;
+    if (messageText.trim() === '' || isLoading) return;
 
-    const newUserMessage = { 
-      role: 'user', 
-      content: messageText || '(Image attached)',
-      images: uploadedImages.length > 0 ? [...uploadedImages] : undefined
-    };
+    const newUserMessage = { role: 'user', content: messageText };
     setMessages((prev) => [...prev, newUserMessage]);
     setInput('');
-    const imagesToSend = [...uploadedImages];
-    setUploadedImages([]);
     setIsLoading(true);
 
     try {
@@ -124,10 +89,7 @@ User query: "${messageText}"`;
         prompt += `\n\nContext: The user is asking about their ${context.type} data: ${JSON.stringify(context)}`;
       }
 
-      const response = await base44.integrations.Core.InvokeLLM({ 
-        prompt,
-        file_urls: imagesToSend.length > 0 ? imagesToSend : undefined
-      });
+      const response = await InvokeLLM({ prompt });
 
       const assistantMessage = { role: 'assistant', content: response };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -178,41 +140,7 @@ User query: "${messageText}"`;
         
         {/* Message Input */}
         <div className="p-4 bg-white border-t">
-          {uploadedImages.length > 0 && (
-            <div className="flex gap-2 mb-3 overflow-x-auto pb-2">
-              {uploadedImages.map((url, idx) => (
-                <div key={idx} className="relative flex-shrink-0">
-                  <img src={url} alt="Upload" className="w-16 h-16 rounded-lg object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(idx)}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
-                  >
-                    <X className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-            <Button
-              type="button"
-              size="icon"
-              variant="ghost"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading || isLoading}
-              className="rounded-full w-12 h-12"
-            >
-              <Paperclip className="w-5 h-5" />
-            </Button>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -223,7 +151,7 @@ User query: "${messageText}"`;
             <Button
               type="submit"
               size="icon"
-              disabled={isLoading || (!input.trim() && uploadedImages.length === 0)}
+              disabled={isLoading || !input.trim()}
               className="rounded-full w-12 h-12 bg-gray-900 hover:bg-gray-800">
 
               <Send className="w-5 h-5" />
