@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, TrendingUp, AlertTriangle, Target, Award, Heart, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import BellIcon from "../components/icons/BellIcon";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
@@ -103,7 +104,7 @@ export default function NotificationsPage() {
         {notifications.length === 0 ? (
           <Card className="bg-white rounded-2xl border-0 shadow-sm">
             <CardContent className="p-8 text-center">
-              <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <BellIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Notifications</h3>
               <p className="text-gray-500 text-sm">
                 You're all caught up! Check back later for updates.
