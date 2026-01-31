@@ -1,12 +1,11 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, ChevronLeft, Inbox, Bot, Droplets, Utensils, ChevronRight } from 'lucide-react';
+import { Send, ChevronLeft, Inbox, Bot, Droplets, Utensils, ChevronRight, Paperclip, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { InvokeLLM } from '@/integrations/Core';
+import { base44 } from '@/api/base44Client';
 import { User } from '@/entities/User';
 import ChatMessage from '../components/ai/ChatMessage';
 
@@ -17,7 +16,10 @@ export default function AIAgentPage() {
   const [context, setContext] = useState(null);
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true); // Add user loading state
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -55,12 +57,44 @@ export default function AIAgentPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (messageText) => {
-    if (messageText.trim() === '' || isLoading) return;
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    const newUserMessage = { role: 'user', content: messageText };
+    setIsUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setUploadedImage(file_url);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSendMessage = async (messageText) => {
+    if ((messageText.trim() === '' && !uploadedImage) || isLoading) return;
+
+    const newUserMessage = { 
+      role: 'user', 
+      content: messageText || (uploadedImage ? 'Uploaded an image' : ''),
+      image: uploadedImage 
+    };
     setMessages((prev) => [...prev, newUserMessage]);
     setInput('');
+    const imageToSend = uploadedImage;
+    setUploadedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setIsLoading(true);
 
     try {
@@ -89,7 +123,10 @@ User query: "${messageText}"`;
         prompt += `\n\nContext: The user is asking about their ${context.type} data: ${JSON.stringify(context)}`;
       }
 
-      const response = await InvokeLLM({ prompt });
+      const response = await base44.integrations.Core.InvokeLLM({ 
+        prompt,
+        file_urls: imageToSend ? [imageToSend] : undefined
+      });
 
       const assistantMessage = { role: 'assistant', content: response };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -140,7 +177,35 @@ User query: "${messageText}"`;
         
         {/* Message Input */}
         <div className="p-4 bg-white border-t">
+          {uploadedImage && (
+            <div className="mb-3 relative inline-block">
+              <img src={uploadedImage} alt="Upload preview" className="w-20 h-20 rounded-lg object-cover border" />
+              <button
+                onClick={handleRemoveImage}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading || isUploading}
+              className="rounded-full w-12 h-12"
+            >
+              <Paperclip className="w-5 h-5" />
+            </Button>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -151,7 +216,7 @@ User query: "${messageText}"`;
             <Button
               type="submit"
               size="icon"
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || (!input.trim() && !uploadedImage)}
               className="rounded-full w-12 h-12 bg-gray-900 hover:bg-gray-800">
 
               <Send className="w-5 h-5" />
