@@ -229,8 +229,12 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                  <UserIcon className="w-8 h-8 text-white" />
+                <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                  <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68cdcec5297c530169c397bd/ecd42a7e3_AppStoreListing.png" 
+                    alt="Nucleus Logo" 
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Nucleus</h1>
                 <p className="text-gray-600">Let's start by getting to know you better</p>
