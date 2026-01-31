@@ -298,7 +298,37 @@ User query: "${messageText}"`;
 
       {/* Bottom Input */}
       <div className="p-4 bg-[#F7F8F8] border-t">
+        {uploadedImage && (
+          <div className="mb-3 flex justify-center">
+            <div className="relative inline-block">
+              <img src={uploadedImage} alt="Upload preview" className="w-20 h-20 rounded-lg object-cover border" />
+              <button
+                onClick={handleRemoveImage}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="flex items-center gap-2 max-w-md mx-auto">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading || isUploading}
+            className="rounded-xl w-[60px] h-[60px]"
+          >
+            <Paperclip className="w-5 h-5" />
+          </Button>
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -309,7 +339,7 @@ User query: "${messageText}"`;
           <Button
             type="submit"
             size="icon"
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || (!input.trim() && !uploadedImage)}
             className="rounded-xl w-[60px] h-[60px] bg-gray-900 hover:bg-gray-800">
 
             <Send className="w-5 h-5" />
