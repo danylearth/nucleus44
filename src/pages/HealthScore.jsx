@@ -30,24 +30,7 @@ export default function HealthScorePage() {
     }
   };
 
-  const healthScore = user?.health_score || 750;
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-600';
-      case 'medium': return 'bg-yellow-100 text-yellow-600';
-      case 'low': return 'bg-green-100 text-green-600';
-      default: return 'bg-gray-100 text-gray-600';
-    }
-  };
-
-  const getImpactColor = (impact) => {
-    switch (impact) {
-      case 'positive': return 'text-green-600';
-      case 'negative': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
-  };
+  const healthScore = user?.health_score || 0;
 
   if (isLoading) {
     return (
