@@ -41,6 +41,9 @@ export default function ChatMessage({ message, isLoading }) {
             : 'bg-blue-500 text-white'
         }`}
       >
+        {message.image && (
+          <img src={message.image} alt="Uploaded" className="rounded-lg mb-2 max-w-full" />
+        )}
         <ReactMarkdown
           className="prose prose-sm"
           components={{
