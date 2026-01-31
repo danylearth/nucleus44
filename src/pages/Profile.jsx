@@ -134,7 +134,7 @@ export default function ProfilePage() {
     action: handleDeleteAccount
   }];
 
-  const profilePicture = user?.profile_picture || 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5c2121d3e86e4be58e018/be300faf8_92e43541-1304-4687-9e2f-3617bacf279e1.png';
+  const profilePicture = user?.profile_picture || `https://avatar.vercel.sh/${user?.email || 'user'}.png`;
 
   return (
     <div className="bg-gray-50 min-h-screen pb-24">
