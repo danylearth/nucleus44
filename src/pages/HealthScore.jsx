@@ -14,6 +14,7 @@ import {
 export default function HealthScorePage() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasDevices, setHasDevices] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -23,6 +24,11 @@ export default function HealthScorePage() {
     try {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
+      
+      const connections = await base44.entities.TerraConnection.filter(
+        { user_id: currentUser.id, is_active: true }
+      );
+      setHasDevices(connections.length > 0);
     } catch (error) {
       console.error('Error loading user data:', error);
     } finally {
@@ -72,7 +78,10 @@ export default function HealthScorePage() {
             <div className="text-6xl font-bold mb-2">{healthScore}</div>
             <p className="text-white/80 mb-4">Your Health Score</p>
             <p className="text-sm text-white/70">
-              Track your health metrics to see detailed insights
+              {!hasDevices 
+                ? "Connect your wearable devices to unlock your health score"
+                : "Track your health metrics to see detailed insights"
+              }
             </p>
           </CardContent>
         </Card>
