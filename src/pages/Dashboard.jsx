@@ -447,9 +447,11 @@ export default function Dashboard() {
             </div>
           </Link>
           <div className="flex items-center gap-3">
-            <button className="w-[52px] h-[52px] bg-white rounded-full flex items-center justify-center shadow-sm">
-              <BellIcon className="w-5 h-5 text-gray-500" />
-            </button>
+            <Link to={createPageUrl("Notifications")}>
+              <button className="w-[52px] h-[52px] bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                <BellIcon className="w-5 h-5 text-gray-500" />
+              </button>
+            </Link>
           </div>
         </div>
       </div>

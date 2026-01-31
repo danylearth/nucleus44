@@ -85,6 +85,7 @@ import Supplements from './pages/Supplements';
 import TermsAndConditions from './pages/TermsAndConditions';
 import TestDetail from './pages/TestDetail';
 import Water from './pages/Water';
+import Notifications from './pages/Notifications';
 import __Layout from './Layout.jsx';
 
 
@@ -127,6 +128,7 @@ export const PAGES = {
     "TermsAndConditions": TermsAndConditions,
     "TestDetail": TestDetail,
     "Water": Water,
+    "Notifications": Notifications,
 }
 
 export const pagesConfig = {
