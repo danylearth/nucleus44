@@ -123,7 +123,12 @@ export default function BloodTestManagementPage() {
     try {
       const response = await base44.functions.invoke('scheduledBloodResultsSync', {});
       console.log('Sync response:', response.data);
-      setSyncMessage(`✅ Sync completed: ${response.data.new_files_matched || 0} new files processed`);
+      
+      const data = response.data;
+      const message = `✅ Sync completed:\n• ${data.total_files_scanned || 0} files found on SFTP\n• ${data.new_files_matched || 0} new files processed\n• ${data.files_already_processed || 0} already processed\n• ${data.unmatched_files_count || 0} unmatched`;
+      
+      setSyncMessage(message);
+      
       // Reload data after sync
       await loadData();
     } catch (error) {
@@ -299,7 +304,7 @@ export default function BloodTestManagementPage() {
         </div>
         
         {syncMessage && (
-          <div className={`text-sm p-3 rounded-lg ${
+          <div className={`text-sm p-3 rounded-lg whitespace-pre-line ${
             syncMessage.startsWith('✅') 
               ? 'bg-green-50 text-green-700' 
               : 'bg-red-50 text-red-700'
