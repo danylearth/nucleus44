@@ -72,6 +72,7 @@ import Home from './pages/Home';
 import LabResultDetail from './pages/LabResultDetail';
 import LabResults from './pages/LabResults';
 import MuhdoProfile from './pages/MuhdoProfile';
+import Notifications from './pages/Notifications';
 import Onboarding from './pages/Onboarding';
 import PersonalInfo from './pages/PersonalInfo';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -85,7 +86,6 @@ import Supplements from './pages/Supplements';
 import TermsAndConditions from './pages/TermsAndConditions';
 import TestDetail from './pages/TestDetail';
 import Water from './pages/Water';
-import Notifications from './pages/Notifications';
 import __Layout from './Layout.jsx';
 
 
@@ -115,6 +115,7 @@ export const PAGES = {
     "LabResultDetail": LabResultDetail,
     "LabResults": LabResults,
     "MuhdoProfile": MuhdoProfile,
+    "Notifications": Notifications,
     "Onboarding": Onboarding,
     "PersonalInfo": PersonalInfo,
     "PrivacyPolicy": PrivacyPolicy,
@@ -128,7 +129,6 @@ export const PAGES = {
     "TermsAndConditions": TermsAndConditions,
     "TestDetail": TestDetail,
     "Water": Water,
-    "Notifications": Notifications,
 }
 
 export const pagesConfig = {
