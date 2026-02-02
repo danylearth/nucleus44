@@ -59,7 +59,7 @@ export default function BloodTestManagementPage() {
 
       const allResults = await base44.entities.LabResult.filter(
         { test_type: 'blood_work' },
-        '-test_date',
+        '-created_date',
         1000
       );
       setResults(allResults);
