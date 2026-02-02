@@ -27,7 +27,8 @@ import {
   XCircle,
   Clock,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  RefreshCw
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -41,6 +42,8 @@ export default function BloodTestManagementPage() {
   const [selectedResult, setSelectedResult] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [isUpdating, setIsUpdating] = useState(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState('');
 
   useEffect(() => {
     loadData();
@@ -112,6 +115,23 @@ export default function BloodTestManagementPage() {
     setSelectedResult(result);
     setRejectionReason(result.rejection_reason || '');
     setRejectDialogOpen(true);
+  };
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    setSyncMessage('');
+    try {
+      const response = await base44.functions.invoke('scheduledBloodResultsSync', {});
+      console.log('Sync response:', response.data);
+      setSyncMessage(`✅ Sync completed: ${response.data.new_files_matched || 0} new files processed`);
+      // Reload data after sync
+      await loadData();
+    } catch (error) {
+      console.error('Sync error:', error);
+      setSyncMessage(`❌ Sync failed: ${error.message}`);
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const getFilteredResults = (status) => {
@@ -255,8 +275,8 @@ export default function BloodTestManagementPage() {
         <div className="w-10"></div>
       </div>
 
-      {/* Search */}
-      <div className="px-4 mb-6">
+      {/* Search and Sync */}
+      <div className="px-4 mb-6 space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <Input
@@ -266,6 +286,27 @@ export default function BloodTestManagementPage() {
             className="pl-10 bg-white border-gray-200 rounded-xl h-12"
           />
         </div>
+        
+        <div className="flex items-center gap-3">
+          <Button 
+            onClick={handleManualSync} 
+            disabled={isSyncing}
+            className="flex-1 bg-gray-900 hover:bg-gray-800 text-white h-12"
+          >
+            <RefreshCw className={`w-5 h-5 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing...' : 'Sync SFTP Files'}
+          </Button>
+        </div>
+        
+        {syncMessage && (
+          <div className={`text-sm p-3 rounded-lg ${
+            syncMessage.startsWith('✅') 
+              ? 'bg-green-50 text-green-700' 
+              : 'bg-red-50 text-red-700'
+          }`}>
+            {syncMessage}
+          </div>
+        )}
       </div>
 
       {/* Tabs */}
