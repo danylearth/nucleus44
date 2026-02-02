@@ -57,8 +57,7 @@ export default function BloodTestManagementPage() {
         return;
       }
 
-      const allResults = await base44.entities.LabResult.filter(
-        { test_type: 'blood_work' },
+      const allResults = await base44.entities.LabResult.list(
         '-created_date',
         1000
       );
