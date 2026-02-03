@@ -28,7 +28,8 @@ import {
   Clock,
   Eye,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  Upload
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -44,6 +45,9 @@ export default function BloodTestManagementPage() {
   const [isUpdating, setIsUpdating] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState('');
+  const fileInputRef = React.useRef(null);
 
   useEffect(() => {
     loadData();
@@ -136,6 +140,38 @@ export default function BloodTestManagementPage() {
       setSyncMessage(`❌ Sync failed: ${error.message}`);
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadMessage('');
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await base44.functions.invoke('uploadBloodResult', formData);
+      console.log('Upload response:', response.data);
+      
+      const data = response.data;
+      setUploadMessage(`✅ Uploaded: ${file.name}\n• Patient: ${data.result.patient}\n• Status: ${data.result.matched ? 'Matched' : 'Unmatched'}\n• Parameters: ${data.result.parameters_count}`);
+      
+      // Clear file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
+      // Reload data after upload
+      await loadData();
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadMessage(`❌ Upload failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -295,12 +331,29 @@ export default function BloodTestManagementPage() {
         <div className="flex items-center gap-3">
           <Button 
             onClick={handleManualSync} 
-            disabled={isSyncing}
+            disabled={isSyncing || isUploading}
             className="flex-1 bg-gray-900 hover:bg-gray-800 text-white h-12"
           >
             <RefreshCw className={`w-5 h-5 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
-            {isSyncing ? 'Syncing...' : 'Sync SFTP Files'}
+            {isSyncing ? 'Syncing...' : 'Sync SFTP'}
           </Button>
+          
+          <Button 
+            onClick={() => fileInputRef.current?.click()} 
+            disabled={isSyncing || isUploading}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12"
+          >
+            <Upload className="w-5 h-5 mr-2" />
+            {isUploading ? 'Uploading...' : 'Upload File'}
+          </Button>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".hl7"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
         </div>
         
         {syncMessage && (
@@ -310,6 +363,16 @@ export default function BloodTestManagementPage() {
               : 'bg-red-50 text-red-700'
           }`}>
             {syncMessage}
+          </div>
+        )}
+        
+        {uploadMessage && (
+          <div className={`text-sm p-3 rounded-lg whitespace-pre-line ${
+            uploadMessage.startsWith('✅') 
+              ? 'bg-green-50 text-green-700' 
+              : 'bg-red-50 text-red-700'
+          }`}>
+            {uploadMessage}
           </div>
         )}
       </div>
