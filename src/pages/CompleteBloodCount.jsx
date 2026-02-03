@@ -355,6 +355,7 @@ export default function CompleteBloodCountPage() {
 
                                                                         // Custom thresholds for specific parameters
                                                                                                                 if (paramName === 'ALT') {
+                                                                                                                  if (numValue <= 25) return 'critical';
                                                                                                                   if (numValue < 7) return 'low';
                                                                                                                   if (numValue >= 7 && numValue <= 50) return 'normal';
                                                                                                                   if (numValue > 50 && numValue <= 60) return 'high';
