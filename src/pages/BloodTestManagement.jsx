@@ -29,7 +29,8 @@ import {
   Eye,
   AlertTriangle,
   RefreshCw,
-  Upload
+  Upload,
+  Download
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -47,6 +48,7 @@ export default function BloodTestManagementPage() {
   const [syncMessage, setSyncMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
+  const [downloadingId, setDownloadingId] = useState(null);
   const fileInputRef = React.useRef(null);
 
   useEffect(() => {
@@ -175,6 +177,27 @@ export default function BloodTestManagementPage() {
     }
   };
 
+  const handleDownloadPdf = async (result) => {
+    setDownloadingId(result.id);
+    try {
+      const response = await base44.functions.invoke('downloadBloodResultPdf', { id: result.id });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `blood-test-${result.test_name.replace(/\s+/g, '-')}-${result.test_date}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    } catch (err) {
+      alert(`Failed to download PDF: ${err.message}`);
+      console.error("Download error:", err);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const getFilteredResults = (status) => {
     return results.filter(r => {
       const matchesStatus = (r.approval_status || 'pending') === status;
@@ -257,6 +280,16 @@ export default function BloodTestManagementPage() {
                 View
               </Button>
             </Link>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={() => handleDownloadPdf(result)}
+              disabled={downloadingId === result.id}
+            >
+              <Download className="w-4 h-4 mr-1" />
+              {downloadingId === result.id ? 'Downloading...' : 'Download'}
+            </Button>
             {showActions && (
               <>
                 <Button 
