@@ -10,8 +10,7 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const url = new URL(req.url);
-        const resultId = url.searchParams.get('id');
+        const { id: resultId } = await req.json();
 
         if (!resultId) {
             return Response.json({ error: 'Missing result ID' }, { status: 400 });
