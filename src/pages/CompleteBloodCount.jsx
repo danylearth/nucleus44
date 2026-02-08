@@ -23,6 +23,7 @@ import {
 import { LabResult, LabResultParameter } from "@/entities/all";
 import { format } from "date-fns";
 import { downloadBloodResult } from "@/functions/downloadBloodResult";
+import { downloadBloodResultPdf } from "@/functions/downloadBloodResultPdf";
 
 export default function CompleteBloodCountPage() {
   const [result, setResult] = useState(null);
@@ -62,22 +63,20 @@ export default function CompleteBloodCountPage() {
   }, [location.search]);
 
   const handleDownloadOriginal = async () => {
-    if (!result?.blood_result_filename) return;
     setIsDownloading(true);
     try {
-      const response = await downloadBloodResult({ filename: result.blood_result_filename, action: 'download' });
-      // Assuming response.data is an ArrayBuffer or similar for Blob
-      const blob = new Blob([response.data], { type: 'text/plain' }); // Using text/plain as per outline
+      const response = await downloadBloodResultPdf({ id: result.id });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = result.blood_result_filename;
+      a.download = `blood-test-${result.test_name.replace(/\s+/g, '-')}-${result.test_date}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       a.remove();
     } catch (err) {
-      alert(`Failed to download file: ${err.message}`);
+      alert(`Failed to download PDF: ${err.message}`);
       console.error("Download error:", err);
     } finally {
       setIsDownloading(false);
@@ -267,7 +266,7 @@ export default function CompleteBloodCountPage() {
                 <Button variant="ghost" size="icon" className="text-white bg-white/20 hover:bg-white/30" onClick={handleViewOriginal} disabled={isViewing}>
                   {isViewing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Eye className="w-5 h-5" />}
                 </Button>
-                <Button variant="ghost" size="icon" className="text-white bg-white/20 hover:bg-white/30" onClick={handleDownloadOriginal} disabled={isDownloading}>
+                <Button variant="ghost" size="icon" className="text-white bg-white/20 hover:bg-white/30" onClick={handleDownloadOriginal} disabled={isDownloading} title="Download as PDF">
                   {isDownloading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
                 </Button>
               </>
@@ -501,10 +500,10 @@ export default function CompleteBloodCountPage() {
             variant="outline" 
             className="flex-1 gap-2"
             onClick={handleDownloadOriginal}
-            disabled={isDownloading || !result?.blood_result_filename}
+            disabled={isDownloading}
           >
             {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            Download Report
+            Download PDF
           </Button>
           <Button variant="outline" className="flex-1 gap-2">
             <Share2 className="w-4 h-4" />
