@@ -219,6 +219,11 @@ Deno.serve(async (req) => {
             return typeof filename === 'string' && filename.toLowerCase().endsWith('.hl7');
         });
         
+        const pdfFiles = files.filter(file => {
+            const filename = file.name || file.filename || file;
+            return typeof filename === 'string' && filename.toLowerCase().endsWith('.pdf');
+        });
+        
         // Get already processed files
         const existingResults = await base44.asServiceRole.entities.LabResult.filter({
             blood_result_filename: { $ne: null }
@@ -229,6 +234,8 @@ Deno.serve(async (req) => {
         let newFilesMatched = 0;
         let unmatchedFiles = [];
         let skippedFilesCount = 0;
+        let pdfsMatched = 0;
+        let pdfsSkipped = 0;
 
         // Process each HL7 file
         for (const file of hl7Files) {
@@ -353,15 +360,99 @@ Deno.serve(async (req) => {
             }
         }
 
+        // Process PDF files - try to match them to existing LabResults
+        for (const file of pdfFiles) {
+            const filename = file.name || file.filename || file;
+            
+            // Check if this PDF is already associated with a result
+            const existingWithPdf = await base44.asServiceRole.entities.LabResult.filter({
+                blood_result_filename: filename
+            });
+            
+            if (existingWithPdf.length > 0) {
+                console.log('✅ PDF already linked, skipping:', filename);
+                pdfsSkipped++;
+                continue;
+            }
+
+            try {
+                // Try to extract patient name and date from filename
+                // Common patterns: "PatientName_Date.pdf", "Date_PatientName.pdf", etc.
+                const nameWithoutExt = filename.replace(/\.pdf$/i, '');
+                const parts = nameWithoutExt.split(/[_-]/);
+                
+                // Look for recent LabResults (last 7 days) that don't have a PDF yet
+                const recentResults = await base44.asServiceRole.entities.LabResult.filter({
+                    blood_result_filename: { $eq: null }
+                });
+                
+                // Sort by creation date, newest first
+                const sortedResults = recentResults.sort((a, b) => 
+                    new Date(b.created_date) - new Date(a.created_date)
+                );
+                
+                let matched = false;
+                
+                // Try to match by patient name in filename
+                for (const result of sortedResults) {
+                    const resultNameParts = result.user_name?.toLowerCase().split(' ') || [];
+                    const filenameLower = filename.toLowerCase();
+                    
+                    // Check if filename contains patient name parts
+                    const nameMatch = resultNameParts.every(part => 
+                        part.length > 2 && filenameLower.includes(part)
+                    );
+                    
+                    if (nameMatch) {
+                        // Update the LabResult with the PDF filename
+                        await base44.asServiceRole.entities.LabResult.update(result.id, {
+                            blood_result_filename: filename
+                        });
+                        
+                        console.log(`✅ Matched PDF "${filename}" to ${result.user_name}`);
+                        pdfsMatched++;
+                        matched = true;
+                        
+                        // Archive the PDF
+                        const moveUrl = `${SFTP_PROXY_URL}/sftp/move`;
+                        const moveResponse = await fetch(moveUrl, {
+                            method: 'POST',
+                            headers: { 'x-api-key': SFTP_PROXY_API_KEY, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                from_path: `/files/${filename}`,
+                                to_path: `/files/archive/${filename}`
+                            })
+                        });
+                        
+                        if (moveResponse.ok) {
+                            console.log(`🗂️ Archived PDF: ${filename}`);
+                        }
+                        
+                        break;
+                    }
+                }
+                
+                if (!matched) {
+                    console.log(`⚠️ Could not match PDF: ${filename}`);
+                }
+                
+            } catch (error) {
+                console.error(`❌ Error processing PDF ${filename}:`, error);
+            }
+        }
+
         const response = {
             success: true,
             sync_timestamp: new Date().toISOString(),
             total_files_scanned: hl7Files.length,
+            total_pdfs_scanned: pdfFiles.length,
             new_files_matched: newFilesMatched,
             files_already_processed: skippedFilesCount,
+            pdfs_matched: pdfsMatched,
+            pdfs_skipped: pdfsSkipped,
             unmatched_files_count: unmatchedFiles.length,
             unmatched_files: unmatchedFiles,
-            message: `Cron sync completed: ${newFilesMatched} new, ${skippedFilesCount} skipped, ${unmatchedFiles.length} unmatched`
+            message: `Cron sync completed: ${newFilesMatched} new HL7s, ${skippedFilesCount} HL7s skipped, ${pdfsMatched} PDFs matched, ${pdfsSkipped} PDFs skipped, ${unmatchedFiles.length} unmatched`
         };
 
         console.log('✅ Cron sync complete:', response.message);
