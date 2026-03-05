@@ -96,8 +96,9 @@ Style:
         }
 
         const body = {
-            model: model || process.env.LLM_MODEL || 'google/gemini-2.5-flash',
+            model: model || process.env.LLM_MODEL || 'google/gemini-2.0-flash-001',
             messages,
+            max_tokens: 2048,
         };
 
         if (response_json_schema) {
