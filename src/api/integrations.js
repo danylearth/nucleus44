@@ -1,7 +1,9 @@
+/**
+ * integrations.js — Re-exports from the Supabase-backed base44 client
+ * 
+ * Pages that import { InvokeLLM, UploadFile, etc. } from '@/api/integrations' continue to work.
+ */
 import { base44 } from './base44Client';
-
-
-
 
 export const Core = base44.integrations.Core;
 
@@ -16,9 +18,3 @@ export const UploadFile = base44.integrations.Core.UploadFile;
 export const GenerateImage = base44.integrations.Core.GenerateImage;
 
 export const ExtractDataFromUploadedFile = base44.integrations.Core.ExtractDataFromUploadedFile;
-
-
-
-
-
-
