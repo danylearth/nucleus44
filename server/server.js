@@ -60,6 +60,7 @@ import { router as matchBloodResultRouter } from './routes/matchBloodResult.js';
 import { router as forceSyncRouter } from './routes/forceSync.js';
 import { router as llmRouter } from './routes/llm.js';
 import { router as emailRouter } from './routes/email.js';
+import { router as signupRouter } from './routes/signup.js';
 
 // ─── Express app ─────────────────────────────────────────────────
 const app = express();
@@ -80,6 +81,7 @@ app.use('/api/functions/downloadBloodResult', downloadBloodResultRouter);
 app.use('/api/functions/downloadBloodResultPdf', downloadBloodResultPdfRouter);
 app.use('/api/functions/matchBloodResult', matchBloodResultRouter);
 app.use('/api/functions/forceSync', forceSyncRouter);
+app.use('/api/functions/signup', signupRouter);
 
 // Integration routes
 app.use('/api/llm', llmRouter);

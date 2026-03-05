@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowRight, 
+import {
+  ArrowRight,
   ArrowLeft,
   User as UserIcon,
   Heart,
@@ -57,11 +57,11 @@ export default function OnboardingPage() {
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      
+
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-      
+
       setFormData(prev => ({ ...prev, age: age.toString() }));
     } else {
       // Clear age if date of birth is cleared
@@ -73,7 +73,7 @@ export default function OnboardingPage() {
     try {
       const currentUser = await User.me();
       setUser(currentUser);
-      
+
       // Pre-fill with existing data if available
       setFormData({
         full_name: currentUser.full_name || '',
@@ -81,14 +81,14 @@ export default function OnboardingPage() {
         phone_number: currentUser.phone_number || '',
         gender: currentUser.gender || '',
         // Age will be calculated by the useEffect when date_of_birth is set
-        age: currentUser.age || '', 
+        age: currentUser.age || '',
         height_cm: currentUser.height_cm || '',
         weight_kg: currentUser.weight_kg || '',
         activity_level: currentUser.activity_level || '',
         health_goals: currentUser.health_goals || [],
         muhdo_kit_id: currentUser.muhdo_kit_id || '' // Pre-fill Kit ID
       });
-      
+
       if (currentUser.profile_picture) {
         setProfilePictureUrl(currentUser.profile_picture);
       }
@@ -130,37 +130,42 @@ export default function OnboardingPage() {
   const handleComplete = async () => {
     setIsSaving(true);
     try {
-      // Prepare the data to save
+      // Prepare the data to save — filter out empty/NaN values
+      const ageNum = parseInt(formData.age);
+      const heightNum = parseFloat(formData.height_cm);
+      const weightNum = parseFloat(formData.weight_kg);
+
       const dataToSave = {
-        full_name: formData.full_name,
-        date_of_birth: formData.date_of_birth,
-        phone_number: formData.phone_number,
-        gender: formData.gender,
-        age: parseInt(formData.age),
-        height_cm: parseFloat(formData.height_cm),
-        weight_kg: parseFloat(formData.weight_kg),
-        activity_level: formData.activity_level,
-        health_goals: formData.health_goals,
-        profile_picture: profilePictureUrl,
-        muhdo_kit_id: formData.muhdo_kit_id, // Save the Kit ID
         onboarding_complete: true,
         last_login: new Date().toISOString()
       };
 
+      // Only include fields that have valid values
+      if (formData.full_name) dataToSave.full_name = formData.full_name;
+      if (formData.date_of_birth) dataToSave.date_of_birth = formData.date_of_birth;
+      if (formData.phone_number) dataToSave.phone_number = formData.phone_number;
+      if (formData.gender) dataToSave.gender = formData.gender;
+      if (!isNaN(ageNum)) dataToSave.age = ageNum;
+      if (!isNaN(heightNum)) dataToSave.height_cm = heightNum;
+      if (!isNaN(weightNum)) dataToSave.weight_kg = weightNum;
+      if (formData.activity_level) dataToSave.activity_level = formData.activity_level;
+      if (formData.health_goals && formData.health_goals.length > 0) dataToSave.health_goals = formData.health_goals;
+      if (profilePictureUrl) dataToSave.profile_picture = profilePictureUrl;
+      if (formData.muhdo_kit_id) dataToSave.muhdo_kit_id = formData.muhdo_kit_id;
+
       console.log('Saving onboarding data:', dataToSave);
-      
+
       await User.updateMyUserData(dataToSave);
-      
+
       console.log('Onboarding data saved successfully');
 
-      // Register user with Muhdo using base44 functions client
+      // Register user with Muhdo (non-blocking)
       try {
         const currentUser = await User.me();
         if (currentUser?.id && currentUser.date_of_birth) {
           console.log('🧬 Calling muhdoRegisterUser function...');
-          // Use base44.functions.invoke to call the backend function
-          await base44.functions.invoke('muhdoRegisterUser', { 
-            user_id: currentUser.id 
+          await base44.functions.invoke('muhdoRegisterUser', {
+            user_id: currentUser.id
           });
           console.log('✅ Muhdo registration function invoked.');
         } else {
@@ -168,12 +173,12 @@ export default function OnboardingPage() {
         }
       } catch (muhdoError) {
         console.error('⚠️ Muhdo registration failed (non-blocking):', muhdoError);
-        // Don't block user flow if Muhdo registration fails
       }
-      
+
       navigate(createPageUrl("Dashboard"));
     } catch (error) {
       console.error('Error completing onboarding:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       alert('Failed to save your information. Please try again.');
     } finally {
       setIsSaving(false);
@@ -230,9 +235,9 @@ export default function OnboardingPage() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                  <img 
-                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68cdcec5297c530169c397bd/ecd42a7e3_AppStoreListing.png" 
-                    alt="Nucleus Logo" 
+                  <img
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68cdcec5297c530169c397bd/ecd42a7e3_AppStoreListing.png"
+                    alt="Nucleus Logo"
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -278,7 +283,7 @@ export default function OnboardingPage() {
                     <Input
                       id="full_name"
                       value={formData.full_name}
-                      onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                       placeholder="John Doe"
                       className="bg-white border-gray-200 rounded-[14px] h-12"
                     />
@@ -292,7 +297,7 @@ export default function OnboardingPage() {
                       id="date_of_birth"
                       type="date"
                       value={formData.date_of_birth}
-                      onChange={(e) => setFormData({...formData, date_of_birth: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
                       className="bg-white border-gray-200 rounded-[14px] h-12"
                     />
                   </div>
@@ -305,7 +310,7 @@ export default function OnboardingPage() {
                       id="phone_number"
                       type="tel"
                       value={formData.phone_number}
-                      onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                       placeholder="+44 (555) 123-456"
                       className="bg-white border-gray-200 rounded-[14px] h-12"
                     />
@@ -313,7 +318,7 @@ export default function OnboardingPage() {
                 </CardContent>
               </Card>
 
-              <Button 
+              <Button
                 onClick={handleNext}
                 disabled={!canProceedStep1}
                 className="w-full h-[60px] bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-[16px]"
@@ -345,12 +350,11 @@ export default function OnboardingPage() {
                       {['male', 'female', 'other'].map((gender) => (
                         <button
                           key={gender}
-                          onClick={() => setFormData({...formData, gender})}
-                          className={`p-4 rounded-[14px] border-2 font-medium transition-all ${
-                            formData.gender === gender
+                          onClick={() => setFormData({ ...formData, gender })}
+                          className={`p-4 rounded-[14px] border-2 font-medium transition-all ${formData.gender === gender
                               ? 'border-gray-900 bg-gray-50'
                               : 'border-gray-200 hover:border-gray-300'
-                          }`}
+                            }`}
                         >
                           {gender.charAt(0).toUpperCase() + gender.slice(1)}
                         </button>
@@ -378,7 +382,7 @@ export default function OnboardingPage() {
                         id="height_cm"
                         type="number"
                         value={formData.height_cm}
-                        onChange={(e) => setFormData({...formData, height_cm: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, height_cm: e.target.value })}
                         placeholder="170"
                         className="bg-white border-gray-200 rounded-[14px] h-12"
                       />
@@ -391,7 +395,7 @@ export default function OnboardingPage() {
                         id="weight_kg"
                         type="number"
                         value={formData.weight_kg}
-                        onChange={(e) => setFormData({...formData, weight_kg: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, weight_kg: e.target.value })}
                         placeholder="70"
                         className="bg-white border-gray-200 rounded-[14px] h-12"
                       />
@@ -413,12 +417,11 @@ export default function OnboardingPage() {
                       ].map((level) => (
                         <button
                           key={level.value}
-                          onClick={() => setFormData({...formData, activity_level: level.value})}
-                          className={`w-full p-4 rounded-[14px] border-2 text-left transition-all ${
-                            formData.activity_level === level.value
+                          onClick={() => setFormData({ ...formData, activity_level: level.value })}
+                          className={`w-full p-4 rounded-[14px] border-2 text-left transition-all ${formData.activity_level === level.value
                               ? 'border-gray-900 bg-gray-50'
                               : 'border-gray-200 hover:border-gray-300'
-                          }`}
+                            }`}
                         >
                           <div className="font-medium text-gray-900">{level.label}</div>
                           <div className="text-sm text-gray-500">{level.desc}</div>
@@ -445,11 +448,10 @@ export default function OnboardingPage() {
                         <Badge
                           key={goal}
                           onClick={() => toggleHealthGoal(goal)}
-                          className={`cursor-pointer px-4 py-2 text-sm font-medium transition-all ${
-                            formData.health_goals.includes(goal)
+                          className={`cursor-pointer px-4 py-2 text-sm font-medium transition-all ${formData.health_goals.includes(goal)
                               ? 'bg-gray-900 text-white hover:bg-gray-800'
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
+                            }`}
                         >
                           {goal}
                         </Badge>
@@ -459,7 +461,7 @@ export default function OnboardingPage() {
                 </CardContent>
               </Card>
 
-              <Button 
+              <Button
                 onClick={handleNext}
                 disabled={!canProceedStep2}
                 className="w-full h-[60px] bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-[16px]"
@@ -489,14 +491,14 @@ export default function OnboardingPage() {
                     <Input
                       id="muhdo_kit_id"
                       value={formData.muhdo_kit_id}
-                      onChange={(e) => setFormData({...formData, muhdo_kit_id: e.target.value.toUpperCase()})}
+                      onChange={(e) => setFormData({ ...formData, muhdo_kit_id: e.target.value.toUpperCase() })}
                       placeholder="e.g., M000ABCXYZ"
                       className="bg-white border-gray-200 rounded-[14px] h-12 text-lg font-mono tracking-widest text-center"
                     />
-                     <p className="text-xs text-gray-500 mt-2 text-center">You can find this ID on the barcode of your test kit.</p>
+                    <p className="text-xs text-gray-500 mt-2 text-center">You can find this ID on the barcode of your test kit.</p>
                   </div>
 
-                   <div className="bg-gray-50 rounded-2xl p-4">
+                  <div className="bg-gray-50 rounded-2xl p-4">
                     <p className="text-sm text-gray-600 text-center">
                       Don't have a kit yet? You can add it later from your profile settings.
                     </p>
@@ -504,7 +506,7 @@ export default function OnboardingPage() {
                 </CardContent>
               </Card>
 
-              <Button 
+              <Button
                 onClick={handleNext} // Changed to handleNext to proceed to Step 4
                 disabled={!formData.muhdo_kit_id}
                 className="w-full h-[60px] bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-[16px]"
@@ -561,7 +563,7 @@ export default function OnboardingPage() {
                       <div>
                         <h3 className="font-semibold text-blue-900 mb-1">Connect via Mobile App</h3>
                         <p className="text-sm text-blue-700">
-                          All device connections are securely managed through the Nucleus mobile app. 
+                          All device connections are securely managed through the Nucleus mobile app.
                           Download the app to connect your wearables and start syncing your health data.
                         </p>
                       </div>
@@ -595,7 +597,7 @@ export default function OnboardingPage() {
 
               {/* Action Buttons */}
               <div className="space-y-3">
-                <Button 
+                <Button
                   onClick={handleComplete}
                   disabled={isSaving}
                   className="w-full h-[60px] bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-[16px]"

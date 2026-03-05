@@ -15,10 +15,13 @@ export const AuthProvider = ({ children }) => {
     checkAppState();
 
     // Listen for auth state changes (login, logout, token refresh)
+    // IMPORTANT: Do NOT use async/await here — Supabase v2.49+ awaits all
+    // onAuthStateChange callbacks before signInWithPassword() resolves.
+    // Using await here would create a deadlock.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
-          await loadUserProfile(session.user);
+          loadUserProfile(session.user); // fire-and-forget (no await)
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
           setIsAuthenticated(false);

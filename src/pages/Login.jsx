@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Mail, Lock, User } from 'lucide-react';
 
 export default function LoginPage() {
@@ -11,8 +11,13 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [message, setMessage] = useState(null);
-    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+
+    const doRedirect = () => {
+        const redirect = searchParams.get('redirect') || '/';
+        // Full page reload ensures AuthContext picks up the fresh session
+        setTimeout(() => { window.location.href = redirect; }, 200);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,15 +27,27 @@ export default function LoginPage() {
 
         try {
             if (isSignUp) {
-                const { error } = await supabase.auth.signUp({
+                // Use backend API to create user (bypasses Supabase email rate limits)
+                const API_BASE = import.meta.env.VITE_API_URL || '';
+                const response = await fetch(`${API_BASE}/api/functions/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, fullName }),
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Signup failed');
+
+                // Auto-login after successful signup
+                const { error: loginError } = await supabase.auth.signInWithPassword({
                     email,
                     password,
-                    options: {
-                        data: { full_name: fullName },
-                    },
                 });
-                if (error) throw error;
-                setMessage('Check your email for the confirmation link!');
+                if (loginError) {
+                    setMessage('Account created! You can now sign in.');
+                } else {
+                    setMessage('Account created! Redirecting...');
+                    doRedirect();
+                }
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
@@ -38,8 +55,8 @@ export default function LoginPage() {
                 });
                 if (error) throw error;
 
-                const redirect = searchParams.get('redirect') || '/';
-                navigate(redirect);
+                setMessage('Login successful! Redirecting...');
+                doRedirect();
             }
         } catch (err) {
             setError(err.message);

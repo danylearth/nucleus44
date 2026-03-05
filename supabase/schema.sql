@@ -219,11 +219,18 @@ CREATE POLICY "Users can view own health data" ON health_data FOR SELECT USING (
 -- Users can read their own lab results
 CREATE POLICY "Users can view own lab results" ON lab_results FOR SELECT USING (auth.uid() = user_id);
 
--- Admins can read all data (add admin check)
+-- Admins can read all data
+-- NOTE: Uses auth.jwt() instead of querying profiles to avoid infinite recursion
 CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT 
-  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+  USING (
+    auth.uid() = id
+    OR (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
+  );
 CREATE POLICY "Admins can view all lab results" ON lab_results FOR SELECT 
-  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+  USING (
+    auth.uid() = user_id
+    OR (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
+  );
 
 -- Products are public
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
