@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Mail, Lock, User } from 'lucide-react';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -48,89 +49,252 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-            <div className="w-full max-w-md">
-                {/* Logo / Brand */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-white tracking-tight">NUCLEUS</h1>
-                    <p className="text-slate-400 mt-2">Your Health Intelligence Platform</p>
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #e8eaf6 0%, #c5cae9 50%, #e3f2fd 100%)',
+            padding: '1rem',
+        }}>
+            <div style={{
+                width: '100%',
+                maxWidth: '420px',
+                background: '#f8fafb',
+                borderRadius: '16px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+                padding: '48px 40px 36px',
+                textAlign: 'center',
+            }}>
+                {/* Logo Circle */}
+                <div style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    background: '#80cbc4',
+                    margin: '0 auto 24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                        <path d="M18 4 L26 28 L18 22 L10 28 Z" fill="#1e293b" />
+                        <path d="M18 4 L14 18 L22 18 Z" fill="#1e293b" opacity="0.7" />
+                    </svg>
                 </div>
 
-                {/* Card */}
-                <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-8 shadow-2xl">
-                    <h2 className="text-xl font-semibold text-white mb-6">
-                        {isSignUp ? 'Create Account' : 'Welcome Back'}
-                    </h2>
+                <h1 style={{
+                    fontSize: '28px',
+                    fontWeight: '700',
+                    color: '#1e293b',
+                    marginBottom: '8px',
+                    letterSpacing: '-0.5px',
+                }}>
+                    Welcome to NUCLEUS
+                </h1>
+                <p style={{
+                    color: '#64748b',
+                    fontSize: '15px',
+                    marginBottom: '32px',
+                }}>
+                    {isSignUp ? 'Create your account' : 'Sign in to continue'}
+                </p>
 
-                    {error && (
-                        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-                            {error}
-                        </div>
-                    )}
+                {error && (
+                    <div style={{
+                        marginBottom: '16px',
+                        padding: '10px 14px',
+                        background: '#fef2f2',
+                        border: '1px solid #fecaca',
+                        borderRadius: '10px',
+                        color: '#dc2626',
+                        fontSize: '13px',
+                    }}>
+                        {error}
+                    </div>
+                )}
 
-                    {message && (
-                        <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 text-sm">
-                            {message}
-                        </div>
-                    )}
+                {message && (
+                    <div style={{
+                        marginBottom: '16px',
+                        padding: '10px 14px',
+                        background: '#ecfdf5',
+                        border: '1px solid #a7f3d0',
+                        borderRadius: '10px',
+                        color: '#059669',
+                        fontSize: '13px',
+                    }}>
+                        {message}
+                    </div>
+                )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {isSignUp && (
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1.5">Full Name</label>
+                <form onSubmit={handleSubmit}>
+                    {isSignUp && (
+                        <div style={{ marginBottom: '16px', textAlign: 'left' }}>
+                            <label style={{
+                                display: 'block',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                color: '#334155',
+                                marginBottom: '6px',
+                            }}>Full Name</label>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                background: '#f1f5f9',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '10px',
+                                padding: '0 14px',
+                            }}>
+                                <User size={18} color="#94a3b8" />
                                 <input
                                     type="text"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition"
                                     placeholder="Your full name"
                                     required
+                                    style={{
+                                        flex: 1,
+                                        padding: '12px 10px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        outline: 'none',
+                                        fontSize: '15px',
+                                        color: '#1e293b',
+                                    }}
                                 />
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+                    <div style={{ marginBottom: '16px', textAlign: 'left' }}>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#334155',
+                            marginBottom: '6px',
+                        }}>Email</label>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            background: '#f1f5f9',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            padding: '0 14px',
+                        }}>
+                            <Mail size={18} color="#94a3b8" />
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition"
                                 placeholder="you@example.com"
                                 required
+                                style={{
+                                    flex: 1,
+                                    padding: '12px 10px',
+                                    background: 'transparent',
+                                    border: 'none',
+                                    outline: 'none',
+                                    fontSize: '15px',
+                                    color: '#1e293b',
+                                }}
                             />
                         </div>
+                    </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+                    <div style={{ marginBottom: '24px', textAlign: 'left' }}>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            color: '#334155',
+                            marginBottom: '6px',
+                        }}>Password</label>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            background: '#f1f5f9',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            padding: '0 14px',
+                        }}>
+                            <Lock size={18} color="#94a3b8" />
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition"
                                 placeholder="••••••••"
                                 required
                                 minLength={6}
+                                style={{
+                                    flex: 1,
+                                    padding: '12px 10px',
+                                    background: 'transparent',
+                                    border: 'none',
+                                    outline: 'none',
+                                    fontSize: '15px',
+                                    color: '#1e293b',
+                                }}
                             />
                         </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
-                        >
-                            {loading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
-                        </button>
-                    </form>
-
-                    <div className="mt-6 text-center">
-                        <button
-                            onClick={() => { setIsSignUp(!isSignUp); setError(null); setMessage(null); }}
-                            className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
-                        >
-                            {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-                        </button>
                     </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                            width: '100%',
+                            padding: '14px',
+                            background: '#0f172a',
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '10px',
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            opacity: loading ? 0.7 : 1,
+                            transition: 'opacity 0.2s',
+                        }}
+                    >
+                        {loading ? 'Loading...' : isSignUp ? 'Sign up' : 'Sign in'}
+                    </button>
+                </form>
+
+                <div style={{
+                    marginTop: '20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: '13px',
+                }}>
+                    <button
+                        onClick={() => { }}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#64748b',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                        }}
+                    >
+                        Forgot password?
+                    </button>
+                    <button
+                        onClick={() => { setIsSignUp(!isSignUp); setError(null); setMessage(null); }}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#64748b',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                        }}
+                    >
+                        {isSignUp ? 'Have an account? ' : 'Need an account? '}
+                        <span style={{ fontWeight: '600', color: '#334155' }}>
+                            {isSignUp ? 'Sign in' : 'Sign up'}
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
