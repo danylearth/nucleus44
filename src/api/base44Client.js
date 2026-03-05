@@ -178,12 +178,13 @@ const auth = {
     return data;
   },
 
+  // Alias used by onboarding and other pages
+  async updateMyUserData(updates) {
+    return this.updateMe(updates);
+  },
+
   async login(redirectUrl) {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: redirectUrl || window.location.origin },
-    });
-    if (error) throw error;
+    window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl || '/')}`;
   },
 
   async logout(redirectUrl) {
