@@ -84,7 +84,7 @@ export default function BloodTestManagementPage() {
       await base44.entities.LabResult.update(result.id, {
         approval_status: 'approved'
       });
-      setResults(prev => prev.map(r => 
+      setResults(prev => prev.map(r =>
         r.id === result.id ? { ...r, approval_status: 'approved' } : r
       ));
     } catch (err) {
@@ -103,7 +103,7 @@ export default function BloodTestManagementPage() {
         approval_status: 'rejected',
         rejection_reason: rejectionReason
       });
-      setResults(prev => prev.map(r => 
+      setResults(prev => prev.map(r =>
         r.id === selectedResult.id ? { ...r, approval_status: 'rejected', rejection_reason: rejectionReason } : r
       ));
       setRejectDialogOpen(false);
@@ -129,12 +129,12 @@ export default function BloodTestManagementPage() {
     try {
       const response = await base44.functions.invoke('scheduledBloodResultsSync', {});
       console.log('Sync response:', response.data);
-      
+
       const data = response.data;
       const message = `✅ Sync completed:\n• ${data.total_files_scanned || 0} files found on SFTP\n• ${data.new_files_matched || 0} new files processed\n• ${data.files_already_processed || 0} already processed\n• ${data.unmatched_files_count || 0} unmatched`;
-      
+
       setSyncMessage(message);
-      
+
       // Reload data after sync
       await loadData();
     } catch (error) {
@@ -151,22 +151,24 @@ export default function BloodTestManagementPage() {
 
     setIsUploading(true);
     setUploadMessage('');
-    
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
 
-      const response = await base44.functions.invoke('uploadBloodResult', formData);
+    try {
+      // Read HL7 file as text and send as JSON
+      const hl7Content = await file.text();
+      const response = await base44.functions.invoke('uploadBloodResult', {
+        hl7Content,
+        filename: file.name,
+      });
       console.log('Upload response:', response.data);
-      
+
       const data = response.data;
       setUploadMessage(`✅ Uploaded: ${file.name}\n• Patient: ${data.result.patient}\n• Status: ${data.result.matched ? 'Matched' : 'Unmatched'}\n• Parameters: ${data.result.parameters_count}`);
-      
+
       // Clear file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      
+
       // Reload data after upload
       await loadData();
     } catch (error) {
@@ -201,7 +203,7 @@ export default function BloodTestManagementPage() {
   const getFilteredResults = (status) => {
     return results.filter(r => {
       const matchesStatus = (r.approval_status || 'pending') === status;
-      const matchesSearch = !searchQuery.trim() || 
+      const matchesSearch = !searchQuery.trim() ||
         r.test_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.laboratory?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -280,9 +282,9 @@ export default function BloodTestManagementPage() {
                 View
               </Button>
             </Link>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="w-full"
               onClick={() => handleDownloadPdf(result)}
               disabled={downloadingId === result.id}
@@ -292,8 +294,8 @@ export default function BloodTestManagementPage() {
             </Button>
             {showActions && (
               <>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="bg-green-600 hover:bg-green-700 text-white"
                   onClick={() => handleApprove(result)}
                   disabled={isUpdating === result.id}
@@ -301,8 +303,8 @@ export default function BloodTestManagementPage() {
                   <CheckCircle className="w-4 h-4 mr-1" />
                   Approve
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="destructive"
                   onClick={() => openRejectDialog(result)}
                   disabled={isUpdating === result.id}
@@ -360,26 +362,26 @@ export default function BloodTestManagementPage() {
             className="pl-10 bg-white border-gray-200 rounded-xl h-12"
           />
         </div>
-        
+
         <div className="flex items-center gap-3">
-          <Button 
-            onClick={handleManualSync} 
+          <Button
+            onClick={handleManualSync}
             disabled={isSyncing || isUploading}
             className="flex-1 bg-gray-900 hover:bg-gray-800 text-white h-12"
           >
             <RefreshCw className={`w-5 h-5 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Syncing...' : 'Sync SFTP'}
           </Button>
-          
-          <Button 
-            onClick={() => fileInputRef.current?.click()} 
+
+          <Button
+            onClick={() => fileInputRef.current?.click()}
             disabled={isSyncing || isUploading}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12"
           >
             <Upload className="w-5 h-5 mr-2" />
             {isUploading ? 'Uploading...' : 'Upload File'}
           </Button>
-          
+
           <input
             ref={fileInputRef}
             type="file"
@@ -388,23 +390,21 @@ export default function BloodTestManagementPage() {
             className="hidden"
           />
         </div>
-        
+
         {syncMessage && (
-          <div className={`text-sm p-3 rounded-lg whitespace-pre-line ${
-            syncMessage.startsWith('✅') 
-              ? 'bg-green-50 text-green-700' 
+          <div className={`text-sm p-3 rounded-lg whitespace-pre-line ${syncMessage.startsWith('✅')
+              ? 'bg-green-50 text-green-700'
               : 'bg-red-50 text-red-700'
-          }`}>
+            }`}>
             {syncMessage}
           </div>
         )}
-        
+
         {uploadMessage && (
-          <div className={`text-sm p-3 rounded-lg whitespace-pre-line ${
-            uploadMessage.startsWith('✅') 
-              ? 'bg-green-50 text-green-700' 
+          <div className={`text-sm p-3 rounded-lg whitespace-pre-line ${uploadMessage.startsWith('✅')
+              ? 'bg-green-50 text-green-700'
               : 'bg-red-50 text-red-700'
-          }`}>
+            }`}>
             {uploadMessage}
           </div>
         )}
@@ -414,15 +414,15 @@ export default function BloodTestManagementPage() {
       <div className="px-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-gray-100 rounded-xl p-1 h-auto">
-            <TabsTrigger 
-              value="pending" 
+            <TabsTrigger
+              value="pending"
               className="rounded-lg py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
               <Clock className="w-4 h-4 mr-2 text-yellow-500" />
               Pending
               <Badge className="ml-2 bg-yellow-100 text-yellow-700">{counts.pending}</Badge>
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="approved"
               className="rounded-lg py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
@@ -430,7 +430,7 @@ export default function BloodTestManagementPage() {
               Approved
               <Badge className="ml-2 bg-green-100 text-green-700">{counts.approved}</Badge>
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="rejected"
               className="rounded-lg py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
@@ -496,8 +496,8 @@ export default function BloodTestManagementPage() {
             <Button variant="outline" onClick={() => setRejectDialogOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={handleReject}
               disabled={isUpdating === selectedResult?.id}
             >

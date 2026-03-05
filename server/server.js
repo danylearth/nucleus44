@@ -61,6 +61,10 @@ import { router as forceSyncRouter } from './routes/forceSync.js';
 import { router as llmRouter } from './routes/llm.js';
 import { router as emailRouter } from './routes/email.js';
 import { router as signupRouter } from './routes/signup.js';
+import { router as bloodSyncRouter } from './routes/scheduledBloodResultsSync.js';
+import { router as uploadBloodResultRouter } from './routes/uploadBloodResult.js';
+import { router as terraWebhookRouter } from './routes/terraWebhook.js';
+import { router as terraConnectRouter } from './routes/terraConnect.js';
 
 // ─── Express app ─────────────────────────────────────────────────
 const app = express();
@@ -82,10 +86,16 @@ app.use('/api/functions/downloadBloodResultPdf', downloadBloodResultPdfRouter);
 app.use('/api/functions/matchBloodResult', matchBloodResultRouter);
 app.use('/api/functions/forceSync', forceSyncRouter);
 app.use('/api/functions/signup', signupRouter);
+app.use('/api/functions/scheduledBloodResultsSync', bloodSyncRouter);
+app.use('/api/functions/uploadBloodResult', uploadBloodResultRouter);
+app.use('/api/functions/terraConnect', terraConnectRouter);
 
 // Integration routes
 app.use('/api/llm', llmRouter);
 app.use('/api/email', emailRouter);
+
+// Terra webhook (no auth — called by Terra servers)
+app.use('/api/webhooks/terra', terraWebhookRouter);
 
 // Start
 const PORT = process.env.PORT || 3001;

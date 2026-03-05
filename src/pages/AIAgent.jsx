@@ -83,12 +83,13 @@ export default function AIAgentPage() {
   const handleSendMessage = async (messageText) => {
     if ((messageText.trim() === '' && !uploadedImage) || isLoading) return;
 
-    const newUserMessage = { 
-      role: 'user', 
+    const newUserMessage = {
+      role: 'user',
       content: messageText || (uploadedImage ? 'Uploaded an image' : ''),
-      image: uploadedImage 
+      image: uploadedImage
     };
-    setMessages((prev) => [...prev, newUserMessage]);
+    const updatedMessages = [...messages, newUserMessage];
+    setMessages(updatedMessages);
     setInput('');
     const imageToSend = uploadedImage;
     setUploadedImage(null);
@@ -98,42 +99,45 @@ export default function AIAgentPage() {
     setIsLoading(true);
 
     try {
-      let prompt = `You are Nucleus AI, a helpful, professional health assistant.
+      // Build conversation history for the server
+      // The server adds the system prompt + health context automatically
+      const conversationHistory = updatedMessages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
 
-Your role:
-- Answer health-related questions clearly, concisely, and in plain language.
-- Personalize insights when the user's biometric, blood, or DNA data is available, always grounding responses in science.
-- Encourage safe and sustainable habits around nutrition, sleep, exercise, stress, and recovery.
-- Stay supportive, positive, and engaging, like a knowledgeable health coach.
-
-Boundaries:
-- You are not a doctor and cannot diagnose conditions or prescribe treatments.
-- Always remind users that for medical concerns, they should consult a licensed healthcare professional.
-- Avoid giving advice that could cause harm (e.g., unsafe diets, extreme exercise, medical prescriptions).
-
-Style:
-- Use a friendly, encouraging tone that makes complex health concepts simple.
-- Where useful, summarize with key takeaways or action steps.
-- If data is missing, ask clarifying questions instead of guessing.
-- When giving recommendations, offer options (e.g., "You could try X, or Y") rather than rigid rules.
-
-User query: "${messageText}"`;
-
-      if (context) {
-        prompt += `\n\nContext: The user is asking about their ${context.type} data: ${JSON.stringify(context)}`;
+      // Add context if available
+      if (context && conversationHistory.length === 1) {
+        conversationHistory[0].content += `\n\nContext: Asking about ${context.type} data: ${JSON.stringify(context)}`;
       }
 
-      const response = await base44.integrations.Core.InvokeLLM({ 
-        prompt,
-        file_urls: imageToSend ? [imageToSend] : undefined
+      const { data: { session } } = await (await import('@/api/supabaseClient')).supabase.auth.getSession();
+      const API_BASE = import.meta.env.VITE_API_URL || '';
+
+      const response = await fetch(`${API_BASE}/api/llm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+        },
+        body: JSON.stringify({
+          messages: conversationHistory,
+          file_urls: imageToSend ? [imageToSend] : undefined
+        }),
       });
 
-      const assistantMessage = { role: 'assistant', content: response };
-      setMessages((prev) => [...prev, assistantMessage]);
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'LLM request failed');
+      }
+
+      const data = await response.json();
+      const assistantMessage = { role: 'assistant', content: data.response };
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Error invoking LLM:", error);
-      const errorMessage = { role: 'assistant', content: "Sorry, I'm having trouble connecting right now. Please try again later." };
-      setMessages((prev) => [...prev, errorMessage]);
+      const errorMessage = { role: 'assistant', content: `Sorry, I'm having trouble connecting right now. ${error.message || 'Please try again later.'}` };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -169,12 +173,12 @@ User query: "${messageText}"`;
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg, index) =>
-          <ChatMessage key={index} message={msg} />
+            <ChatMessage key={index} message={msg} />
           )}
           {isLoading && <ChatMessage isLoading={true} message={{ role: 'assistant', content: '' }} />}
           <div ref={messagesEndRef} />
         </div>
-        
+
         {/* Message Input */}
         <div className="p-4 bg-white border-t">
           {uploadedImage && (
@@ -253,11 +257,11 @@ User query: "${messageText}"`;
             </div>
           </div>
           {userLoading ?
-          <div className="animate-pulse">
+            <div className="animate-pulse">
               <div className="h-9 bg-gray-200 rounded w-32 mx-auto mb-2"></div>
             </div> :
 
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Hey, {firstName}!</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Hey, {firstName}!</h2>
           }
         </div>
 

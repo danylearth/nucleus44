@@ -283,10 +283,38 @@ const entities = new Proxy({}, {
   },
 });
 
+// ─── Functions wrapper ──────────────────────────────────────────
+// Replaces base44.functions.invoke() — routes to server API endpoints
+const functions = {
+  async invoke(functionName, payload) {
+    // Get the current session token for auth
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
+    const response = await fetch(`${API_BASE}/api/functions/${functionName}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(payload || {}),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `Function ${functionName} failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return { data };
+  },
+};
+
 // ─── Export as "base44" for maximum compatibility ────────────────
 // Pages import { base44 } from '@/api/base44Client' — this keeps working
 export const base44 = {
   auth,
   entities,
   integrations,
+  functions,
 };
