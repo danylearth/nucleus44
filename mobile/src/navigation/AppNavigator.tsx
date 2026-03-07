@@ -39,32 +39,31 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-    const color = focused ? '#fff' : '#8E8E93';
+    const color = focused ? '#fff' : '#6B7280';
 
     const icons: Record<string, React.ReactNode> = {
-        Home: (
+        Dashboard: (
             <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
                 <Path d="M3 12L12 3L21 12" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                 <Path d="M5 10V20H19V10" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
             </Svg>
         ),
-        AI: (
-            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-                <Path d="M21 15C21 15.55 20.55 16 20 16H8L4 20V4C4 3.45 4.45 3 5 3H20C20.55 3 21 3.45 21 4V15Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-            </Svg>
-        ),
         Health: (
             <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-                <Rect x={3} y={3} width={7} height={9} rx={1} stroke={color} strokeWidth={2} />
-                <Rect x={14} y={3} width={7} height={5} rx={1} stroke={color} strokeWidth={2} />
-                <Rect x={3} y={16} width={7} height={5} rx={1} stroke={color} strokeWidth={2} />
-                <Rect x={14} y={12} width={7} height={9} rx={1} stroke={color} strokeWidth={2} />
+                <Path d="M3 12H7L10 4L14 20L17 12H21" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
             </Svg>
         ),
         Profile: (
             <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-                <Circle cx={12} cy={8} r={4} stroke={color} strokeWidth={2} />
-                <Path d="M4 20C4 17 7 14 12 14C17 14 20 17 20 20" stroke={color} strokeWidth={2} strokeLinecap="round" />
+                <Path d="M4 4H10V10H4V4Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M14 4H20V10H14V4Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M4 14H10V20H4V14Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M14 14H20V20H14V14Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </Svg>
+        ),
+        AI: (
+            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Path d="M21 15C21 15.55 20.55 16 20 16H8L4 20V4C4 3.45 4.45 3 5 3H20C20.55 3 21 3.45 21 4V15Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
             </Svg>
         ),
     };
@@ -73,7 +72,7 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
         return (
             <View style={[styles.tabIcon, styles.tabIconActive]}>
                 {icons[label]}
-                <Text style={[styles.tabLabel, styles.tabLabelActive]}>{label}</Text>
+                <Text style={styles.tabLabelActive}>{label}</Text>
             </View>
         );
     }
@@ -97,10 +96,10 @@ function MainTabs() {
                 ),
             })}
         >
-            <Tab.Screen name="Home" component={DashboardScreen} />
-            <Tab.Screen name="AI" component={AIAgentScreen} />
+            <Tab.Screen name="Dashboard" component={DashboardScreen} />
             <Tab.Screen name="Health" component={HealthScreen} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
+            <Tab.Screen name="AI" component={AIAgentScreen} />
         </Tab.Navigator>
     );
 }
@@ -188,41 +187,39 @@ export default function AppNavigator() {
 
 const styles = StyleSheet.create({
     tabBar: {
-        backgroundColor: '#F2F2F7',
+        backgroundColor: '#fff',
         borderTopWidth: 0,
-        height: 80,
-        paddingTop: 6,
-        paddingBottom: 20,
+        height: 82,
+        paddingTop: 8,
+        paddingBottom: 22,
         shadowColor: '#000',
         shadowOpacity: 0.06,
-        shadowRadius: 12,
+        shadowRadius: 16,
         shadowOffset: { width: 0, height: -4 },
         elevation: 8,
     },
     tabIcon: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        minWidth: 48,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: '#F2F2F7',
     },
     tabIconActive: {
         backgroundColor: '#1C1C1E',
         flexDirection: 'row',
-        gap: 6,
-        paddingHorizontal: 16,
-    },
-    tabLabel: {
-        fontSize: 10,
-        color: '#8E8E93',
-        fontWeight: '500',
-        marginTop: 2,
+        gap: 8,
+        width: 'auto' as any,
+        paddingHorizontal: 18,
+        borderRadius: 24,
+        height: 46,
     },
     tabLabelActive: {
         color: '#fff',
+        fontSize: 14,
         fontWeight: '600',
-        marginTop: 0,
+        letterSpacing: -0.2,
     },
     loadingContainer: {
         flex: 1,
