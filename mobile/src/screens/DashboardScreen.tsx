@@ -496,61 +496,63 @@ export default function DashboardScreen() {
                 <HealthScoreArc score={healthScore} />
             </TouchableOpacity>
 
-            {/* Steps & Heart Rate row */}
-            <MetricRow>
-                <MetricCard
-                    icon={<StepsIcon />}
-                    label="Steps"
-                    value={metrics.steps > 0 ? metrics.steps.toLocaleString() : '8,533'}
-                    unit="Steps"
-                    progress={((metrics.steps || 8533) / 10000) * 100}
-                    onPress={() => nav.navigate('Steps')}
-                />
-                <MetricCard
-                    icon={<HeartIcon />}
-                    label="Heart Rate"
-                    value={metrics.heartRate > 0 ? metrics.heartRate.toString() : '87'}
-                    unit="bpm"
-                    badge={hrStatus || 'normal'}
-                    sparkData={[72, 85, 78, 68, 82, 90, 75, 88, 95, 80, 85, 92]}
-                    sparkColor="#EF4444"
-                    sparkFill="#FCA5A5"
-                    onPress={() => nav.navigate('HeartRate')}
-                />
-            </MetricRow>
+            {/* Steps + Heart Rate (asymmetric grid) */}
+            <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
+                {/* Left column: Steps + Calories stacked */}
+                <View style={{ flex: 1, gap: 12 }}>
+                    <MetricCard
+                        icon={<StepsIcon />}
+                        label="Steps"
+                        value={metrics.steps > 0 ? metrics.steps.toLocaleString() : '8,533'}
+                        unit="Steps"
+                        progress={((metrics.steps || 8533) / 10000) * 100}
+                        onPress={() => nav.navigate('Steps')}
+                    />
+                    <MetricCard
+                        icon={<BoltIcon />}
+                        label="Calories"
+                        value={metrics.calories > 0 ? metrics.calories.toLocaleString() : '933'}
+                        unit="Kcal"
+                        progress={((metrics.calories || 933) / 2000) * 100}
+                        onPress={() => nav.navigate('Calories')}
+                    />
+                </View>
+                {/* Right column: Heart Rate (tall) */}
+                <View style={{ flex: 1 }}>
+                    <MetricCard
+                        icon={<HeartIcon />}
+                        label="Heart Rate"
+                        value={metrics.heartRate > 0 ? metrics.heartRate.toString() : '87'}
+                        unit="bpm"
+                        badge={hrStatus || 'normal'}
+                        wide
+                        sparkData={[72, 85, 78, 68, 82, 90, 75, 88, 95, 80, 85, 92]}
+                        sparkColor="#EF4444"
+                        sparkFill="#FCA5A5"
+                        onPress={() => nav.navigate('HeartRate')}
+                    />
+                </View>
+            </View>
 
-            {/* Calories & Sleep row */}
+            {/* Sleep & Stress row */}
             <MetricRow>
-                <MetricCard
-                    icon={<BoltIcon />}
-                    label="Calories"
-                    value={metrics.calories > 0 ? metrics.calories.toLocaleString() : '933'}
-                    unit="Kcal"
-                    progress={((metrics.calories || 933) / 2000) * 100}
-                    onPress={() => nav.navigate('Calories')}
-                />
                 <MetricCard
                     icon={<MoonIcon />}
                     label="Sleep"
-                    value={metrics.sleepHours > 0 ? `${metrics.sleepHours}h` : '7.5h'}
-                    unit={metrics.deepSleep > 0 ? `${metrics.deepSleep}m Deep` : '45m Deep'}
-                    progress={((metrics.sleepHours || 7.5) / 8) * 100}
+                    value={metrics.sleepHours > 0 ? `${metrics.sleepHours}h` : '6h'}
+                    unit={metrics.deepSleep > 0 ? `${metrics.deepSleep}m Deep` : '22m Deep'}
+                    progress={((metrics.sleepHours || 6) / 8) * 100}
                     onPress={() => nav.navigate('Sleep')}
                 />
+                <MetricCard
+                    icon={<BrainIcon />}
+                    label="Stress"
+                    value={metrics.hrv > 0 ? metrics.hrv.toString() : '32'}
+                    unit="HRV"
+                    progress={((metrics.hrv || 32) / 100) * 100}
+                    onPress={() => nav.navigate('Stress')}
+                />
             </MetricRow>
-
-            {/* Stress (wide) */}
-            <MetricCard
-                icon={<BrainIcon />}
-                label="HRV / Stress"
-                value={metrics.hrv > 0 ? metrics.hrv.toString() : '45'}
-                unit="ms HRV"
-                wide
-                sparkData={[38, 42, 35, 50, 48, 45, 52, 40, 44, 47, 50, 55]}
-                sparkColor="#F59E0B"
-                sparkFill="#FDE68A"
-                onPress={() => nav.navigate('Stress')}
-            />
 
             {/* Supplements */}
             <TouchableOpacity onPress={() => nav.navigate('Supplements')}>
@@ -614,7 +616,7 @@ const styles = StyleSheet.create({
         flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 18,
         shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 2,
     },
-    metricCardWide: { marginBottom: 12 },
+    metricCardWide: { marginBottom: 0, flex: 1 },
     metricHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
     metricLabel: { fontSize: 15, fontWeight: '600', color: '#1C1C1E', letterSpacing: -0.2 },
     metricBody: { flexDirection: 'row', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' },
