@@ -160,39 +160,29 @@ export default function AIAgentScreen() {
                         <View style={styles.aiLogo}>
                             <Text style={styles.aiLogoEmoji}>🧬</Text>
                         </View>
-                        <Text style={styles.heroGreeting}>Hey, {firstName}!</Text>
+                        <Text style={styles.heroGreeting}>Hey, {firstName}</Text>
                         <Text style={styles.heroSubtitle}>
-                            I'm your Nucleus AI health assistant. Ask me anything about your health data, nutrition, sleep, or fitness.
+                            I'm your health assistant
                         </Text>
                     </View>
 
                     {/* Quick Prompts */}
                     <View style={styles.promptsSection}>
-                        <Text style={styles.promptsLabel}>Try asking me...</Text>
+                        <Text style={styles.promptsLabel}>Try asking me…</Text>
                         <QuickPrompt
                             icon="🩸"
-                            text="Explain my recent blood results"
-                            onPress={() => handleQuickPrompt('Explain my recent blood results and what I should focus on improving.')}
-                        />
-                        <QuickPrompt
-                            icon="😴"
-                            text="How can I improve my sleep?"
-                            onPress={() => handleQuickPrompt('Based on my health data, how can I improve my sleep quality?')}
+                            text="Explain my recent lipid panel"
+                            onPress={() => handleQuickPrompt('Explain my recent lipid panel results and what I should focus on improving.')}
                         />
                         <QuickPrompt
                             icon="🥗"
-                            text="Suggest a meal plan for today"
-                            onPress={() => handleQuickPrompt('Suggest a healthy meal plan for today based on my health goals.')}
+                            text="Suggest a healthy breakfast"
+                            onPress={() => handleQuickPrompt('Suggest a healthy breakfast based on my health data and goals.')}
                         />
                         <QuickPrompt
-                            icon="💊"
-                            text="Review my supplement stack"
-                            onPress={() => handleQuickPrompt('Review my current supplements and suggest any changes.')}
-                        />
-                        <QuickPrompt
-                            icon="🏃"
-                            text="Create a workout plan"
-                            onPress={() => handleQuickPrompt('Create a workout plan for this week based on my activity levels.')}
+                            icon="🏋️"
+                            text="Create a 30-min workout"
+                            onPress={() => handleQuickPrompt('Create a 30-minute workout plan for me based on my activity levels.')}
                         />
                     </View>
                 </ScrollView>

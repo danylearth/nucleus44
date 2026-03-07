@@ -113,6 +113,50 @@ function HealthScoreArc({ score }: { score: number }) {
     );
 }
 
+// ─── Macronutrients Card ────────────────────────────────────────────
+function MacroRing({ value, label, color, max }: { value: number; label: string; color: string; max: number }) {
+    const percentage = Math.min(value / max, 1);
+    const r = 28;
+    const circumference = 2 * Math.PI * r;
+    const strokeDashoffset = circumference * (1 - percentage);
+
+    return (
+        <View style={styles.macroItem}>
+            <View style={{ width: 68, height: 68, alignItems: 'center', justifyContent: 'center' }}>
+                <Svg width={68} height={68} viewBox="0 0 68 68">
+                    <Circle cx={34} cy={34} r={r} stroke="#F2F2F7" strokeWidth={5} fill="none" />
+                    <Circle
+                        cx={34} cy={34} r={r}
+                        stroke={color} strokeWidth={5} fill="none"
+                        strokeDasharray={`${circumference}`}
+                        strokeDashoffset={strokeDashoffset}
+                        strokeLinecap="round"
+                        transform="rotate(-90 34 34)"
+                    />
+                </Svg>
+                <Text style={styles.macroValue}>{value}g</Text>
+            </View>
+            <Text style={styles.macroLabel}>{label}</Text>
+        </View>
+    );
+}
+
+function MacronutrientsCard() {
+    return (
+        <View style={styles.macroCard}>
+            <View style={styles.macroHeader}>
+                <Text style={{ fontSize: 16 }}>🌾</Text>
+                <Text style={styles.macroTitle}>Macronutrients</Text>
+            </View>
+            <View style={styles.macroRow}>
+                <MacroRing value={85} label="Protein" color="#A8D8D0" max={120} />
+                <MacroRing value={220} label="Carbs" color="#B8B4D0" max={300} />
+                <MacroRing value={65} label="Fats" color="#D4B4A4" max={80} />
+            </View>
+        </View>
+    );
+}
+
 // ─── Metric Cards ───────────────────────────────────────────────────
 function MetricRow({ children }: { children: React.ReactNode }) {
     return <View style={styles.metricRow}>{children}</View>;
@@ -349,6 +393,9 @@ export default function DashboardScreen() {
                 <HealthScoreArc score={healthScore} />
             </TouchableOpacity>
 
+            {/* Macronutrients */}
+            <MacronutrientsCard />
+
             {/* Steps & Heart Rate row */}
             <MetricRow>
                 <MetricCard icon="👟" label="Steps" value={metrics.steps > 0 ? metrics.steps.toLocaleString() : '—'} unit="Steps" onPress={() => nav.navigate('Steps')} />
@@ -474,4 +521,13 @@ const styles = StyleSheet.create({
 
     // Goals card
     goalsCard: { backgroundColor: '#111827', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
+
+    // Macronutrients
+    macroCard: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 8, elevation: 1 },
+    macroHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+    macroTitle: { fontSize: 15, fontWeight: '600', color: '#1C1C1E', letterSpacing: -0.2 },
+    macroRow: { flexDirection: 'row', justifyContent: 'space-around' },
+    macroItem: { alignItems: 'center' },
+    macroValue: { position: 'absolute', fontSize: 13, fontWeight: '600', color: '#1C1C1E' },
+    macroLabel: { fontSize: 13, color: '#8E8E93', marginTop: 4 },
 });

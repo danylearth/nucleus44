@@ -31,6 +31,8 @@ import OnboardingScreen from '../screens/OnboardingScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import GoalsScreen from '../screens/GoalsScreen';
 import GoalDetailScreen from '../screens/GoalDetailScreen';
+import CalendarScreen from '../screens/CalendarScreen';
+import BloodResultDetailScreen from '../screens/BloodResultDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -136,6 +138,8 @@ export default function AppNavigator() {
                         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
                         <Stack.Screen name="Goals" component={GoalsScreen} />
                         <Stack.Screen name="GoalDetail" component={GoalDetailScreen} />
+                        <Stack.Screen name="Calendar" component={CalendarScreen} />
+                        <Stack.Screen name="BloodResultDetail" component={BloodResultDetailScreen} />
                         {!needsOnboarding ? (
                             <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                         ) : null}

@@ -24,9 +24,12 @@ export default function ProfileScreen() {
 
     const menuItems = [
         { icon: '✏️', label: 'Edit Profile', onPress: () => nav.navigate('EditProfile') },
+        { icon: '🎯', label: 'Goals', onPress: () => nav.navigate('Goals') },
         { icon: '🧬', label: 'Blood Results', onPress: () => nav.navigate('LabResults') },
         { icon: '💊', label: 'Supplements', onPress: () => nav.navigate('Supplements') },
-        { icon: '📊', label: 'Health Score', onPress: () => nav.navigate('HealthScore') },
+        { icon: '📊', label: 'Health Bar', onPress: () => nav.navigate('HealthScore') },
+        { icon: '📅', label: 'Calendar', onPress: () => nav.navigate('Calendar') },
+        { icon: '⌚', label: 'Connected Devices', onPress: () => nav.navigate('Main', { screen: 'Devices' }) },
         { icon: '🔔', label: 'Notifications', onPress: () => nav.navigate('Notifications') },
         { icon: '🔒', label: 'Privacy & Security', onPress: () => { } },
         { icon: '❓', label: 'Help & Support', onPress: () => { } },
