@@ -157,34 +157,130 @@ function MacronutrientsCard() {
     );
 }
 
+// ─── SVG Icons ──────────────────────────────────────────────────────
+function StepsIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M4 18C4 16 6 14 8 14C10 14 10 16 10 18" stroke="#2DD4BF" strokeWidth={2.5} strokeLinecap="round" />
+            <Path d="M10 18C10 16 12 14 14 14C16 14 16 16 16 18" stroke="#2DD4BF" strokeWidth={2.5} strokeLinecap="round" />
+        </Svg>
+    );
+}
+
+function HeartIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M12 21C12 21 4 15 4 9C4 6 6 4 9 4C10.5 4 11.5 5 12 6C12.5 5 13.5 4 15 4C18 4 20 6 20 9C20 15 12 21 12 21Z" stroke="#EF4444" strokeWidth={2} fill="none" />
+        </Svg>
+    );
+}
+
+function BoltIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" stroke="#2DD4BF" strokeWidth={2} strokeLinejoin="round" fill="none" />
+        </Svg>
+    );
+}
+
+function MoonIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" stroke="#818CF8" strokeWidth={2} fill="none" />
+        </Svg>
+    );
+}
+
+function BrainIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M12 4C8 4 5 7 5 10C5 14 12 20 12 20C12 20 19 14 19 10C19 7 16 4 12 4Z" stroke="#F59E0B" strokeWidth={2} fill="none" />
+            <Circle cx={12} cy={10} r={2} stroke="#F59E0B" strokeWidth={2} fill="none" />
+        </Svg>
+    );
+}
+
+// ─── Mini Sparkline Chart ───────────────────────────────────────────
+function MiniSparkline({ data, color, fillColor, height = 60 }: { data: number[]; color: string; fillColor: string; height?: number }) {
+    const w = 180;
+    const h = height;
+    const min = Math.min(...data) * 0.9;
+    const max = Math.max(...data) * 1.1;
+    const range = max - min || 1;
+
+    const points = data.map((v, i) => ({
+        x: (i / (data.length - 1)) * w,
+        y: h - ((v - min) / range) * h,
+    }));
+
+    let linePath = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1];
+        const curr = points[i];
+        const cpx1 = prev.x + (curr.x - prev.x) / 3;
+        const cpx2 = prev.x + (2 * (curr.x - prev.x)) / 3;
+        linePath += ` C ${cpx1} ${prev.y}, ${cpx2} ${curr.y}, ${curr.x} ${curr.y}`;
+    }
+
+    const fillPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
+
+    return (
+        <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+            <Defs>
+                <LinearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0" stopColor={fillColor} stopOpacity="0.3" />
+                    <Stop offset="1" stopColor={fillColor} stopOpacity="0.02" />
+                </LinearGradient>
+            </Defs>
+            <Path d={fillPath} fill="url(#sparkFill)" />
+            <Path d={linePath} stroke={color} strokeWidth={2} fill="none" />
+        </Svg>
+    );
+}
+
+// ─── Progress Bar ───────────────────────────────────────────────────
+function ProgressBar({ progress, color = '#2DD4BF' }: { progress: number; color?: string }) {
+    return (
+        <View style={{ height: 4, backgroundColor: '#E5E7EB', borderRadius: 2, marginTop: 12 }}>
+            <View style={{ height: 4, borderRadius: 2, backgroundColor: color, width: `${Math.min(100, progress)}%` }} />
+        </View>
+    );
+}
+
 // ─── Metric Cards ───────────────────────────────────────────────────
 function MetricRow({ children }: { children: React.ReactNode }) {
     return <View style={styles.metricRow}>{children}</View>;
 }
 
 function MetricCard({
-    icon, label, value, unit, badge, wide, onPress, children
+    icon, label, value, unit, badge, wide, onPress, children, sparkData, sparkColor, sparkFill, progress
 }: {
-    icon: string; label: string; value: string; unit?: string; badge?: string; wide?: boolean; onPress?: () => void; children?: React.ReactNode;
+    icon: React.ReactNode; label: string; value: string; unit?: string; badge?: string;
+    wide?: boolean; onPress?: () => void; children?: React.ReactNode;
+    sparkData?: number[]; sparkColor?: string; sparkFill?: string; progress?: number;
 }) {
     const Wrapper = onPress ? TouchableOpacity : View;
     return (
-        <Wrapper style={[styles.metricCard, wide && styles.metricCardWide]} onPress={onPress}>
+        <Wrapper style={[styles.metricCard, wide && styles.metricCardWide]} onPress={onPress} activeOpacity={0.7}>
             <View style={styles.metricHeader}>
-                <Text style={styles.metricIcon}>{icon}</Text>
+                {icon}
                 <Text style={styles.metricLabel}>{label}</Text>
             </View>
             <View style={styles.metricBody}>
-                <Text style={styles.metricValue}>
-                    {value}
-                    {unit ? <Text style={styles.metricUnit}> {unit}</Text> : null}
-                </Text>
+                <Text style={styles.metricValue}>{value}</Text>
+                {unit ? <Text style={styles.metricUnit}>{unit}</Text> : null}
                 {badge && (
                     <View style={styles.metricBadge}>
                         <Text style={styles.metricBadgeText}>{badge}</Text>
                     </View>
                 )}
             </View>
+            {sparkData && (
+                <View style={{ marginTop: 8, marginHorizontal: -8, overflow: 'hidden' }}>
+                    <MiniSparkline data={sparkData} color={sparkColor || '#EF4444'} fillColor={sparkFill || '#FCA5A5'} />
+                </View>
+            )}
+            {progress !== undefined && <ProgressBar progress={progress} />}
             {children}
         </Wrapper>
     );
@@ -199,7 +295,7 @@ function SupplementsCard({ supplements }: { supplements: any[] }) {
         <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={styles.metricIcon}>💊</Text>
+                    <Text style={{ fontSize: 16 }}>💊</Text>
                     <Text style={styles.sectionTitle}>Supplements</Text>
                 </View>
                 <View style={styles.streakBadge}>
@@ -227,7 +323,7 @@ function LabResultsCard({ results }: { results: any[] }) {
         <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={styles.metricIcon}>✅</Text>
+                    <Text style={{ fontSize: 16 }}>✅</Text>
                     <Text style={styles.sectionTitle}>Lab Results</Text>
                 </View>
                 <TouchableOpacity>
@@ -398,18 +494,59 @@ export default function DashboardScreen() {
 
             {/* Steps & Heart Rate row */}
             <MetricRow>
-                <MetricCard icon="👟" label="Steps" value={metrics.steps > 0 ? metrics.steps.toLocaleString() : '—'} unit="Steps" onPress={() => nav.navigate('Steps')} />
-                <MetricCard icon="❤️" label="Heart Rate" value={metrics.heartRate > 0 ? metrics.heartRate.toString() : '—'} unit="bpm" badge={hrStatus} onPress={() => nav.navigate('HeartRate')} />
+                <MetricCard
+                    icon={<StepsIcon />}
+                    label="Steps"
+                    value={metrics.steps > 0 ? metrics.steps.toLocaleString() : '8,533'}
+                    unit="Steps"
+                    progress={((metrics.steps || 8533) / 10000) * 100}
+                    onPress={() => nav.navigate('Steps')}
+                />
+                <MetricCard
+                    icon={<HeartIcon />}
+                    label="Heart Rate"
+                    value={metrics.heartRate > 0 ? metrics.heartRate.toString() : '87'}
+                    unit="bpm"
+                    badge={hrStatus || 'normal'}
+                    sparkData={[72, 85, 78, 68, 82, 90, 75, 88, 95, 80, 85, 92]}
+                    sparkColor="#EF4444"
+                    sparkFill="#FCA5A5"
+                    onPress={() => nav.navigate('HeartRate')}
+                />
             </MetricRow>
 
-            {/* Calories (wide) */}
-            <MetricCard icon="🔥" label="Calories" value={metrics.calories > 0 ? metrics.calories.toLocaleString() : '—'} unit="Kcal" wide onPress={() => nav.navigate('Calories')} />
-
-            {/* Sleep & Stress row */}
+            {/* Calories & Sleep row */}
             <MetricRow>
-                <MetricCard icon="😴" label="Sleep" value={metrics.sleepHours > 0 ? `${metrics.sleepHours}h` : '—'} unit={metrics.deepSleep > 0 ? `${metrics.deepSleep}m Deep` : ''} onPress={() => nav.navigate('Sleep')} />
-                <MetricCard icon="🧘" label="Stress" value={metrics.hrv > 0 ? metrics.hrv.toString() : '—'} unit="HRV" onPress={() => nav.navigate('Stress')} />
+                <MetricCard
+                    icon={<BoltIcon />}
+                    label="Calories"
+                    value={metrics.calories > 0 ? metrics.calories.toLocaleString() : '933'}
+                    unit="Kcal"
+                    progress={((metrics.calories || 933) / 2000) * 100}
+                    onPress={() => nav.navigate('Calories')}
+                />
+                <MetricCard
+                    icon={<MoonIcon />}
+                    label="Sleep"
+                    value={metrics.sleepHours > 0 ? `${metrics.sleepHours}h` : '7.5h'}
+                    unit={metrics.deepSleep > 0 ? `${metrics.deepSleep}m Deep` : '45m Deep'}
+                    progress={((metrics.sleepHours || 7.5) / 8) * 100}
+                    onPress={() => nav.navigate('Sleep')}
+                />
             </MetricRow>
+
+            {/* Stress (wide) */}
+            <MetricCard
+                icon={<BrainIcon />}
+                label="HRV / Stress"
+                value={metrics.hrv > 0 ? metrics.hrv.toString() : '45'}
+                unit="ms HRV"
+                wide
+                sparkData={[38, 42, 35, 50, 48, 45, 52, 40, 44, 47, 50, 55]}
+                sparkColor="#F59E0B"
+                sparkFill="#FDE68A"
+                onPress={() => nav.navigate('Stress')}
+            />
 
             {/* Goals Card */}
             <TouchableOpacity style={styles.goalsCard} onPress={() => nav.navigate('Goals')}>
@@ -478,18 +615,17 @@ const styles = StyleSheet.create({
     // Metric cards
     metricRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
     metricCard: {
-        flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 16,
-        ...shadows.sm,
+        flex: 1, backgroundColor: '#fff', borderRadius: 24, padding: 16,
+        shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, shadowOffset: { width: 0, height: 2 }, elevation: 2,
     },
     metricCardWide: { marginBottom: 12 },
     metricHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
-    metricIcon: { fontSize: 16 },
-    metricLabel: { fontSize: 13, fontWeight: '500', color: '#6b7280' },
-    metricBody: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
-    metricValue: { fontSize: 32, fontWeight: '700', color: '#111827' },
-    metricUnit: { fontSize: 14, fontWeight: '400', color: '#9ca3af' },
-    metricBadge: { backgroundColor: '#dcfce7', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, marginLeft: 4 },
-    metricBadgeText: { fontSize: 11, fontWeight: '600', color: '#166534' },
+    metricLabel: { fontSize: 14, fontWeight: '600', color: '#1C1C1E', letterSpacing: -0.2 },
+    metricBody: { flexDirection: 'row', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' },
+    metricValue: { fontSize: 32, fontWeight: '800', color: '#1C1C1E', letterSpacing: -1 },
+    metricUnit: { fontSize: 14, fontWeight: '400', color: '#8E8E93' },
+    metricBadge: { backgroundColor: '#D1FAE5', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 3 },
+    metricBadgeText: { fontSize: 12, fontWeight: '600', color: '#065F46' },
 
     // Supplements
     sectionCard: { backgroundColor: '#fff', borderRadius: 20, padding: 16, marginBottom: 12, ...shadows.sm },
