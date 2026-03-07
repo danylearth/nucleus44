@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text, View, StyleSheet } from 'react-native';
+import Svg, { Path, Circle, Rect } from 'react-native-svg';
 import { useAuth } from '../lib/AuthContext';
 import { colors, fontSizes } from '../lib/theme';
 
@@ -38,18 +39,40 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-    const icons: Record<string, string> = {
-        Home: '🏠',
-        AI: '🧬',
-        Health: '📊',
-        Devices: '⌚',
-        Profile: '👤',
+    const color = focused ? '#fff' : '#8E8E93';
+
+    const icons: Record<string, React.ReactNode> = {
+        Home: (
+            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Path d="M3 12L12 3L21 12" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                <Path d="M5 10V20H19V10" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </Svg>
+        ),
+        AI: (
+            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Path d="M21 15C21 15.55 20.55 16 20 16H8L4 20V4C4 3.45 4.45 3 5 3H20C20.55 3 21 3.45 21 4V15Z" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </Svg>
+        ),
+        Health: (
+            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Rect x={3} y={3} width={7} height={9} rx={1} stroke={color} strokeWidth={2} />
+                <Rect x={14} y={3} width={7} height={5} rx={1} stroke={color} strokeWidth={2} />
+                <Rect x={3} y={16} width={7} height={5} rx={1} stroke={color} strokeWidth={2} />
+                <Rect x={14} y={12} width={7} height={9} rx={1} stroke={color} strokeWidth={2} />
+            </Svg>
+        ),
+        Profile: (
+            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                <Circle cx={12} cy={8} r={4} stroke={color} strokeWidth={2} />
+                <Path d="M4 20C4 17 7 14 12 14C17 14 20 17 20 20" stroke={color} strokeWidth={2} strokeLinecap="round" />
+            </Svg>
+        ),
     };
 
     if (focused) {
         return (
             <View style={[styles.tabIcon, styles.tabIconActive]}>
-                <Text style={styles.tabEmoji}>{icons[label] || '📋'}</Text>
+                {icons[label]}
                 <Text style={[styles.tabLabel, styles.tabLabelActive]}>{label}</Text>
             </View>
         );
@@ -57,8 +80,7 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 
     return (
         <View style={styles.tabIcon}>
-            <Text style={styles.tabEmoji}>{icons[label] || '📋'}</Text>
-            <Text style={styles.tabLabel}>{label}</Text>
+            {icons[label]}
         </View>
     );
 }
@@ -78,7 +100,6 @@ function MainTabs() {
             <Tab.Screen name="Home" component={DashboardScreen} />
             <Tab.Screen name="AI" component={AIAgentScreen} />
             <Tab.Screen name="Health" component={HealthScreen} />
-            <Tab.Screen name="Devices" component={DevicesScreen} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
     );
@@ -148,6 +169,7 @@ export default function AppNavigator() {
                         <Stack.Screen name="GoalDetail" component={GoalDetailScreen} />
                         <Stack.Screen name="Calendar" component={CalendarScreen} />
                         <Stack.Screen name="BloodResultDetail" component={BloodResultDetailScreen} />
+                        <Stack.Screen name="Devices" component={DevicesScreen} />
                         {!needsOnboarding ? (
                             <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                         ) : null}
@@ -190,9 +212,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 6,
         paddingHorizontal: 16,
-    },
-    tabEmoji: {
-        fontSize: 20,
     },
     tabLabel: {
         fontSize: 10,

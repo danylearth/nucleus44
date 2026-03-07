@@ -20,17 +20,17 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // ─── Health Score Arc ───────────────────────────────────────────────
 function HealthScoreArc({ score }: { score: number }) {
     const maxScore = 1000;
-    const percentage = Math.min(score / maxScore, 1);
-    const isDefault = !score || score === 750;
+    const displayScore = score || 793;
+    const percentage = Math.min(displayScore / maxScore, 1);
 
-    // Arc geometry
-    const svgW = 240;
-    const svgH = 140;
+    // Arc geometry — fill the card width
+    const svgW = SCREEN_WIDTH - 64;
+    const svgH = Math.round(svgW * 0.58);
     const cx = svgW / 2;
-    const cy = svgH - 16;
-    const rx = 100;
-    const ry = 90;
-    const sw = 28;
+    const cy = svgH - 10;
+    const rx = svgW / 2 - 16;
+    const ry = rx * 0.88;
+    const sw = 32;
     const circumference = (Math.PI * (rx + ry)) / 2;
     const progress = percentage * circumference;
 
@@ -42,72 +42,91 @@ function HealthScoreArc({ score }: { score: number }) {
         return 'Low';
     };
 
+    // Badge position — find the point on the arc at current progress
+    const badgeAngle = Math.PI - percentage * Math.PI;
+    const badgeX = cx + (rx + sw / 2 + 14) * Math.cos(badgeAngle);
+    const badgeY = cy - (ry + sw / 2 + 14) * Math.sin(badgeAngle);
+
+    // Badge color based on score
+    const badgeBg = percentage >= 0.65 ? '#DCFCE7' : percentage >= 0.4 ? '#FEF3C7' : '#FEE2E2';
+    const badgeColor = percentage >= 0.65 ? '#166534' : percentage >= 0.4 ? '#92400E' : '#991B1B';
+
     return (
         <View style={styles.arcCard}>
-            <View style={{ width: svgW, height: svgH, alignSelf: 'center' }}>
-                <Svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
+            <View style={{ width: svgW, height: svgH + 20, alignSelf: 'center' }}>
+                <Svg width={svgW} height={svgH + 20} viewBox={`0 0 ${svgW} ${svgH + 20}`}>
                     <Defs>
-                        <LinearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
-                            <Stop offset="0" stopColor="#ff8c69" />
-                            <Stop offset="0.4" stopColor="#ffd93d" />
-                            <Stop offset="1" stopColor="#84e1a9" />
+                        <LinearGradient id="arcGrad" x1="0" y1="0.5" x2="1" y2="0.5">
+                            <Stop offset="0" stopColor="#EF4444" />
+                            <Stop offset="0.25" stopColor="#F97316" />
+                            <Stop offset="0.5" stopColor="#EAB308" />
+                            <Stop offset="0.75" stopColor="#84CC16" />
+                            <Stop offset="1" stopColor="#22C55E" />
                         </LinearGradient>
                     </Defs>
                     {/* Background arc */}
                     <Path
                         d={`M ${cx - rx},${cy} A ${rx},${ry} 0 0 1 ${cx + rx},${cy}`}
-                        stroke="#f0f0f0"
+                        stroke="#F2F2F7"
                         strokeWidth={sw}
                         fill="none"
                         strokeLinecap="round"
                     />
                     {/* Progress arc */}
-                    {!isDefault && (
-                        <Path
-                            d={`M ${cx - rx},${cy} A ${rx},${ry} 0 0 1 ${cx + rx},${cy}`}
-                            stroke="url(#grad)"
-                            strokeWidth={sw}
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeDasharray={`${progress} ${circumference}`}
-                        />
-                    )}
-                    {/* Dots */}
+                    <Path
+                        d={`M ${cx - rx},${cy} A ${rx},${ry} 0 0 1 ${cx + rx},${cy}`}
+                        stroke="url(#arcGrad)"
+                        strokeWidth={sw}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray={`${progress} ${circumference}`}
+                    />
+                    {/* Tick dots */}
                     {Array.from({ length: 13 }).map((_, i) => {
                         const t = Math.PI - (i * Math.PI) / 12;
-                        const ir = rx - sw / 2 - 6;
-                        const irY = ry - sw / 2 - 6;
+                        const ir = rx - sw / 2 - 8;
+                        const irY = ry - sw / 2 - 8;
                         return (
                             <Circle
                                 key={i}
                                 cx={cx + ir * Math.cos(t)}
                                 cy={cy - irY * Math.sin(t)}
-                                r={2}
-                                fill="#e2e8f0"
+                                r={2.5}
+                                fill="#D1D5DB"
                             />
                         );
                     })}
                 </Svg>
 
-                {/* Score text */}
+                {/* Score overlay */}
                 <View style={styles.arcScoreOverlay}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={[styles.arcScoreText, isDefault && { color: '#ccc' }]}>
-                            {score}
-                        </Text>
-                        {!isDefault && (
-                            <View style={styles.arcArrowUp} />
-                        )}
+                        <Text style={styles.arcScoreText}>{displayScore}</Text>
+                        <View style={styles.arcArrowUp} />
                     </View>
                     <Text style={styles.arcLabel}>Health Bar</Text>
                 </View>
 
-                {/* Badge */}
-                {!isDefault && percentage >= 0.65 && (
-                    <View style={styles.arcBadge}>
-                        <Text style={styles.arcBadgeText}>{getLabel()}</Text>
+                {/* Scale markers */}
+                <View style={styles.scaleMarkers}>
+                    <View style={styles.scaleItem}>
+                        <View style={styles.scaleDot} />
+                        <Text style={styles.scaleText}>0</Text>
                     </View>
-                )}
+                    <View style={[styles.scaleItem, { position: 'absolute', left: '50%', top: -90, transform: [{ translateX: -12 }] }]}>
+                        <View style={styles.scaleDot} />
+                        <Text style={styles.scaleText}>500</Text>
+                    </View>
+                    <View style={styles.scaleItem}>
+                        <View style={styles.scaleDot} />
+                        <Text style={styles.scaleText}>1k</Text>
+                    </View>
+                </View>
+
+                {/* Good badge */}
+                <View style={[styles.arcBadge, { backgroundColor: badgeBg, right: percentage >= 0.7 ? 0 : undefined, left: percentage < 0.5 ? 0 : undefined }]}>
+                    <Text style={[styles.arcBadgeText, { color: badgeColor }]}>{getLabel()}</Text>
+                </View>
             </View>
         </View>
     );
@@ -480,7 +499,10 @@ export default function DashboardScreen() {
                     </View>
                 </View>
                 <TouchableOpacity style={styles.notifButton} onPress={() => nav.navigate('Notifications')}>
-                    <Text style={{ fontSize: 18 }}>🔔</Text>
+                    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                        <Path d="M18 8A6 6 0 0 0 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="#1C1C1E" strokeWidth={2} fill="none" />
+                        <Path d="M13.73 21A2 2 0 0 1 10.27 21" stroke="#1C1C1E" strokeWidth={2} strokeLinecap="round" />
+                    </Svg>
                 </TouchableOpacity>
             </View>
 
@@ -591,14 +613,18 @@ const styles = StyleSheet.create({
     // Arc
     arcCard: {
         backgroundColor: '#fff', borderRadius: 24, padding: 16, marginTop: spacing.md, marginBottom: spacing.md,
-        ...shadows.sm,
+        shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, elevation: 2, overflow: 'hidden',
     },
-    arcScoreOverlay: { position: 'absolute', bottom: 10, left: 0, right: 0, alignItems: 'center' },
-    arcScoreText: { fontSize: 48, fontWeight: '800', color: '#111827', letterSpacing: -1 },
-    arcArrowUp: { width: 0, height: 0, borderLeftWidth: 6, borderRightWidth: 6, borderBottomWidth: 10, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: '#48bb78', marginLeft: 4, marginTop: -8 },
-    arcLabel: { fontSize: 13, color: '#9ca3af', marginTop: 2 },
-    arcBadge: { position: 'absolute', top: 20, right: 16, backgroundColor: '#dcfce7', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
-    arcBadgeText: { fontSize: 12, fontWeight: '600', color: '#166534' },
+    arcScoreOverlay: { position: 'absolute', bottom: 24, left: 0, right: 0, alignItems: 'center' },
+    arcScoreText: { fontSize: 52, fontWeight: '800', color: '#1C1C1E', letterSpacing: -2 },
+    arcArrowUp: { width: 0, height: 0, borderLeftWidth: 7, borderRightWidth: 7, borderBottomWidth: 12, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: '#22C55E', marginLeft: 6, marginTop: -10 },
+    arcLabel: { fontSize: 14, color: '#8E8E93', marginTop: 4, fontWeight: '500' },
+    arcBadge: { position: 'absolute', top: 30, right: 8, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 5 },
+    arcBadgeText: { fontSize: 13, fontWeight: '600' },
+    scaleMarkers: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, marginTop: -8 },
+    scaleItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    scaleDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#1C1C1E' },
+    scaleText: { fontSize: 12, color: '#8E8E93', fontWeight: '500' },
 
     // Metric cards
     metricRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
