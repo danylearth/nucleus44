@@ -28,6 +28,7 @@ import SupplementsScreen from '../screens/SupplementsScreen';
 import LabResultsScreen from '../screens/LabResultsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -72,7 +73,31 @@ function MainTabs() {
 }
 
 export default function AppNavigator() {
-    const { session, loading } = useAuth();
+    const { session, loading, profile } = useAuth();
+
+    const needsOnboarding = session && profile && profile.onboarding_complete === false;
+
+    // Deep linking config
+    const linking = {
+        prefixes: ['nucleus://', 'https://nucleus.health'],
+        config: {
+            screens: {
+                Main: 'main',
+                HeartRate: 'heart-rate',
+                Steps: 'steps',
+                Sleep: 'sleep',
+                Calories: 'calories',
+                Water: 'water',
+                Stress: 'stress',
+                HealthScore: 'health-score',
+                Supplements: 'supplements',
+                LabResults: 'lab-results',
+                Notifications: 'notifications',
+                Onboarding: 'onboarding',
+                Login: 'login',
+            },
+        },
+    } as any;
 
     if (loading) {
         return (
@@ -86,10 +111,13 @@ export default function AppNavigator() {
     }
 
     return (
-        <NavigationContainer>
+        <NavigationContainer linking={linking}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {session ? (
                     <>
+                        {needsOnboarding ? (
+                            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                        ) : null}
                         <Stack.Screen name="Main" component={MainTabs} />
                         {/* Biometric detail screens */}
                         <Stack.Screen name="HeartRate" component={HeartRateScreen} />
@@ -103,7 +131,10 @@ export default function AppNavigator() {
                         <Stack.Screen name="Supplements" component={SupplementsScreen} />
                         <Stack.Screen name="LabResults" component={LabResultsScreen} />
                         <Stack.Screen name="Notifications" component={NotificationsScreen} />
-                        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+                        {!needsOnboarding ? (
+                            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                        ) : null}
                     </>
                 ) : (
                     <Stack.Screen

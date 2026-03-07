@@ -9,9 +9,11 @@ import {
 } from 'react-native';
 import { colors, fontSizes, spacing, borderRadius, shadows } from '../lib/theme';
 import { useAuth } from '../lib/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
     const { profile, signOut } = useAuth();
+    const nav = useNavigation<any>();
 
     const handleSignOut = () => {
         Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
@@ -21,9 +23,11 @@ export default function ProfileScreen() {
     };
 
     const menuItems = [
-        { icon: '🧬', label: 'Blood Results', onPress: () => { } },
-        { icon: '💊', label: 'Supplements', onPress: () => { } },
-        { icon: '🔔', label: 'Notifications', onPress: () => { } },
+        { icon: '✏️', label: 'Edit Profile', onPress: () => nav.navigate('EditProfile') },
+        { icon: '🧬', label: 'Blood Results', onPress: () => nav.navigate('LabResults') },
+        { icon: '💊', label: 'Supplements', onPress: () => nav.navigate('Supplements') },
+        { icon: '📊', label: 'Health Score', onPress: () => nav.navigate('HealthScore') },
+        { icon: '🔔', label: 'Notifications', onPress: () => nav.navigate('Notifications') },
         { icon: '🔒', label: 'Privacy & Security', onPress: () => { } },
         { icon: '❓', label: 'Help & Support', onPress: () => { } },
     ];

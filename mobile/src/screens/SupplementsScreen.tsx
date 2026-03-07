@@ -29,6 +29,21 @@ export default function SupplementsScreen({ navigation }: any) {
                     { id: '7', name: 'Coenzyme Q10', dosage: '100mg', frequency: 'Daily', active: true },
                 ]);
             }
+
+            // Load today's taken supplements
+            const today = new Date().toISOString().split('T')[0];
+            try {
+                const { data: logs } = await supabase
+                    .from('supplement_logs')
+                    .select('supplement_id')
+                    .eq('user_id', profile?.id)
+                    .gte('taken_at', today);
+                if (logs?.length) {
+                    setTaken(new Set(logs.map(l => l.supplement_id)));
+                }
+            } catch (e) {
+                // supplement_logs table might not exist yet
+            }
         } catch {
             setSupplements([
                 { id: '1', name: 'Vitamin D', dosage: '5000 IU', frequency: 'Daily', active: true },
@@ -38,13 +53,34 @@ export default function SupplementsScreen({ navigation }: any) {
         }
     };
 
-    const toggleTaken = (id: string) => {
+    const toggleTaken = async (id: string) => {
+        const wasTaken = taken.has(id);
         setTaken(prev => {
             const next = new Set(prev);
             if (next.has(id)) next.delete(id);
             else next.add(id);
             return next;
         });
+
+        // Persist to Supabase
+        try {
+            if (!wasTaken) {
+                await supabase.from('supplement_logs').insert({
+                    user_id: profile?.id,
+                    supplement_id: id,
+                    taken_at: new Date().toISOString(),
+                });
+            } else {
+                const today = new Date().toISOString().split('T')[0];
+                await supabase.from('supplement_logs')
+                    .delete()
+                    .eq('user_id', profile?.id)
+                    .eq('supplement_id', id)
+                    .gte('taken_at', today);
+            }
+        } catch (e) {
+            console.log('Supplement log error (table may not exist):', e);
+        }
     };
 
     return (
