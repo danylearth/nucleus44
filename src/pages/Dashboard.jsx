@@ -16,6 +16,7 @@ import BellIcon from "../components/icons/BellIcon";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import NutritionCard from "../components/dashboard/NutritionCard";
+import { calculateHealthScore } from "@/functions/healthScore";
 
 export default function Dashboard() {
   const [user, setUser] = useState({ health_score: 750, full_name: 'User', id: '', profile_picture: '' });
@@ -33,7 +34,7 @@ export default function Dashboard() {
   const processHealthDataToMetrics = useMemo(() => {
     return (healthDataForToday) => {
       console.log('🔍 Processing health data for metrics:', healthDataForToday);
-      
+
       const metrics = {
         steps: { value: '0', unit: 'steps', progress: 0 },
         heartRate: { value: '0', unit: 'bpm', status: 'normal' },
@@ -46,236 +47,236 @@ export default function Dashboard() {
         temperature: { average: 0 },
         oxygen: { average: 0 }
       };
-      
+
       // Process daily data
       const dailyData = healthDataForToday.find(item => item.data_type === 'daily');
       if (dailyData?.data) {
-          console.log('📊 Daily data found:', dailyData.data);
-          
-          // STEPS - Terra sends steps in distance_data.steps
-          const totalSteps = dailyData.data.distance_data?.steps || 0;
-          if (totalSteps > 0) {
-            metrics.steps.value = totalSteps.toString();
-            metrics.steps.progress = Math.min((totalSteps / 10000) * 100, 100);
-            console.log('👟 Steps:', metrics.steps.value);
-          }
-          
-          // CALORIES - Terra sends calorie_samples array, need to sum them up
-          const calorieSamples = dailyData.data.calories_data?.calorie_samples || [];
-          const totalCaloriesSamples = dailyData.data.calories_data?.total_burned_calories; // Some providers send this
-          
-          let totalCalories = 0;
-          if (totalCaloriesSamples) {
-            // If total is provided directly
-            totalCalories = totalCaloriesSamples;
-          } else if (calorieSamples.length > 0) {
-            // Sum up all calorie samples
-            totalCalories = calorieSamples.reduce((sum, sample) => sum + (sample.calories || 0), 0);
-          }
-          
-          if (totalCalories > 0) {
-            metrics.calories.value = Math.round(totalCalories).toString();
-            metrics.calories.progress = Math.min((totalCalories / 2000) * 100, 100);
-            console.log('🔥 Calories:', metrics.calories.value, 'from', calorieSamples.length, 'samples');
-          }
-          
-          // HEART RATE - DETAILED LOGGING
-          console.log('🔍 Checking heart rate data structure (daily):', {
-            has_heart_rate_data: !!dailyData.data.heart_rate_data,
-            summary: dailyData.data.heart_rate_data?.summary,
-            samples_count: dailyData.data.heart_rate_data?.samples?.length || 0,
-            full_hr_data: JSON.stringify(dailyData.data.heart_rate_data, null, 2)
-          });
+        console.log('📊 Daily data found:', dailyData.data);
 
-          let avgHr = dailyData.data.heart_rate_data?.summary?.avg_hr_bpm || 0;
-          
-          // If no summary, calculate from samples
-          if (avgHr === 0 && dailyData.data.heart_rate_data?.samples?.length > 0) {
-            const samples = dailyData.data.heart_rate_data.samples;
-            const sum = samples.reduce((acc, s) => acc + (s.bpm || 0), 0);
-            avgHr = Math.round(sum / samples.length);
-            console.log('❤️ Heart Rate calculated from', samples.length, 'samples:', avgHr);
-          }
-          
-          console.log('❤️ Heart Rate (daily):', avgHr, 'Full HR data:', dailyData.data.heart_rate_data);
-          
-          if (avgHr > 0) {
-            metrics.heartRate.value = Math.round(avgHr).toString();
-            metrics.heartRate.status = (avgHr > 60 && avgHr < 100) ? 'normal' : 'elevated';
-            console.log('✅ Heart Rate set:', metrics.heartRate.value, 'bpm');
-          }
-          
-          // OXYGEN
-          const avgO2 = dailyData.data.oxygen_data?.avg_saturation_percentage || 0;
-          if (avgO2 > 0) {
-            metrics.oxygen.average = Math.round(avgO2);
-          } else if (dailyData.data.oxygen_data?.saturation_samples?.length > 0) {
-            const samples = dailyData.data.oxygen_data.saturation_samples;
-            const sum = samples.reduce((acc, s) => acc + (s.percentage || 0), 0);
-            metrics.oxygen.average = Math.round(sum / samples.length);
-          }
-          
-          // HRV for stress
-          const hrvValue = dailyData.data.heart_rate_data?.summary?.avg_hrv_rmssd || 0;
-          if (hrvValue > 0) {
-            metrics.stress.value = Math.round(hrvValue).toString();
-          }
+        // STEPS - Terra sends steps in distance_data.steps
+        const totalSteps = dailyData.data.distance_data?.steps || 0;
+        if (totalSteps > 0) {
+          metrics.steps.value = totalSteps.toString();
+          metrics.steps.progress = Math.min((totalSteps / 10000) * 100, 100);
+          console.log('👟 Steps:', metrics.steps.value);
+        }
+
+        // CALORIES - Terra sends calorie_samples array, need to sum them up
+        const calorieSamples = dailyData.data.calories_data?.calorie_samples || [];
+        const totalCaloriesSamples = dailyData.data.calories_data?.total_burned_calories; // Some providers send this
+
+        let totalCalories = 0;
+        if (totalCaloriesSamples) {
+          // If total is provided directly
+          totalCalories = totalCaloriesSamples;
+        } else if (calorieSamples.length > 0) {
+          // Sum up all calorie samples
+          totalCalories = calorieSamples.reduce((sum, sample) => sum + (sample.calories || 0), 0);
+        }
+
+        if (totalCalories > 0) {
+          metrics.calories.value = Math.round(totalCalories).toString();
+          metrics.calories.progress = Math.min((totalCalories / 2000) * 100, 100);
+          console.log('🔥 Calories:', metrics.calories.value, 'from', calorieSamples.length, 'samples');
+        }
+
+        // HEART RATE - DETAILED LOGGING
+        console.log('🔍 Checking heart rate data structure (daily):', {
+          has_heart_rate_data: !!dailyData.data.heart_rate_data,
+          summary: dailyData.data.heart_rate_data?.summary,
+          samples_count: dailyData.data.heart_rate_data?.samples?.length || 0,
+          full_hr_data: JSON.stringify(dailyData.data.heart_rate_data, null, 2)
+        });
+
+        let avgHr = dailyData.data.heart_rate_data?.summary?.avg_hr_bpm || 0;
+
+        // If no summary, calculate from samples
+        if (avgHr === 0 && dailyData.data.heart_rate_data?.samples?.length > 0) {
+          const samples = dailyData.data.heart_rate_data.samples;
+          const sum = samples.reduce((acc, s) => acc + (s.bpm || 0), 0);
+          avgHr = Math.round(sum / samples.length);
+          console.log('❤️ Heart Rate calculated from', samples.length, 'samples:', avgHr);
+        }
+
+        console.log('❤️ Heart Rate (daily):', avgHr, 'Full HR data:', dailyData.data.heart_rate_data);
+
+        if (avgHr > 0) {
+          metrics.heartRate.value = Math.round(avgHr).toString();
+          metrics.heartRate.status = (avgHr > 60 && avgHr < 100) ? 'normal' : 'elevated';
+          console.log('✅ Heart Rate set:', metrics.heartRate.value, 'bpm');
+        }
+
+        // OXYGEN
+        const avgO2 = dailyData.data.oxygen_data?.avg_saturation_percentage || 0;
+        if (avgO2 > 0) {
+          metrics.oxygen.average = Math.round(avgO2);
+        } else if (dailyData.data.oxygen_data?.saturation_samples?.length > 0) {
+          const samples = dailyData.data.oxygen_data.saturation_samples;
+          const sum = samples.reduce((acc, s) => acc + (s.percentage || 0), 0);
+          metrics.oxygen.average = Math.round(sum / samples.length);
+        }
+
+        // HRV for stress
+        const hrvValue = dailyData.data.heart_rate_data?.summary?.avg_hrv_rmssd || 0;
+        if (hrvValue > 0) {
+          metrics.stress.value = Math.round(hrvValue).toString();
+        }
       }
 
       // Process body data
       const bodyData = healthDataForToday.find(item => item.data_type === 'body');
       if (bodyData?.data) {
-          console.log('🏋️ Body data found:', bodyData.data);
-          
-          // Heart Rate from body data (if not already set)
-          if (metrics.heartRate.value === '0') {
-            console.log('🔍 Checking body heart rate:', {
-              has_heart_data: !!bodyData.data.heart_data,
-              has_hr_data: !!bodyData.data.heart_data?.heart_rate_data,
-              summary: bodyData.data.heart_data?.heart_rate_data?.summary,
-              samples_count: bodyData.data.heart_data?.heart_rate_data?.samples?.length || 0,
-              full_hr_data: JSON.stringify(bodyData.data.heart_data?.heart_rate_data, null, 2)
-            });
-            
-            const hrSummary = bodyData.data.heart_data?.heart_rate_data?.summary;
-            let bodyAvgHr = hrSummary?.avg_hr_bpm || 0;
-            
-            // Try samples if no summary
-            if (bodyAvgHr === 0 && bodyData.data.heart_data?.heart_rate_data?.samples?.length > 0) {
-              const samples = bodyData.data.heart_data.heart_rate_data.samples;
-              const sum = samples.reduce((acc, s) => acc + (s.bpm || 0), 0);
-              bodyAvgHr = Math.round(sum / samples.length);
-            }
-            
-            console.log('❤️ Heart Rate (body):', bodyAvgHr, 'Full HR data:', bodyData.data.heart_data);
-            
-            if (bodyAvgHr > 0) {
-              metrics.heartRate.value = Math.round(bodyAvgHr).toString();
-              metrics.heartRate.status = (bodyAvgHr > 60 && bodyAvgHr < 100) ? 'normal' : 'elevated';
-              console.log('✅ Heart Rate set from body:', metrics.heartRate.value, 'bpm');
-            }
+        console.log('🏋️ Body data found:', bodyData.data);
+
+        // Heart Rate from body data (if not already set)
+        if (metrics.heartRate.value === '0') {
+          console.log('🔍 Checking body heart rate:', {
+            has_heart_data: !!bodyData.data.heart_data,
+            has_hr_data: !!bodyData.data.heart_data?.heart_rate_data,
+            summary: bodyData.data.heart_data?.heart_rate_data?.summary,
+            samples_count: bodyData.data.heart_data?.heart_rate_data?.samples?.length || 0,
+            full_hr_data: JSON.stringify(bodyData.data.heart_data?.heart_rate_data, null, 2)
+          });
+
+          const hrSummary = bodyData.data.heart_data?.heart_rate_data?.summary;
+          let bodyAvgHr = hrSummary?.avg_hr_bpm || 0;
+
+          // Try samples if no summary
+          if (bodyAvgHr === 0 && bodyData.data.heart_data?.heart_rate_data?.samples?.length > 0) {
+            const samples = bodyData.data.heart_data.heart_rate_data.samples;
+            const sum = samples.reduce((acc, s) => acc + (s.bpm || 0), 0);
+            bodyAvgHr = Math.round(sum / samples.length);
           }
 
-          // Blood Pressure
-          const bpSamples = bodyData.data.blood_pressure_data?.blood_pressure_samples;
-          if (bpSamples && bpSamples.length > 0) {
-            const latestBP = bpSamples[0];
-            metrics.bloodPressure.systolic = Math.round(latestBP.systolic_bp || 0);
-            metrics.bloodPressure.diastolic = Math.round(latestBP.diastolic_bp || 0);
-          }
+          console.log('❤️ Heart Rate (body):', bodyAvgHr, 'Full HR data:', bodyData.data.heart_data);
 
-          // Glucose
-          const avgGlucose = bodyData.data.glucose_data?.day_avg_blood_glucose_mg_per_dL || 0;
-          if (avgGlucose > 0) {
-            metrics.glucose.average = Math.round(avgGlucose);
-          } else if (bodyData.data.glucose_data?.blood_glucose_samples?.length > 0) {
-            const samples = bodyData.data.glucose_data.blood_glucose_samples;
-            const sum = samples.reduce((acc, s) => acc + (s.glucose_mg_per_dL || 0), 0);
-            metrics.glucose.average = Math.round(sum / samples.length);
+          if (bodyAvgHr > 0) {
+            metrics.heartRate.value = Math.round(bodyAvgHr).toString();
+            metrics.heartRate.status = (bodyAvgHr > 60 && bodyAvgHr < 100) ? 'normal' : 'elevated';
+            console.log('✅ Heart Rate set from body:', metrics.heartRate.value, 'bpm');
           }
+        }
 
-          // Temperature
-          const tempSamples = bodyData.data.temperature_data?.body_temperature_samples;
-          if (tempSamples && tempSamples.length > 0) {
-            const avgTemp = tempSamples.reduce((sum, sample) => sum + (sample.temperature_celsius || 0), 0) / tempSamples.length;
-            if (avgTemp > 0) {
-              metrics.temperature.average = avgTemp.toFixed(1);
-            }
+        // Blood Pressure
+        const bpSamples = bodyData.data.blood_pressure_data?.blood_pressure_samples;
+        if (bpSamples && bpSamples.length > 0) {
+          const latestBP = bpSamples[0];
+          metrics.bloodPressure.systolic = Math.round(latestBP.systolic_bp || 0);
+          metrics.bloodPressure.diastolic = Math.round(latestBP.diastolic_bp || 0);
+        }
+
+        // Glucose
+        const avgGlucose = bodyData.data.glucose_data?.day_avg_blood_glucose_mg_per_dL || 0;
+        if (avgGlucose > 0) {
+          metrics.glucose.average = Math.round(avgGlucose);
+        } else if (bodyData.data.glucose_data?.blood_glucose_samples?.length > 0) {
+          const samples = bodyData.data.glucose_data.blood_glucose_samples;
+          const sum = samples.reduce((acc, s) => acc + (s.glucose_mg_per_dL || 0), 0);
+          metrics.glucose.average = Math.round(sum / samples.length);
+        }
+
+        // Temperature
+        const tempSamples = bodyData.data.temperature_data?.body_temperature_samples;
+        if (tempSamples && tempSamples.length > 0) {
+          const avgTemp = tempSamples.reduce((sum, sample) => sum + (sample.temperature_celsius || 0), 0) / tempSamples.length;
+          if (avgTemp > 0) {
+            metrics.temperature.average = avgTemp.toFixed(1);
           }
-          
-          // Oxygen fallback
-          if (metrics.oxygen.average === 0) {
-            const bodyO2 = bodyData.data.oxygen_data?.avg_saturation_percentage || 0;
-            if (bodyO2 > 0) {
-              metrics.oxygen.average = Math.round(bodyO2);
-            } else if (bodyData.data.oxygen_data?.saturation_samples?.length > 0) {
-              const samples = bodyData.data.oxygen_data.saturation_samples;
-              const sum = samples.reduce((acc, s) => acc + (s.percentage || 0), 0);
-              metrics.oxygen.average = Math.round(sum / samples.length);
-            }
+        }
+
+        // Oxygen fallback
+        if (metrics.oxygen.average === 0) {
+          const bodyO2 = bodyData.data.oxygen_data?.avg_saturation_percentage || 0;
+          if (bodyO2 > 0) {
+            metrics.oxygen.average = Math.round(bodyO2);
+          } else if (bodyData.data.oxygen_data?.saturation_samples?.length > 0) {
+            const samples = bodyData.data.oxygen_data.saturation_samples;
+            const sum = samples.reduce((acc, s) => acc + (s.percentage || 0), 0);
+            metrics.oxygen.average = Math.round(sum / samples.length);
           }
+        }
       }
 
       // Process activity data
       const activityData = healthDataForToday.filter(item => item.data_type === 'activity');
       if (activityData.length > 0) {
-          console.log('🏃 Activity data found:', activityData.length, 'activities');
-          
-          // Sum calories from all activities if daily doesn't have it
-          if (metrics.calories.value === '0') {
-            let totalActivityCalories = 0;
-            activityData.forEach(activity => {
-              const activityTotal = activity.data.calories_data?.total_burned_calories || 0;
-              const activitySamples = activity.data.calories_data?.calorie_samples || [];
-              
-              if (activityTotal > 0) {
-                totalActivityCalories += activityTotal;
-              } else if (activitySamples.length > 0) {
-                totalActivityCalories += activitySamples.reduce((sum, s) => sum + (s.calories || 0), 0);
-              }
-            });
-            
-            if (totalActivityCalories > 0) {
-              metrics.calories.value = Math.round(totalActivityCalories).toString();
-              metrics.calories.progress = Math.min((totalActivityCalories / 2000) * 100, 100);
-              console.log('🔥 Calories from activities:', metrics.calories.value);
+        console.log('🏃 Activity data found:', activityData.length, 'activities');
+
+        // Sum calories from all activities if daily doesn't have it
+        if (metrics.calories.value === '0') {
+          let totalActivityCalories = 0;
+          activityData.forEach(activity => {
+            const activityTotal = activity.data.calories_data?.total_burned_calories || 0;
+            const activitySamples = activity.data.calories_data?.calorie_samples || [];
+
+            if (activityTotal > 0) {
+              totalActivityCalories += activityTotal;
+            } else if (activitySamples.length > 0) {
+              totalActivityCalories += activitySamples.reduce((sum, s) => sum + (s.calories || 0), 0);
             }
+          });
+
+          if (totalActivityCalories > 0) {
+            metrics.calories.value = Math.round(totalActivityCalories).toString();
+            metrics.calories.progress = Math.min((totalActivityCalories / 2000) * 100, 100);
+            console.log('🔥 Calories from activities:', metrics.calories.value);
+          }
+        }
+
+        // Sum steps from all activities if daily doesn't have it
+        if (metrics.steps.value === '0') {
+          const totalActivitySteps = activityData.reduce((sum, activity) => {
+            return sum + (activity.data.distance_data?.steps || 0);
+          }, 0);
+
+          if (totalActivitySteps > 0) {
+            metrics.steps.value = totalActivitySteps.toString();
+            metrics.steps.progress = Math.min((totalActivitySteps / 10000) * 100, 100);
+            console.log('👟 Steps from activities:', metrics.steps.value);
+          }
+        }
+
+        // Heart rate from activities if still not set
+        if (metrics.heartRate.value === '0' || parseInt(metrics.heartRate.value) < 50) {
+          const latestActivity = activityData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+
+          console.log('🔍 Checking activity heart rate:', {
+            activity_name: latestActivity?.data?.metadata?.name,
+            has_hr_data: !!latestActivity?.data?.heart_rate_data,
+            summary: latestActivity?.data?.heart_rate_data?.summary,
+            samples_count: latestActivity?.data?.heart_rate_data?.samples?.length || 0,
+            full_hr_data: JSON.stringify(latestActivity?.data?.heart_rate_data, null, 2)
+          });
+
+          let activityHr = latestActivity?.data?.heart_rate_data?.summary?.avg_hr_bpm || 0;
+
+          if (activityHr === 0 && latestActivity?.data?.heart_rate_data?.samples?.length > 0) {
+            const samples = latestActivity.data.heart_rate_data.samples;
+            const sum = samples.reduce((acc, s) => acc + (s.bpm || 0), 0);
+            activityHr = Math.round(sum / samples.length);
           }
 
-          // Sum steps from all activities if daily doesn't have it
-          if (metrics.steps.value === '0') {
-            const totalActivitySteps = activityData.reduce((sum, activity) => {
-              return sum + (activity.data.distance_data?.steps || 0);
-            }, 0);
-            
-            if (totalActivitySteps > 0) {
-              metrics.steps.value = totalActivitySteps.toString();
-              metrics.steps.progress = Math.min((totalActivitySteps / 10000) * 100, 100);
-              console.log('👟 Steps from activities:', metrics.steps.value);
-            }
-          }
+          console.log('❤️ Heart Rate (activity):', activityHr, 'Full HR data:', latestActivity?.data?.heart_rate_data);
 
-          // Heart rate from activities if still not set
-          if (metrics.heartRate.value === '0' || parseInt(metrics.heartRate.value) < 50) {
-            const latestActivity = activityData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-            
-            console.log('🔍 Checking activity heart rate:', {
-              activity_name: latestActivity?.data?.metadata?.name,
-              has_hr_data: !!latestActivity?.data?.heart_rate_data,
-              summary: latestActivity?.data?.heart_rate_data?.summary,
-              samples_count: latestActivity?.data?.heart_rate_data?.samples?.length || 0,
-              full_hr_data: JSON.stringify(latestActivity?.data?.heart_rate_data, null, 2)
-            });
-            
-            let activityHr = latestActivity?.data?.heart_rate_data?.summary?.avg_hr_bpm || 0;
-            
-            if (activityHr === 0 && latestActivity?.data?.heart_rate_data?.samples?.length > 0) {
-              const samples = latestActivity.data.heart_rate_data.samples;
-              const sum = samples.reduce((acc, s) => acc + (s.bpm || 0), 0);
-              activityHr = Math.round(sum / samples.length);
-            }
-            
-            console.log('❤️ Heart Rate (activity):', activityHr, 'Full HR data:', latestActivity?.data?.heart_rate_data);
-            
-            if (activityHr > 0) {
-              metrics.heartRate.value = Math.round(activityHr).toString();
-              metrics.heartRate.status = (activityHr > 60 && activityHr < 100) ? 'normal' : 'elevated';
-              console.log('✅ Heart Rate set from activity:', metrics.heartRate.value, 'bpm');
-            }
+          if (activityHr > 0) {
+            metrics.heartRate.value = Math.round(activityHr).toString();
+            metrics.heartRate.status = (activityHr > 60 && activityHr < 100) ? 'normal' : 'elevated';
+            console.log('✅ Heart Rate set from activity:', metrics.heartRate.value, 'bpm');
           }
+        }
       }
-      
+
       // Process sleep data
       const sleepData = healthDataForToday.find(item => item.data_type === 'sleep');
       if (sleepData?.data?.sleep_durations_data?.asleep) {
-          const duration = sleepData.data.sleep_durations_data.asleep.duration_asleep_state_seconds || 0;
-          if (duration > 0) {
-            const hours = Math.floor(duration / 3600);
-            const minutes = Math.floor((duration % 3600) / 60);
-            metrics.sleep.value = `${hours}h`;
-            metrics.sleep.subtitle = `${minutes}m Deep`;
-            console.log('😴 Sleep:', metrics.sleep.value, metrics.sleep.subtitle);
-          }
+        const duration = sleepData.data.sleep_durations_data.asleep.duration_asleep_state_seconds || 0;
+        if (duration > 0) {
+          const hours = Math.floor(duration / 3600);
+          const minutes = Math.floor((duration % 3600) / 60);
+          metrics.sleep.value = `${hours}h`;
+          metrics.sleep.subtitle = `${minutes}m Deep`;
+          console.log('😴 Sleep:', metrics.sleep.value, metrics.sleep.subtitle);
+        }
       }
 
       console.log('✅ Final metrics:', metrics);
@@ -304,73 +305,83 @@ export default function Dashboard() {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
 
+      // Calculate health score from real data (async, non-blocking)
+      try {
+        const scoreResult = await calculateHealthScore({});
+        if (scoreResult?.score != null) {
+          setUser(prev => ({ ...prev, health_score: scoreResult.score }));
+        }
+      } catch (e) {
+        console.log('Health score calc skipped:', e.message);
+      }
+
       if (currentUser?.id) {
         const userRecords = await base44.entities.HealthData.filter(
-          { user_id: currentUser.id }, 
+          { user_id: currentUser.id },
           '-synced_at',
           50
         );
-        
+
         console.log('📦 Total records fetched:', userRecords.length);
-        
+
         const now = new Date();
         const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        
+
         const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
-        
+
         const todayRecords = userRecords.filter(record => {
           if (!record.synced_at) return false;
           const syncDate = record.synced_at.split('T')[0];
           return syncDate === today;
         });
-        
+
         console.log(`📅 Found ${todayRecords.length} records for today (${today})`);
-        
+
         let recordsToProcess = todayRecords;
         let dateUsed = today;
-        
+
         if (todayRecords.length === 0) {
           const yesterdayRecords = userRecords.filter(record => {
             if (!record.synced_at) return false;
             const syncDate = record.synced_at.split('T')[0];
             return syncDate === yesterdayStr;
           });
-          
+
           console.log(`📅 Using yesterday's data (${yesterdayStr}): ${yesterdayRecords.length} records`);
           recordsToProcess = yesterdayRecords;
           dateUsed = yesterdayStr;
         }
-        
+
         if (recordsToProcess.length > 0) {
           const latestByType = {};
           recordsToProcess.forEach(record => {
             const type = record.data_type;
-            
+
             if (!latestByType[type]) {
               latestByType[type] = record;
             } else {
               const currentSyncTime = new Date(latestByType[type].synced_at);
               const newSyncTime = new Date(record.synced_at);
-              
+
               if (newSyncTime > currentSyncTime) {
                 latestByType[type] = record;
               }
             }
           });
-          
+
           const latestRecords = Object.values(latestByType);
-          
+
           console.log(`🎯 Processing ${latestRecords.length} latest records by type`);
           latestRecords.forEach(r => {
             console.log(`  - ${r.data_type}: synced at ${r.synced_at}`);
           });
-          
+
           const nutritionEntries = latestRecords.filter(item => item.data_type === 'nutrition');
           const processedMetrics = processHealthDataToMetrics(latestRecords);
           const nutrition = nutritionEntries.length > 0 && nutritionEntries[0].data.summary ? nutritionEntries[0].data.summary : null;
-          
+
           setHealthData(latestRecords);
           setDataSource(dateUsed === today ? 'real' : 'yesterday');
           setMetricsData(processedMetrics);
@@ -513,7 +524,7 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card> */}
-        
+
         {/* Show error message if there's an error */}
         {error && (
           <Card className="bg-red-50 rounded-2xl border-red-200 shadow-sm">
@@ -526,7 +537,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
-        
+
         {/* Show placeholder if no data */}
         {!error && dataSource === 'none' ? (
           <Card className="bg-white rounded-2xl border-0 shadow-sm">
@@ -547,19 +558,19 @@ export default function Dashboard() {
           <>
             {/* Show metrics if we have data */}
             <div className="grid grid-cols-3 gap-4 items-start">
-                <div className="col-span-1 flex flex-col gap-4">
-                    <MetricCard metric={metricsData.find(m => m.label === 'Steps')} />
-                    <MetricCard metric={metricsData.find(m => m.label === 'Calories')} />
-                </div>
-                <div className="col-span-2">
-                    <MetricCard metric={metricsData.find(m => m.label === 'Heart Rate')} />
-                </div>
+              <div className="col-span-1 flex flex-col gap-4">
+                <MetricCard metric={metricsData.find(m => m.label === 'Steps')} />
+                <MetricCard metric={metricsData.find(m => m.label === 'Calories')} />
+              </div>
+              <div className="col-span-2">
+                <MetricCard metric={metricsData.find(m => m.label === 'Heart Rate')} />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-                <MetricCard metric={metricsData.find(m => m.label === 'Sleep')} />
-                <MetricCard metric={metricsData.find(m => m.label === 'Stress')} />
+              <MetricCard metric={metricsData.find(m => m.label === 'Sleep')} />
+              <MetricCard metric={metricsData.find(m => m.label === 'Stress')} />
             </div>
-            
+
             {nutritionData && (
               <div className="mt-6">
                 <NutritionCard nutritionData={nutritionData} />
@@ -567,7 +578,7 @@ export default function Dashboard() {
             )}
           </>
         )}
-        
+
         <div className="mt-6">
           <SupplementsCard />
         </div>

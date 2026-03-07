@@ -65,6 +65,7 @@ import { router as bloodSyncRouter } from './routes/scheduledBloodResultsSync.js
 import { router as uploadBloodResultRouter } from './routes/uploadBloodResult.js';
 import { router as terraWebhookRouter } from './routes/terraWebhook.js';
 import { router as terraConnectRouter } from './routes/terraConnect.js';
+import { router as healthScoreRouter } from './routes/healthScore.js';
 
 // ─── Express app ─────────────────────────────────────────────────
 const app = express();
@@ -93,6 +94,7 @@ app.use('/api/functions/terraConnect', terraConnectRouter);
 // Integration routes
 app.use('/api/llm', llmRouter);
 app.use('/api/email', emailRouter);
+app.use('/api/functions/healthScore', healthScoreRouter);
 
 // Terra webhook (no auth — called by Terra servers)
 app.use('/api/webhooks/terra', terraWebhookRouter);
