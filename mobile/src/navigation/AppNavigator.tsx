@@ -45,12 +45,20 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
         Devices: '⌚',
         Profile: '👤',
     };
+
+    if (focused) {
+        return (
+            <View style={[styles.tabIcon, styles.tabIconActive]}>
+                <Text style={styles.tabEmoji}>{icons[label] || '📋'}</Text>
+                <Text style={[styles.tabLabel, styles.tabLabelActive]}>{label}</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.tabIcon}>
             <Text style={styles.tabEmoji}>{icons[label] || '📋'}</Text>
-            <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>
-                {label}
-            </Text>
+            <Text style={styles.tabLabel}>{label}</Text>
         </View>
     );
 }
@@ -158,28 +166,44 @@ export default function AppNavigator() {
 
 const styles = StyleSheet.create({
     tabBar: {
-        backgroundColor: colors.surface,
-        borderTopWidth: 1,
-        borderTopColor: colors.borderLight,
-        height: 85,
-        paddingTop: 8,
+        backgroundColor: '#F2F2F7',
+        borderTopWidth: 0,
+        height: 80,
+        paddingTop: 6,
         paddingBottom: 20,
+        shadowColor: '#000',
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: -4 },
+        elevation: 8,
     },
     tabIcon: {
         alignItems: 'center',
-        gap: 2,
+        justifyContent: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        minWidth: 48,
+    },
+    tabIconActive: {
+        backgroundColor: '#1C1C1E',
+        flexDirection: 'row',
+        gap: 6,
+        paddingHorizontal: 16,
     },
     tabEmoji: {
-        fontSize: 22,
+        fontSize: 20,
     },
     tabLabel: {
-        fontSize: fontSizes.xs,
-        color: colors.textTertiary,
+        fontSize: 10,
+        color: '#8E8E93',
         fontWeight: '500',
+        marginTop: 2,
     },
     tabLabelActive: {
-        color: colors.primary,
+        color: '#fff',
         fontWeight: '600',
+        marginTop: 0,
     },
     loadingContainer: {
         flex: 1,
