@@ -273,8 +273,9 @@ function MetricCard({
                     {unit ? <Text style={styles.metricUnitBelow}>{unit}</Text> : null}
                 </View>
             )}
+            {sparkData && <View style={{ flex: 1 }} />}
             {sparkData && (
-                <View style={{ marginTop: 8, marginHorizontal: -8, overflow: 'hidden' }}>
+                <View style={{ marginTop: 8, marginHorizontal: -18, marginBottom: -18, overflow: 'hidden', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
                     <MiniSparkline data={sparkData} color={sparkColor || '#EF4444'} fillColor={sparkFill || '#FCA5A5'} />
                 </View>
             )}
