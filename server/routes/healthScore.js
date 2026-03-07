@@ -82,14 +82,30 @@ function scoreBloodWork(labResults) {
         count++;
     }
 
-    return count > 0 ? Math.round(totalScore / count) : null;
+    return count > 0 ? Math.round((totalScore / count) * 0.75) : null; // scale down from 200 base to 150 max
 }
 
 function scoreConsistency(dataPoints, daysTracked) {
     // How many of the last 7 days have data
     if (!daysTracked || daysTracked <= 0) return null;
     const ratio = Math.min(daysTracked / 7, 1);
-    return Math.round(ratio * 200);
+    return Math.round(ratio * 100); // Max 100 for consistency
+}
+
+function scoreGoals(goals) {
+    if (!goals || goals.length === 0) return null;
+    let totalPct = 0;
+    for (const g of goals) {
+        if (!g.target_value) {
+            totalPct += 0.5; // Default middle ground if no target
+            continue;
+        }
+        let current = g.current_value || 0;
+        let pct = Math.min(1, current / g.target_value);
+        totalPct += pct;
+    }
+    const avgPct = (totalPct / goals.length);
+    return Math.round(avgPct * 150); // Max 150 for goals
 }
 
 // ─── Main route ─────────────────────────────────────────────────────
@@ -130,6 +146,17 @@ router.post('/', requireAuth, async (req, res) => {
                 if (data) labResults = data;
             } catch (e) { /* ok */ }
         }
+
+        // Gather active goals
+        let activeGoals = [];
+        try {
+            const { data } = await supabaseAdmin
+                .from('goals')
+                .select('target_value, current_value, status')
+                .eq('user_id', userId)
+                .eq('status', 'active');
+            if (data) activeGoals = data;
+        } catch (e) { /* table might not exist yet */ }
 
         // Parse health data into metrics
         let totalSteps = 0, stepDays = 0;
@@ -172,11 +199,21 @@ router.post('/', requireAuth, async (req, res) => {
         const avgHR = restingHRs.length > 0 ? restingHRs.reduce((a, b) => a + b) / restingHRs.length : 0;
         const avgHRV = hrvValues.length > 0 ? hrvValues.reduce((a, b) => a + b) / hrvValues.length : 0;
 
+        const categoryMaxes = {
+            activity: 200,
+            sleep: 200,
+            heart: 200, // Make sure key matches frontend optionally
+            blood: 150,
+            goals: 150,
+            consistency: 100,
+        };
+
         const categories = {
             activity: scoreSteps(avgSteps),
             sleep: scoreSleep(avgSleep),
-            heartRate: scoreHeartRate(avgHR, avgHRV),
-            bloodWork: scoreBloodWork(labResults),
+            heart: scoreHeartRate(avgHR, avgHRV),
+            blood: scoreBloodWork(labResults),
+            goals: scoreGoals(activeGoals),
             consistency: scoreConsistency(healthData?.length || 0, uniqueDays.size),
         };
 
@@ -186,7 +223,7 @@ router.post('/', requireAuth, async (req, res) => {
 
         if (availableCategories.length > 0) {
             const rawTotal = availableCategories.reduce((sum, [_, v]) => sum + v, 0);
-            const maxPossible = availableCategories.length * 200;
+            const maxPossible = availableCategories.reduce((sum, [k, _]) => sum + categoryMaxes[k], 0);
             finalScore = Math.round((rawTotal / maxPossible) * 1000);
             finalScore = Math.max(0, Math.min(1000, finalScore));
         }
@@ -200,10 +237,11 @@ router.post('/', requireAuth, async (req, res) => {
         // Build breakdown for the UI
         const breakdown = {};
         for (const [key, value] of Object.entries(categories)) {
+            const maxKey = categoryMaxes[key] || 200;
             breakdown[key] = {
                 score: value,
-                maxScore: 200,
-                percentage: value !== null ? Math.round((value / 200) * 100) : null,
+                maxScore: maxKey,
+                percentage: value !== null ? Math.round((value / maxKey) * 100) : null,
                 hasData: value !== null,
             };
         }

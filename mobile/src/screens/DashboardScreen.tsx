@@ -164,7 +164,7 @@ function MacronutrientsCard() {
     return (
         <View style={styles.macroCard}>
             <View style={styles.macroHeader}>
-                <Text style={{ fontSize: 16 }}>🌾</Text>
+                <MacronutrientsIcon />
                 <Text style={styles.macroTitle}>Macronutrients</Text>
             </View>
             <View style={styles.macroRow}>
@@ -177,6 +177,35 @@ function MacronutrientsCard() {
 }
 
 // ─── SVG Icons ──────────────────────────────────────────────────────
+function MacronutrientsIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M12 22C12 22 17 17 17 12C17 7 12 2 12 2C12 2 7 7 7 12C7 17 12 22 12 22Z" stroke="#A8D8D0" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+    );
+}
+
+function SupplementsIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M10.5 20.5L3.5 13.5C2.11929 12.1193 2.11929 9.88071 3.5 8.5L8.5 3.5C9.88071 2.11929 12.1193 2.11929 13.5 3.5L20.5 10.5C21.8807 11.8807 21.8807 14.1193 20.5 15.5L15.5 20.5C14.1193 21.8807 11.8807 21.8807 10.5 20.5Z" stroke="#8B5CF6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            <Path d="M8.5 8.5L15.5 15.5" stroke="#8B5CF6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+    );
+}
+
+function LabResultsIcon() {
+    return (
+        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+            <Path d="M9 3H15" stroke="#F97316" strokeWidth={2} strokeLinecap="round" />
+            <Path d="M10 3V7" stroke="#F97316" strokeWidth={2} strokeLinecap="round" />
+            <Path d="M14 3V7" stroke="#F97316" strokeWidth={2} strokeLinecap="round" />
+            <Path d="M7 21H17C18.1046 21 19 20.1046 19 19V11.2361C19 10.6385 18.7327 10.0718 18.2676 9.69974L15.7324 7.67248C15.2673 7.3004 15 6.73369 15 6.1361V3H9V6.1361C9 6.73369 8.73268 7.3004 8.26756 7.67248L5.73244 9.69974C5.26732 10.0718 5 10.6385 5 11.2361V19C5 20.1046 5.89543 21 7 21Z" stroke="#F97316" strokeWidth={2} strokeLinejoin="round" />
+            <Path d="M5 14H19" stroke="#F97316" strokeWidth={2} strokeLinecap="round" />
+        </Svg>
+    );
+}
+
 function StepsIcon() {
     return (
         <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
@@ -314,7 +343,7 @@ function SupplementsCard({ supplements }: { supplements: any[] }) {
         <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={{ fontSize: 16 }}>💊</Text>
+                    <SupplementsIcon />
                     <Text style={styles.sectionTitle}>Supplements</Text>
                 </View>
                 <View style={styles.streakBadge}>
@@ -342,7 +371,7 @@ function LabResultsCard({ results }: { results: any[] }) {
         <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={{ fontSize: 16 }}>✅</Text>
+                    <LabResultsIcon />
                     <Text style={styles.sectionTitle}>Lab Results</Text>
                 </View>
                 <TouchableOpacity>
@@ -388,6 +417,8 @@ export default function DashboardScreen() {
     const [supplements, setSupplements] = useState<any[]>([]);
     const [labResults, setLabResults] = useState<any[]>([]);
     const [greeting, setGreeting] = useState('');
+
+    const [activeGoals, setActiveGoals] = useState<any[]>([]);
 
     useEffect(() => {
         const hour = new Date().getHours();
@@ -465,6 +496,12 @@ export default function DashboardScreen() {
                 const result = await callFunction('healthScore', {});
                 if (result?.score != null) setHealthScore(result.score);
             } catch (e) { }
+
+            // Active Goals
+            try {
+                const result = await callFunction('goals', {}, 'GET');
+                if (result?.goals) setActiveGoals(result.goals.filter((g: any) => g.status === 'active'));
+            } catch (e) { console.log('Goals load error on dashboard:', e); }
         } catch (error) {
             console.log('Dashboard load error:', error);
         }
@@ -570,6 +607,40 @@ export default function DashboardScreen() {
                 onPress={() => nav.navigate('Stress')}
             />
 
+            {/* Goals Card (New) */}
+            <TouchableOpacity style={styles.goalsCard} activeOpacity={0.8} onPress={() => nav.navigate('Goals')}>
+                <View style={styles.goalsHeader}>
+                    <View style={styles.goalsIconWrapper}>
+                        <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+                            <Circle cx={12} cy={12} r={9} stroke="#22C55E" strokeWidth={2} />
+                            <Circle cx={12} cy={12} r={3} stroke="#22C55E" strokeWidth={2} />
+                            <Path d="M12 3V1M12 23V21M3 12H1M23 12H21" stroke="#22C55E" strokeWidth={2} strokeLinecap="round" />
+                        </Svg>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.goalsTitle}>90-Day Goals</Text>
+                        <Text style={styles.goalsSubtitle}>
+                            {activeGoals.length} Active Targets
+                        </Text>
+                    </View>
+                    <Text style={styles.goalsChevron}>›</Text>
+                </View>
+                {activeGoals.length > 0 && (
+                    <View style={styles.goalsPreview}>
+                        {activeGoals.slice(0, 2).map((g: any, i: number) => (
+                            <View key={i} style={styles.goalsPreviewItem}>
+                                <Text style={styles.goalsPreviewTitle} numberOfLines={1}>{g.title}</Text>
+                                {g.target_value && g.current_value != null && (
+                                    <View style={styles.goalsPreviewBarBg}>
+                                        <View style={[styles.goalsPreviewBarFill, { width: `${Math.min(100, (g.current_value / g.target_value) * 100)}%` }]} />
+                                    </View>
+                                )}
+                            </View>
+                        ))}
+                    </View>
+                )}
+            </TouchableOpacity>
+
             {/* Supplements */}
             <TouchableOpacity onPress={() => nav.navigate('Supplements')}>
                 <SupplementsCard supplements={supplements.length > 0 ? supplements : [
@@ -671,6 +742,16 @@ const styles = StyleSheet.create({
 
     // Goals card
     goalsCard: { backgroundColor: '#111827', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
+    goalsHeader: { flexDirection: 'row', alignItems: 'center' },
+    goalsIconWrapper: { width: 44, height: 44, borderRadius: 14, backgroundColor: '#22C55E15', alignItems: 'center', justifyContent: 'center', marginRight: 16 },
+    goalsTitle: { fontSize: 17, fontWeight: '600', color: '#fff', letterSpacing: -0.3, marginBottom: 2 },
+    goalsSubtitle: { fontSize: 14, color: '#9ca3af', fontWeight: '500' },
+    goalsChevron: { fontSize: 24, color: '#4b5563', fontWeight: '300', marginLeft: 8 },
+    goalsPreview: { marginTop: 16, gap: 12, borderTopWidth: 1, borderTopColor: '#374151', paddingTop: 16 },
+    goalsPreviewItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    goalsPreviewTitle: { fontSize: 14, color: '#f3f4f6', fontWeight: '500', flex: 1, marginRight: 12 },
+    goalsPreviewBarBg: { width: 80, height: 6, backgroundColor: '#374151', borderRadius: 3, overflow: 'hidden' },
+    goalsPreviewBarFill: { height: '100%', backgroundColor: '#22c55e', borderRadius: 3 },
 
     // Macronutrients
     macroCard: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 8, elevation: 1 },
