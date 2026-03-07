@@ -13,6 +13,7 @@ import { colors, fontSizes, spacing, borderRadius, shadows } from '../lib/theme'
 import { useAuth } from '../lib/AuthContext';
 import { supabase, callFunction } from '../lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -118,12 +119,13 @@ function MetricRow({ children }: { children: React.ReactNode }) {
 }
 
 function MetricCard({
-    icon, label, value, unit, badge, wide, children
+    icon, label, value, unit, badge, wide, onPress, children
 }: {
-    icon: string; label: string; value: string; unit?: string; badge?: string; wide?: boolean; children?: React.ReactNode;
+    icon: string; label: string; value: string; unit?: string; badge?: string; wide?: boolean; onPress?: () => void; children?: React.ReactNode;
 }) {
+    const Wrapper = onPress ? TouchableOpacity : View;
     return (
-        <View style={[styles.metricCard, wide && styles.metricCardWide]}>
+        <Wrapper style={[styles.metricCard, wide && styles.metricCardWide]} onPress={onPress}>
             <View style={styles.metricHeader}>
                 <Text style={styles.metricIcon}>{icon}</Text>
                 <Text style={styles.metricLabel}>{label}</Text>
@@ -140,7 +142,7 @@ function MetricCard({
                 )}
             </View>
             {children}
-        </View>
+        </Wrapper>
     );
 }
 
@@ -317,6 +319,7 @@ export default function DashboardScreen() {
 
     const firstName = profile?.full_name?.split(' ')[0] || 'there';
     const hrStatus = metrics.heartRate > 0 ? (metrics.heartRate >= 60 && metrics.heartRate < 100 ? 'normal' : 'elevated') : '';
+    const nav = useNavigation<any>();
 
     return (
         <ScrollView
@@ -336,43 +339,49 @@ export default function DashboardScreen() {
                         <Text style={styles.userName}>{firstName}</Text>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.notifButton}>
+                <TouchableOpacity style={styles.notifButton} onPress={() => nav.navigate('Notifications')}>
                     <Text style={{ fontSize: 18 }}>🔔</Text>
                 </TouchableOpacity>
             </View>
 
             {/* Health Score */}
-            <HealthScoreArc score={healthScore} />
+            <TouchableOpacity onPress={() => nav.navigate('HealthScore')}>
+                <HealthScoreArc score={healthScore} />
+            </TouchableOpacity>
 
             {/* Steps & Heart Rate row */}
             <MetricRow>
-                <MetricCard icon="👟" label="Steps" value={metrics.steps > 0 ? metrics.steps.toLocaleString() : '—'} unit="Steps" />
-                <MetricCard icon="❤️" label="Heart Rate" value={metrics.heartRate > 0 ? metrics.heartRate.toString() : '—'} unit="bpm" badge={hrStatus} />
+                <MetricCard icon="👟" label="Steps" value={metrics.steps > 0 ? metrics.steps.toLocaleString() : '—'} unit="Steps" onPress={() => nav.navigate('Steps')} />
+                <MetricCard icon="❤️" label="Heart Rate" value={metrics.heartRate > 0 ? metrics.heartRate.toString() : '—'} unit="bpm" badge={hrStatus} onPress={() => nav.navigate('HeartRate')} />
             </MetricRow>
 
             {/* Calories (wide) */}
-            <MetricCard icon="🔥" label="Calories" value={metrics.calories > 0 ? metrics.calories.toLocaleString() : '—'} unit="Kcal" wide />
+            <MetricCard icon="🔥" label="Calories" value={metrics.calories > 0 ? metrics.calories.toLocaleString() : '—'} unit="Kcal" wide onPress={() => nav.navigate('Calories')} />
 
             {/* Sleep & Stress row */}
             <MetricRow>
-                <MetricCard icon="😴" label="Sleep" value={metrics.sleepHours > 0 ? `${metrics.sleepHours}h` : '—'} unit={metrics.deepSleep > 0 ? `${metrics.deepSleep}m Deep` : ''} />
-                <MetricCard icon="🧘" label="Stress" value={metrics.hrv > 0 ? metrics.hrv.toString() : '—'} unit="HRV" />
+                <MetricCard icon="😴" label="Sleep" value={metrics.sleepHours > 0 ? `${metrics.sleepHours}h` : '—'} unit={metrics.deepSleep > 0 ? `${metrics.deepSleep}m Deep` : ''} onPress={() => nav.navigate('Sleep')} />
+                <MetricCard icon="🧘" label="Stress" value={metrics.hrv > 0 ? metrics.hrv.toString() : '—'} unit="HRV" onPress={() => nav.navigate('Stress')} />
             </MetricRow>
 
             {/* Supplements */}
-            <SupplementsCard supplements={supplements.length > 0 ? supplements : [
-                { name: 'Vitamin D', active: true },
-                { name: 'Omega-3', active: true },
-                { name: 'Magnesium', active: true },
-                { name: 'Probiotics', active: true },
-                { name: 'Zinc', active: true },
-            ]} />
+            <TouchableOpacity onPress={() => nav.navigate('Supplements')}>
+                <SupplementsCard supplements={supplements.length > 0 ? supplements : [
+                    { name: 'Vitamin D', active: true },
+                    { name: 'Omega-3', active: true },
+                    { name: 'Magnesium', active: true },
+                    { name: 'Probiotics', active: true },
+                    { name: 'Zinc', active: true },
+                ]} />
+            </TouchableOpacity>
 
             {/* Lab Results */}
-            <LabResultsCard results={labResults} />
+            <TouchableOpacity onPress={() => nav.navigate('LabResults')}>
+                <LabResultsCard results={labResults} />
+            </TouchableOpacity>
 
             {/* Order Tests Button */}
-            <TouchableOpacity style={styles.orderButton}>
+            <TouchableOpacity style={styles.orderButton} onPress={() => nav.navigate('LabResults')}>
                 <Text style={styles.orderButtonText}>Order New Tests</Text>
             </TouchableOpacity>
 

@@ -6,12 +6,28 @@ import { Text, View, StyleSheet } from 'react-native';
 import { useAuth } from '../lib/AuthContext';
 import { colors, fontSizes } from '../lib/theme';
 
+// Main screens
 import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import AIAgentScreen from '../screens/AIAgentScreen';
 import DevicesScreen from '../screens/DevicesScreen';
 import HealthScreen from '../screens/HealthScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+
+// Detail screens - biometrics
+import HeartRateScreen from '../screens/HeartRateScreen';
+import StepsScreen from '../screens/StepsScreen';
+import SleepScreen from '../screens/SleepScreen';
+import CaloriesScreen from '../screens/CaloriesScreen';
+import WaterScreen from '../screens/WaterScreen';
+import StressScreen from '../screens/StressScreen';
+
+// Feature screens
+import HealthScoreScreen from '../screens/HealthScoreScreen';
+import SupplementsScreen from '../screens/SupplementsScreen';
+import LabResultsScreen from '../screens/LabResultsScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
+import OnboardingScreen from '../screens/OnboardingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -73,7 +89,22 @@ export default function AppNavigator() {
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {session ? (
-                    <Stack.Screen name="Main" component={MainTabs} />
+                    <>
+                        <Stack.Screen name="Main" component={MainTabs} />
+                        {/* Biometric detail screens */}
+                        <Stack.Screen name="HeartRate" component={HeartRateScreen} />
+                        <Stack.Screen name="Steps" component={StepsScreen} />
+                        <Stack.Screen name="Sleep" component={SleepScreen} />
+                        <Stack.Screen name="Calories" component={CaloriesScreen} />
+                        <Stack.Screen name="Water" component={WaterScreen} />
+                        <Stack.Screen name="Stress" component={StressScreen} />
+                        {/* Feature screens */}
+                        <Stack.Screen name="HealthScore" component={HealthScoreScreen} />
+                        <Stack.Screen name="Supplements" component={SupplementsScreen} />
+                        <Stack.Screen name="LabResults" component={LabResultsScreen} />
+                        <Stack.Screen name="Notifications" component={NotificationsScreen} />
+                        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                    </>
                 ) : (
                     <Stack.Screen
                         name="Login"
