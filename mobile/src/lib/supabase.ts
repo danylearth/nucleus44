@@ -20,17 +20,20 @@ export const API_BASE = __DEV__
     : 'https://your-production-server.com';
 
 // Helper to call server functions with auth
-export async function callFunction(name: string, data: any = {}) {
+export async function callFunction(name: string, data: any = {}, method: string = 'POST') {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
 
-    const response = await fetch(`${API_BASE}/api/functions/${name}`, {
-        method: 'POST',
+    const isGet = method.toUpperCase() === 'GET';
+    const url = `${API_BASE}/api/functions/${name}`;
+
+    const response = await fetch(url, {
+        method: method.toUpperCase(),
         headers: {
             'Content-Type': 'application/json',
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify(data),
+        ...(isGet ? {} : { body: JSON.stringify(data) }),
     });
 
     if (!response.ok) {

@@ -99,7 +99,7 @@ function HealthScoreArc({ score }: { score: number }) {
                             <View style={styles.arcArrowUp} />
                         )}
                     </View>
-                    <Text style={styles.arcLabel}>Health Score</Text>
+                    <Text style={styles.arcLabel}>Health Bar</Text>
                 </View>
 
                 {/* Badge */}
@@ -344,7 +344,7 @@ export default function DashboardScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* Health Score */}
+            {/* Health Bar */}
             <TouchableOpacity onPress={() => nav.navigate('HealthScore')}>
                 <HealthScoreArc score={healthScore} />
             </TouchableOpacity>
@@ -363,6 +363,18 @@ export default function DashboardScreen() {
                 <MetricCard icon="😴" label="Sleep" value={metrics.sleepHours > 0 ? `${metrics.sleepHours}h` : '—'} unit={metrics.deepSleep > 0 ? `${metrics.deepSleep}m Deep` : ''} onPress={() => nav.navigate('Sleep')} />
                 <MetricCard icon="🧘" label="Stress" value={metrics.hrv > 0 ? metrics.hrv.toString() : '—'} unit="HRV" onPress={() => nav.navigate('Stress')} />
             </MetricRow>
+
+            {/* Goals Card */}
+            <TouchableOpacity style={styles.goalsCard} onPress={() => nav.navigate('Goals')}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <Text style={{ fontSize: 24 }}>🎯</Text>
+                    <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>90-Day Goals</Text>
+                        <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>Set targets & track your progress</Text>
+                    </View>
+                    <Text style={{ fontSize: 20, color: '#9ca3af' }}>›</Text>
+                </View>
+            </TouchableOpacity>
 
             {/* Supplements */}
             <TouchableOpacity onPress={() => nav.navigate('Supplements')}>
@@ -459,4 +471,7 @@ const styles = StyleSheet.create({
     // Order button
     orderButton: { backgroundColor: '#111827', borderRadius: 16, paddingVertical: 16, alignItems: 'center', marginTop: 4, marginBottom: 12 },
     orderButtonText: { fontSize: 16, fontWeight: '600', color: '#fff' },
+
+    // Goals card
+    goalsCard: { backgroundColor: '#111827', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
 });

@@ -43,7 +43,7 @@ export default function HealthScoreScreen({ navigation }: any) {
         <ScrollView style={[s.container, { paddingTop: insets.top }]} contentContainerStyle={{ paddingBottom: 100 }}>
             <View style={s.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}><Text style={{ fontSize: 16, fontWeight: '600' }}>← Back</Text></TouchableOpacity>
-                <Text style={s.headerTitle}>Health Score</Text>
+                <Text style={s.headerTitle}>Health Bar</Text>
                 <View style={{ width: 60 }} />
             </View>
 

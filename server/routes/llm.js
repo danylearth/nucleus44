@@ -86,6 +86,43 @@ async function buildHealthContext(userId) {
         if (epiData?.data) context.epigeneticProfile = epiData.data;
     } catch (e) { /* ok */ }
 
+    // 6. Active goals + recent check-ins
+    try {
+        const { data: goals } = await supabaseAdmin
+            .from('goals')
+            .select('id, title, category, target_metric, target_value, current_value, unit, start_date, end_date, status')
+            .eq('user_id', userId)
+            .in('status', ['active', 'completed'])
+            .order('created_at', { ascending: false })
+            .limit(10);
+        if (goals?.length) {
+            context.goals = goals;
+            // Get recent check-ins for active goals
+            for (const goal of goals.filter(g => g.status === 'active')) {
+                try {
+                    const { data: checkIns } = await supabaseAdmin
+                        .from('goal_check_ins')
+                        .select('value, source, checked_at')
+                        .eq('goal_id', goal.id)
+                        .order('checked_at', { ascending: false })
+                        .limit(5);
+                    if (checkIns?.length) goal.recentCheckIns = checkIns;
+                } catch (e) { /* ok */ }
+            }
+        }
+    } catch (e) { /* goals table may not exist yet */ }
+
+    // 7. Today's supplement log (what they actually took)
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const { data: supplementLogs } = await supabaseAdmin
+            .from('supplement_logs')
+            .select('supplement_id, taken_at')
+            .eq('user_id', userId)
+            .gte('taken_at', today);
+        if (supplementLogs?.length) context.supplementsTakenToday = supplementLogs;
+    } catch (e) { /* ok */ }
+
     return context;
 }
 
@@ -157,12 +194,35 @@ Give the user genuinely useful, personalised health insights — not generic wel
         }
     }
 
-    // Add supplements
+    // Add supplements + today's adherence
     if (healthContext.supplements?.length) {
         prompt += `\n\n## CURRENT SUPPLEMENTS\n`;
+        const takenIds = (healthContext.supplementsTakenToday || []).map(l => l.supplement_id);
         for (const s of healthContext.supplements) {
-            prompt += `- ${s.name}: ${s.dosage || 'unknown dose'}, ${s.frequency || 'unknown frequency'}\n`;
+            const takenToday = takenIds.includes(s.id) ? '✅ taken today' : '❌ not taken yet';
+            prompt += `- ${s.name}: ${s.dosage || 'unknown dose'}, ${s.frequency || 'unknown frequency'} — ${takenToday}\n`;
         }
+        const takenCount = takenIds.length;
+        const totalCount = healthContext.supplements.length;
+        prompt += `\nAdherence today: ${takenCount}/${totalCount} supplements taken.`;
+    }
+
+    // Add active goals
+    if (healthContext.goals?.length) {
+        prompt += `\n\n## HEALTH GOALS (90-day cycles)\n`;
+        const today = new Date();
+        for (const g of healthContext.goals) {
+            const endDate = new Date(g.end_date);
+            const daysLeft = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)));
+            const progress = g.target_value && g.current_value
+                ? Math.round((g.current_value / g.target_value) * 100)
+                : 0;
+            prompt += `- **${g.title}** [${g.status}]: ${g.current_value || 'no data'} → target: ${g.target_value} ${g.unit || ''} (${daysLeft} days left, ${progress}% progress)\n`;
+            if (g.recentCheckIns?.length) {
+                prompt += `  Recent check-ins: ${g.recentCheckIns.map(c => `${c.value} (${c.checked_at?.split('T')[0]})`).join(', ')}\n`;
+            }
+        }
+        prompt += `\nWhen the user asks about their goals, reference specific numbers, trends, and time remaining. Suggest concrete actions to hit their targets.`;
     }
 
     // Add connected devices
@@ -189,6 +249,7 @@ Give the user genuinely useful, personalised health insights — not generic wel
     if (!healthContext.supplements?.length) missing.push('supplement information');
     if (!healthContext.dnaProfile) missing.push('DNA profile');
     if (!healthContext.devices?.length) missing.push('connected devices');
+    if (!healthContext.goals?.length) missing.push('health goals');
 
     if (missing.length > 0) {
         prompt += `\n\n## MISSING DATA\nThe following data sources are not yet connected: ${missing.join(', ')}. If the user asks about these, let them know they can connect them in the app for better insights.`;
