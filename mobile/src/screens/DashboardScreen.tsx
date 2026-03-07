@@ -607,40 +607,6 @@ export default function DashboardScreen() {
                 onPress={() => nav.navigate('Stress')}
             />
 
-            {/* Goals Card (New) */}
-            <TouchableOpacity style={styles.goalsCard} activeOpacity={0.8} onPress={() => nav.navigate('Goals')}>
-                <View style={styles.goalsHeader}>
-                    <View style={styles.goalsIconWrapper}>
-                        <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-                            <Circle cx={12} cy={12} r={9} stroke="#22C55E" strokeWidth={2} />
-                            <Circle cx={12} cy={12} r={3} stroke="#22C55E" strokeWidth={2} />
-                            <Path d="M12 3V1M12 23V21M3 12H1M23 12H21" stroke="#22C55E" strokeWidth={2} strokeLinecap="round" />
-                        </Svg>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.goalsTitle}>90-Day Goals</Text>
-                        <Text style={styles.goalsSubtitle}>
-                            {activeGoals.length} Active Targets
-                        </Text>
-                    </View>
-                    <Text style={styles.goalsChevron}>›</Text>
-                </View>
-                {activeGoals.length > 0 && (
-                    <View style={styles.goalsPreview}>
-                        {activeGoals.slice(0, 2).map((g: any, i: number) => (
-                            <View key={i} style={styles.goalsPreviewItem}>
-                                <Text style={styles.goalsPreviewTitle} numberOfLines={1}>{g.title}</Text>
-                                {g.target_value && g.current_value != null && (
-                                    <View style={styles.goalsPreviewBarBg}>
-                                        <View style={[styles.goalsPreviewBarFill, { width: `${Math.min(100, (g.current_value / g.target_value) * 100)}%` }]} />
-                                    </View>
-                                )}
-                            </View>
-                        ))}
-                    </View>
-                )}
-            </TouchableOpacity>
-
             {/* Supplements */}
             <TouchableOpacity onPress={() => nav.navigate('Supplements')}>
                 <SupplementsCard supplements={supplements.length > 0 ? supplements : [
