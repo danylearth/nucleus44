@@ -374,8 +374,6 @@ export default function DashboardScreen() {
     const [labResults, setLabResults] = useState<any[]>([]);
     const [greeting, setGreeting] = useState('');
 
-    const [activeGoals, setActiveGoals] = useState<any[]>([]);
-
     useEffect(() => {
         const hour = new Date().getHours();
         if (hour < 12) setGreeting('Good morning');
@@ -452,12 +450,6 @@ export default function DashboardScreen() {
                 const result = await callFunction('healthScore', {});
                 if (result?.score != null) setHealthScore(result.score);
             } catch (e) { }
-
-            // Active Goals
-            try {
-                const result = await callFunction('goals', {}, 'GET');
-                if (result?.goals) setActiveGoals(result.goals.filter((g: any) => g.status === 'active'));
-            } catch (e) { console.log('Goals load error on dashboard:', e); }
         } catch (error) {
             console.log('Dashboard load error:', error);
         }
