@@ -614,7 +614,8 @@ const styles = StyleSheet.create({
     metricRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
     metricCard: {
         flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 18,
-        shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+        borderWidth: 1, borderColor: '#E8E8ED',
+        shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 3,
     },
     metricCardWide: { marginBottom: 0, flex: 1 },
     metricHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
