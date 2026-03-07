@@ -132,58 +132,7 @@ function HealthScoreArc({ score }: { score: number }) {
     );
 }
 
-// ─── Macronutrients Card ────────────────────────────────────────────
-function MacroRing({ value, label, color, max }: { value: number; label: string; color: string; max: number }) {
-    const percentage = Math.min(value / max, 1);
-    const r = 28;
-    const circumference = 2 * Math.PI * r;
-    const strokeDashoffset = circumference * (1 - percentage);
-
-    return (
-        <View style={styles.macroItem}>
-            <View style={{ width: 68, height: 68, alignItems: 'center', justifyContent: 'center' }}>
-                <Svg width={68} height={68} viewBox="0 0 68 68">
-                    <Circle cx={34} cy={34} r={r} stroke="#F2F2F7" strokeWidth={5} fill="none" />
-                    <Circle
-                        cx={34} cy={34} r={r}
-                        stroke={color} strokeWidth={5} fill="none"
-                        strokeDasharray={`${circumference}`}
-                        strokeDashoffset={strokeDashoffset}
-                        strokeLinecap="round"
-                        transform="rotate(-90 34 34)"
-                    />
-                </Svg>
-                <Text style={styles.macroValue}>{value}g</Text>
-            </View>
-            <Text style={styles.macroLabel}>{label}</Text>
-        </View>
-    );
-}
-
-function MacronutrientsCard() {
-    return (
-        <View style={styles.macroCard}>
-            <View style={styles.macroHeader}>
-                <MacronutrientsIcon />
-                <Text style={styles.macroTitle}>Macronutrients</Text>
-            </View>
-            <View style={styles.macroRow}>
-                <MacroRing value={85} label="Protein" color="#A8D8D0" max={120} />
-                <MacroRing value={220} label="Carbs" color="#B8B4D0" max={300} />
-                <MacroRing value={65} label="Fats" color="#D4B4A4" max={80} />
-            </View>
-        </View>
-    );
-}
-
 // ─── SVG Icons ──────────────────────────────────────────────────────
-function MacronutrientsIcon() {
-    return (
-        <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
-            <Path d="M12 22C12 22 17 17 17 12C17 7 12 2 12 2C12 2 7 7 7 12C7 17 12 22 12 22Z" stroke="#A8D8D0" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        </Svg>
-    );
-}
 
 function SupplementsIcon() {
     return (
@@ -289,8 +238,8 @@ function MiniSparkline({ data, color, fillColor, height = 60 }: { data: number[]
 // ─── Progress Bar ───────────────────────────────────────────────────
 function ProgressBar({ progress, color = '#2DD4BF' }: { progress: number; color?: string }) {
     return (
-        <View style={{ height: 4, backgroundColor: '#E5E7EB', borderRadius: 2, marginTop: 12 }}>
-            <View style={{ height: 4, borderRadius: 2, backgroundColor: color, width: `${Math.min(100, progress)}%` }} />
+        <View style={{ height: 5, backgroundColor: '#E5E7EB', borderRadius: 3, marginTop: 14 }}>
+            <View style={{ height: 5, borderRadius: 3, backgroundColor: color, width: `${Math.min(100, progress)}%` }} />
         </View>
     );
 }
@@ -314,15 +263,22 @@ function MetricCard({
                 {icon}
                 <Text style={styles.metricLabel}>{label}</Text>
             </View>
-            <View style={styles.metricBody}>
-                <Text style={styles.metricValue}>{value}</Text>
-                {unit ? <Text style={styles.metricUnit}>{unit}</Text> : null}
-                {badge && (
-                    <View style={styles.metricBadge}>
-                        <Text style={styles.metricBadgeText}>{badge}</Text>
-                    </View>
-                )}
-            </View>
+            {wide ? (
+                <View style={styles.metricBody}>
+                    <Text style={styles.metricValue}>{value}</Text>
+                    {unit ? <Text style={styles.metricUnit}>{unit}</Text> : null}
+                    {badge && (
+                        <View style={styles.metricBadge}>
+                            <Text style={styles.metricBadgeText}>{badge}</Text>
+                        </View>
+                    )}
+                </View>
+            ) : (
+                <View>
+                    <Text style={styles.metricValue}>{value}</Text>
+                    {unit ? <Text style={styles.metricUnitBelow}>{unit}</Text> : null}
+                </View>
+            )}
             {sparkData && (
                 <View style={{ marginTop: 8, marginHorizontal: -8, overflow: 'hidden' }}>
                     <MiniSparkline data={sparkData} color={sparkColor || '#EF4444'} fillColor={sparkFill || '#FCA5A5'} />
@@ -548,9 +504,6 @@ export default function DashboardScreen() {
                 <HealthScoreArc score={healthScore} />
             </TouchableOpacity>
 
-            {/* Macronutrients */}
-            <MacronutrientsCard />
-
             {/* Steps & Heart Rate row */}
             <MetricRow>
                 <MetricCard
@@ -666,15 +619,16 @@ const styles = StyleSheet.create({
     // Metric cards
     metricRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
     metricCard: {
-        flex: 1, backgroundColor: '#fff', borderRadius: 24, padding: 16,
-        shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 10, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+        flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 18,
+        shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 2,
     },
     metricCardWide: { marginBottom: 12 },
-    metricHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
-    metricLabel: { fontSize: 14, fontWeight: '600', color: '#1C1C1E', letterSpacing: -0.2 },
-    metricBody: { flexDirection: 'row', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' },
-    metricValue: { fontSize: 32, fontWeight: '800', color: '#1C1C1E', letterSpacing: -1 },
-    metricUnit: { fontSize: 14, fontWeight: '400', color: '#8E8E93' },
+    metricHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
+    metricLabel: { fontSize: 15, fontWeight: '600', color: '#1C1C1E', letterSpacing: -0.2 },
+    metricBody: { flexDirection: 'row', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' },
+    metricValue: { fontSize: 40, fontWeight: '800', color: '#1C1C1E', letterSpacing: -1.5 },
+    metricUnit: { fontSize: 16, fontWeight: '400', color: '#8E8E93' },
+    metricUnitBelow: { fontSize: 14, fontWeight: '500', color: '#8E8E93', marginTop: -2 },
     metricBadge: { backgroundColor: '#D1FAE5', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 3 },
     metricBadgeText: { fontSize: 12, fontWeight: '600', color: '#065F46' },
 
@@ -705,26 +659,4 @@ const styles = StyleSheet.create({
     // Order button
     orderButton: { backgroundColor: '#111827', borderRadius: 16, paddingVertical: 16, alignItems: 'center', marginTop: 4, marginBottom: 12 },
     orderButtonText: { fontSize: 16, fontWeight: '600', color: '#fff' },
-
-    // Goals card
-    goalsCard: { backgroundColor: '#111827', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
-    goalsHeader: { flexDirection: 'row', alignItems: 'center' },
-    goalsIconWrapper: { width: 44, height: 44, borderRadius: 14, backgroundColor: '#22C55E15', alignItems: 'center', justifyContent: 'center', marginRight: 16 },
-    goalsTitle: { fontSize: 17, fontWeight: '600', color: '#fff', letterSpacing: -0.3, marginBottom: 2 },
-    goalsSubtitle: { fontSize: 14, color: '#9ca3af', fontWeight: '500' },
-    goalsChevron: { fontSize: 24, color: '#4b5563', fontWeight: '300', marginLeft: 8 },
-    goalsPreview: { marginTop: 16, gap: 12, borderTopWidth: 1, borderTopColor: '#374151', paddingTop: 16 },
-    goalsPreviewItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    goalsPreviewTitle: { fontSize: 14, color: '#f3f4f6', fontWeight: '500', flex: 1, marginRight: 12 },
-    goalsPreviewBarBg: { width: 80, height: 6, backgroundColor: '#374151', borderRadius: 3, overflow: 'hidden' },
-    goalsPreviewBarFill: { height: '100%', backgroundColor: '#22c55e', borderRadius: 3 },
-
-    // Macronutrients
-    macroCard: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 8, elevation: 1 },
-    macroHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-    macroTitle: { fontSize: 15, fontWeight: '600', color: '#1C1C1E', letterSpacing: -0.2 },
-    macroRow: { flexDirection: 'row', justifyContent: 'space-around' },
-    macroItem: { alignItems: 'center' },
-    macroValue: { position: 'absolute', fontSize: 13, fontWeight: '600', color: '#1C1C1E' },
-    macroLabel: { fontSize: 13, color: '#8E8E93', marginTop: 4 },
 });
