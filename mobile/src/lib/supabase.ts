@@ -16,7 +16,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 // API base for server functions
 export const API_BASE = __DEV__
-    ? 'http://192.168.1.193:3001'
+    ? 'http://192.168.1.71:3001'
     : 'https://your-production-server.com';
 
 // Helper to call server functions with auth
