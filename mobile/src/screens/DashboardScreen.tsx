@@ -548,18 +548,6 @@ export default function DashboardScreen() {
                 onPress={() => nav.navigate('Stress')}
             />
 
-            {/* Goals Card */}
-            <TouchableOpacity style={styles.goalsCard} onPress={() => nav.navigate('Goals')}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                    <Text style={{ fontSize: 24 }}>🎯</Text>
-                    <View style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>90-Day Goals</Text>
-                        <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>Set targets & track your progress</Text>
-                    </View>
-                    <Text style={{ fontSize: 20, color: '#9ca3af' }}>›</Text>
-                </View>
-            </TouchableOpacity>
-
             {/* Supplements */}
             <TouchableOpacity onPress={() => nav.navigate('Supplements')}>
                 <SupplementsCard supplements={supplements.length > 0 ? supplements : [
